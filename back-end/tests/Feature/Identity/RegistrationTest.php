@@ -6,8 +6,20 @@ use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
+function smtpReachable(): bool
+{
+    try {
+        (new SmtpSinkService)->getAllEmails();
+        return true;
+    } catch (\Exception $e) {
+        return false;
+    }
+}
+
 beforeEach(function () {
-    // Purge SMTP inbox before each test
+    if (! smtpReachable()) {
+        $this->markTestSkipped('SMTP sink server is not running. Skipping email-related tests.');
+    }
     $this->smtp = app(SmtpSinkService::class);
     $this->smtp->purgeAll();
 });
@@ -25,7 +37,6 @@ it('registers a user and sends verification email', function () {
     $response->assertStatus(201)
         ->assertJsonStructure(['user', 'token']);
 
-    // Wait for email to arrive in SMTP sink
     sleep(1);
 
     $received = $this->smtp->findEmailForRecipient($email);
@@ -41,7 +52,6 @@ it('registers a user and sends verification email', function () {
 });
 
 it('prevents duplicate email registration', function () {
-    // Create a user first
     \Modules\Identity\Models\User::factory()->create(['email' => 'dup@larablog.test']);
 
     $response = postJson('/api/register', [

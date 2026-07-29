@@ -3,11 +3,25 @@
 use Tests\Support\SmtpSinkService;
 use Modules\Identity\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Password;
 use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
+function smtpReachable(): bool
+{
+    try {
+        (new SmtpSinkService)->getAllEmails();
+        return true;
+    } catch (\Exception $e) {
+        return false;
+    }
+}
+
 beforeEach(function () {
+    if (! smtpReachable()) {
+        $this->markTestSkipped('SMTP sink server is not running. Skipping email-related tests.');
+    }
     $this->smtp = app(SmtpSinkService::class);
     $this->smtp->purgeAll();
 });
@@ -22,7 +36,6 @@ it('sends a password reset link email', function () {
     $response->assertStatus(200)
         ->assertJson(['message' => __(Password::RESET_LINK_SENT)]);
 
-    // Check SMTP sink for the reset email
     sleep(1);
 
     $received = $this->smtp->findEmailForRecipient('reset-me@larablog.test');
@@ -40,21 +53,17 @@ it('sends a password reset link email', function () {
 it('resets password with a valid token from email', function () {
     $user = User::factory()->create(['email' => 'valid-reset@larablog.test']);
 
-    // Request a reset link
     postJson('/api/forgot-password', ['email' => 'valid-reset@larablog.test']);
     sleep(1);
 
-    // Extract token and email from the reset link
     $received = $this->smtp->findEmailForRecipient('valid-reset@larablog.test');
     $resetLinkUrl = collect($received['links'])->firstWhere('text', 'Reset Password')['url'];
 
-    // Parse query parameters (token & email)
     $query = parse_url($resetLinkUrl, PHP_URL_QUERY);
     parse_str($query, $params);
     $token = $params['token'];
     $email = $params['email'];
 
-    // Now perform the actual password reset
     $newPassword = 'NewStrongPass999!';
     $response = postJson('/api/reset-password', [
         'token'                 => $token,
@@ -66,7 +75,6 @@ it('resets password with a valid token from email', function () {
     $response->assertStatus(200)
         ->assertJson(['message' => __(Password::PASSWORD_RESET)]);
 
-    // Verify that the new password works for login
     $loginResponse = postJson('/api/login', [
         'email'    => 'valid-reset@larablog.test',
         'password' => $newPassword,
