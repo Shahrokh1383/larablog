@@ -528,8 +528,6 @@ export function usePost(slug: string) {
 
 This pattern is mandatory for every page.
 
----
-
 10. Golden Rules (Memorize)
 
 1. Do not fight Laravel. Use Eloquent, FormRequests, and Policies as first-class tools.
@@ -539,21 +537,6 @@ This pattern is mandatory for every page.
 5. Frontend pages only compose. Hooks own logic. Components only present.
 6. All server state goes through React Query.
 7. When in doubt, ask: “Which Bounded Context owns this business rule?”
-
----
-
-11. Quick Bootstrap Checklist
-
-1. Laravel project + move business code under src/Modules + PSR-4.
-2. Install Sanctum, Spatie Permission, Fortify/Socialite, Reverb.
-3. Create lean Shared Kernel (only the items listed above).
-4. Fully implement Identity module as the reference skeleton.
-5. Create the Administration module (even if minimal) to handle cross-module admin routes.
-6. Add Pest Architecture tests → CI fails on boundary violation.
-7. Scaffold Next.js + Admin with feature-based structure + React Query + AuthProvider.
-8. Write CONTRIBUTING.md that points everyone to this Constitution.
-
----
 
 This document is the Single Source of Truth for both Backend and Frontend.
 Any deviation is technical debt and must be corrected.
