@@ -7,6 +7,7 @@ use Modules\Identity\Actions\FindOrCreateSocialUserAction;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class OAuthService
 {
@@ -14,10 +15,12 @@ class OAuthService
         protected FindOrCreateSocialUserAction $findOrCreate,
     ) {}
 
-    public function redirect(string $provider)
+    public function redirect(string $provider): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $this->validateProvider($provider);
-        return Socialite::driver($provider)->redirect();
+        /** @var AbstractProvider $driver */
+        $driver = Socialite::driver($provider);
+        return $driver->redirect();
     }
 
     public function callback(OAuthCallbackDTO $dto): array
@@ -25,7 +28,9 @@ class OAuthService
         $this->validateProvider($dto->provider);
 
         try {
-            $socialUser = Socialite::driver($dto->provider)->stateless()->user();
+            /** @var AbstractProvider $driver */
+            $driver = Socialite::driver($dto->provider);
+            $socialUser = $driver->stateless()->user();
         } catch (\Exception $e) {
             throw ValidationException::withMessages([
                 'provider' => ['OAuth callback failed.'],

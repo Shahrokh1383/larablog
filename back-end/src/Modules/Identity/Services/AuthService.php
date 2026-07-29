@@ -9,6 +9,7 @@ use Modules\Identity\Actions\AssignRoleAction;
 use Modules\Identity\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
@@ -32,12 +33,16 @@ class AuthService
 
     public function login(UserLoginDTO $dto): array
     {
-        if (! Auth::attempt(['email' => $dto->email, 'password' => $dto->password], $dto->remember)) {
+        if (! Auth::attempt([
+            'email'    => $dto->email,
+            'password' => $dto->password,
+        ], $dto->remember)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
+        /** @var User $user */
         $user = Auth::user();
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -46,6 +51,8 @@ class AuthService
 
     public function logout(User $user): void
     {
-        $user->currentAccessToken()->delete();
+        /** @var PersonalAccessToken|null $token */
+        $token = $user->currentAccessToken();
+        $token?->delete();
     }
 }

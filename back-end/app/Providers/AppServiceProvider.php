@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Support\Facades\Event;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,8 +19,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Mail::mailer('smtp')->alwaysWithHeaders([
-            'X-Mailer' => config('app.name'),
-        ]);
+        // Attach X-Mailer header to every outgoing email
+        Event::listen(MessageSending::class, function (MessageSending $event) {
+            $event->message->getHeaders()->addTextHeader(
+                'X-Mailer', config('app.name', 'Larablog')
+            );
+        });
     }
 }

@@ -8,8 +8,11 @@ use Modules\Identity\Http\Resources\UserResource;
 use Modules\Identity\Services\AuthService;
 use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\DTOs\UserLoginDTO;
+use Modules\Identity\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -39,27 +42,29 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        $this->authService->logout(auth()->user());
+        $this->authService->logout(Auth::user());
 
         return response()->json(['message' => 'Logged out']);
     }
 
     public function verifyEmail(Request $request): JsonResponse
     {
-        // This can be handled by Laravel's default email verification route if we enable it,
-        // but we can also create our own. We'll add a simple verification using signed URLs.
-        // I'll implement a standard verify method that fulfills MustVerifyEmail interface.
-        if ($request->hasValidSignature()) {
-            $user = User::findOrFail($request->id);
-            if (! hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
-                abort(403);
-            }
-            if ($user->hasVerifiedEmail()) {
-                return response()->json(['message' => 'Email already verified']);
-            }
-            $user->markEmailAsVerified();
-            return response()->json(['message' => 'Email verified successfully']);
+        if (! $request->hasValidSignature()) {
+            return response()->json(['message' => 'Invalid or expired link'], 403);
         }
-        return response()->json(['message' => 'Invalid or expired link'], 403);
+
+        $user = User::findOrFail($request->route('id'));
+
+        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            abort(403);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified']);
+        }
+
+        $user->markEmailAsVerified();
+
+        return response()->json(['message' => 'Email verified successfully']);
     }
 }

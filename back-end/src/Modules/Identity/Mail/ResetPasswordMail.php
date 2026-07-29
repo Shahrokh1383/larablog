@@ -7,23 +7,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Modules\Identity\Models\User;
 
-class VerificationMail extends Mailable
+class ResetPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
         public User $user,
-        public string $verificationUrl
+        public string $resetUrl
     ) {}
 
     public function build(): self
     {
         return $this
-            ->subject('Verify Email Address')
-            ->view('identity::emails.verify-email')
+            ->subject('Reset Your Password')
+            ->view('identity::emails.reset-password')
             ->with([
-                'user'            => $this->user,
-                'verificationUrl' => $this->verificationUrl,
+                'user'     => $this->user,
+                'resetUrl' => $this->resetUrl,
             ]);
     }
 }
