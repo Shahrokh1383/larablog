@@ -26,11 +26,19 @@
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="DB_URL" value=""/>
-        <env name="MAIL_MAILER" value="array"/>
+        
+        <!-- Updated Mail Configuration to hit Python SMTP Sink Server -->
+        <env name="MAIL_MAILER" value="smtp"/>
+        <env name="MAIL_HOST" value="127.0.0.1"/>
+        <env name="MAIL_PORT" value="1025"/>
+        
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        
+        <!-- SMTP Sink API URL for Pest Tests -->
+        <env name="SMTP_SINK_API_URL" value="http://127.0.0.1:5000/api"/>
     </php>
 </phpunit>

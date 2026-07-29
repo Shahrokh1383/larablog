@@ -1,0 +1,32 @@
+{
+  "excludedPaths": [
+    "doc",
+    "Admin",
+    "lara-blog (Demo)",
+    "User",
+    "todo",
+    "fix2.txt",
+    "fix.txt",
+    "content.txt",
+    "back-end\\storage",
+    "back-end\\routes",
+    "back-end\\resources",
+    "back-end\\public",
+    "back-end\\database",
+    "back-end\\config",
+    "back-end\\bootstrap",
+    "back-end\\app",
+    "back-end\\README.md",
+    "back-end\\vite.config.js",
+    "back-end\\phpunit.xml",
+    "back-end\\package.json",
+    "back-end\\package-lock.json",
+    "back-end\\composer.lock",
+    "back-end\\composer.json",
+    "back-end\\artisan",
+    "back-end\\tests"
+  ],
+  "globalPatterns": [],
+  "lastModified": "2026-07-29T20:15:06.877Z",
+  "version": 1
+}

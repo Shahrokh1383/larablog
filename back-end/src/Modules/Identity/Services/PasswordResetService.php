@@ -30,8 +30,10 @@ class PasswordResetService
             'password'              => $dto->password,
             'password_confirmation' => $dto->password,
         ], function ($user, $password) {
+            // Removed bcrypt() to prevent double hashing.
+            // The 'hashed' cast on the User model handles it securely.
             $user->forceFill([
-                'password' => bcrypt($password),
+                'password' => $password,
             ])->save();
         });
 

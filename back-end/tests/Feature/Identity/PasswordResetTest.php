@@ -8,16 +8,6 @@ use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
-function smtpReachable(): bool
-{
-    try {
-        (new SmtpSinkService)->getAllEmails();
-        return true;
-    } catch (\Exception $e) {
-        return false;
-    }
-}
-
 beforeEach(function () {
     if (! smtpReachable()) {
         $this->markTestSkipped('SMTP sink server is not running. Skipping email-related tests.');

@@ -6,20 +6,14 @@ use function Pest\Laravel\postJson;
 
 uses(RefreshDatabase::class);
 
-function smtpReachable(): bool
-{
-    try {
-        (new SmtpSinkService)->getAllEmails();
-        return true;
-    } catch (\Exception $e) {
-        return false;
-    }
-}
-
 beforeEach(function () {
     if (! smtpReachable()) {
         $this->markTestSkipped('SMTP sink server is not running. Skipping email-related tests.');
     }
+    
+    // Ensure roles are seeded before running tests
+    $this->seed(\Database\Seeders\RoleSeeder::class);
+    
     $this->smtp = app(SmtpSinkService::class);
     $this->smtp->purgeAll();
 });
@@ -48,7 +42,7 @@ it('registers a user and sends verification email', function () {
 
     $verifyLink = collect($links)->firstWhere('text', 'Verify Email Address');
     expect($verifyLink)->not->toBeNull();
-    expect($verifyLink['url'])->toContain('verify-email');
+    expect($verifyLink['url'])->toContain('email/verify');
 });
 
 it('prevents duplicate email registration', function () {

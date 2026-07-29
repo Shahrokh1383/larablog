@@ -7,10 +7,12 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Modules\Identity\UserFactory;
 
 class User extends BaseUser implements MustVerifyEmail
 {
-    use HasApiTokens, HasRoles, Notifiable;
+    use HasApiTokens, HasRoles, Notifiable, HasFactory;
 
     protected $fillable = [
         'name', 'email', 'password',
@@ -42,5 +44,13 @@ class User extends BaseUser implements MustVerifyEmail
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new \Modules\Identity\Notifications\ResetPasswordNotification($token));
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
     }
 }
