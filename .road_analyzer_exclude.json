@@ -3,7 +3,6 @@
     "doc",
     "Admin",
     "lara-blog (Demo)",
-    "User",
     "todo",
     "fix2.txt",
     "fix.txt",
@@ -24,9 +23,18 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "back-end\\tests"
+    "back-end\\tests",
+    "back-end",
+    "User\\tsconfig.json",
+    "User\\README.md",
+    "User\\package.json",
+    "User\\package-lock.json",
+    "User\\next.config.mjs",
+    "User\\next-env.d.ts",
+    "User\\jsconfig.json",
+    "User\\eslint.config.mjs"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-07-29T20:15:06.877Z",
+  "lastModified": "2026-07-30T13:55:05.407Z",
   "version": 1
 }
