@@ -42,7 +42,7 @@ it('registers a user and sends verification email', function () {
 
     $verifyLink = collect($links)->firstWhere('text', 'Verify Email Address');
     expect($verifyLink)->not->toBeNull();
-    expect($verifyLink['url'])->toContain('email/verify');
+    expect($verifyLink['url'])->toContain('verify-email');
 });
 
 it('prevents duplicate email registration', function () {
