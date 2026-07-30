@@ -8,7 +8,7 @@ interface RegisterFormProps {
     email: string;
     password: string;
     password_confirmation: string;
-  }) => Promise<void>;
+  }) => void;
   isLoading?: boolean;
   error?: string | null;
 }

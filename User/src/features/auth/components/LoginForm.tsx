@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface LoginFormProps {
-  onSubmit: (data: { email: string; password: string; remember: boolean }) => Promise<void>;
+  onSubmit: (data: { email: string; password: string; remember: boolean }) => void;
   isLoading?: boolean;
   error?: string | null;
 }
