@@ -1,0 +1,414 @@
+/* ============================================================
+   LARABLOG - auth.css
+   Authentication Page Styles (Minimal, Dual Panel Slider)
+   ============================================================ */
+
+.auth-body {
+    background: var(--clr-bg-alt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.auth-container {
+    display: flex;
+    width: 100%;
+    max-width: 880px;
+    height: 85vh;               /* fixed relative height for slider to work */
+    min-height: 550px;          /* ensures enough space */
+    max-height: 95vh;
+    background: var(--clr-card-bg);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--clr-border-light);
+}
+
+/* ==================== THEME TOGGLE (absolute, no impact on layout) ==================== */
+.auth-theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.auth-theme-toggle .btn-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    background: var(--clr-bg-elevated);
+    backdrop-filter: blur(6px);
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-theme-toggle .btn-icon:hover {
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+}
+
+/* ==================== FORMS PANEL (LEFT) ==================== */
+.auth-forms-panel {
+    width: 55%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-forms-slider {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.auth-form-wrapper {
+    width: 50%;
+    height: 100%;
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;           /* allow internal scroll if ever needed, but design prevents it */
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--clr-text);
+    margin-bottom: 0.75rem;
+}
+
+.auth-logo .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.auth-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+    color: var(--clr-text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+/* ==================== FORM ELEMENTS (compact, no overflow) ==================== */
+.auth-form .form-group {
+    margin-bottom: 0.7rem;
+}
+
+.auth-form .form-label {
+    font-weight: 600;
+    color: var(--clr-text);
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.85rem;
+}
+
+.auth-form .form-control {
+    width: 100%;
+    padding: 0.55rem 0.9rem;
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    font-family: var(--ff-primary);
+    font-size: 0.9rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.auth-form .form-control:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px var(--clr-primary-light);
+}
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--clr-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px;
+}
+
+.password-toggle:hover {
+    color: var(--clr-primary);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--clr-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.remember-me,
+.terms-agree {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+}
+
+.forgot-link {
+    color: var(--clr-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.btn-auth {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+    padding: 0.65rem;
+    font-size: 0.95rem;
+}
+
+/* Social Login */
+.social-login {
+    margin-top: 0.8rem;
+    text-align: center;
+}
+
+.social-login-text {
+    font-size: 0.8rem;
+    color: var(--clr-text-muted);
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.social-login-text::before,
+.social-login-text::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 25%;
+    height: 1px;
+    background: var(--clr-border);
+}
+
+.social-login-text::before { left: 0; }
+.social-login-text::after { right: 0; }
+
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.social-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--clr-border);
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.social-btn.google:hover { border-color: #4285F4; color: #4285F4; }
+.social-btn.facebook:hover { border-color: #1877F2; color: #1877F2; }
+.social-btn.github:hover { border-color: #333; color: #333; }
+[data-theme="dark"] .social-btn.github:hover { border-color: #fff; color: #fff; }
+
+/* ==================== WELCOME PANEL (RIGHT) ==================== */
+.auth-welcome-panel {
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-slider {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.welcome-content {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #fff;
+    text-align: center;
+}
+
+.welcome-inner {
+    max-width: 250px;
+}
+
+.welcome-icon {
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
+    opacity: 0.9;
+}
+
+.welcome-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.welcome-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+}
+
+.btn-switch {
+    border: 2px solid #fff !important;
+    color: #fff !important;
+    background: transparent;
+    font-weight: 600;
+    padding: 0.55rem 1.8rem;
+    font-size: 0.9rem;
+}
+
+.btn-switch:hover {
+    background: #fff !important;
+    color: var(--clr-primary) !important;
+    transform: translateY(-2px);
+}
+
+/* ==================== SLIDER STATES ==================== */
+.auth-container.signup-active .auth-forms-slider {
+    transform: translateX(-50%);
+}
+
+.auth-container.signup-active .welcome-slider {
+    transform: translateX(-50%);
+}
+
+/* ==================== SINGLE-PANEL AUTH PAGES (forgot & reset password) ==================== */
+.auth-container.single-panel {
+    max-width: 460px;
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+    padding: 2rem;
+    margin: auto;
+}
+
+.auth-container.single-panel .auth-forms-panel {
+    width: 100%;
+    height: auto;
+}
+
+.auth-container.single-panel .auth-forms-slider {
+    width: 100%;
+    transform: none !important;
+}
+
+.auth-container.single-panel .auth-form-wrapper {
+    width: 100%;
+    padding: 0;
+    overflow: visible;
+}
+
+.auth-container.single-panel .auth-welcome-panel {
+    display: none;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 991.98px) {
+    .auth-container {
+        flex-direction: column;
+        max-width: 460px;
+        height: auto;          /* let content define height on mobile */
+        min-height: 0;
+        max-height: none;
+    }
+
+    .auth-forms-panel {
+        width: 100%;
+        height: auto;
+        order: 1;
+    }
+
+    .auth-welcome-panel {
+        width: 100%;
+        height: auto;
+        order: 0;
+        padding: 1.5rem 1rem;
+    }
+
+    /* Mobile layout: disable slider transforms, show/hide via JS */
+    .auth-container.mobile-layout .auth-forms-slider {
+        display: block;
+        transform: none !important;
+    }
+
+    .auth-container.mobile-layout .auth-form-wrapper {
+        display: none;
+    }
+
+    .auth-container.mobile-layout .auth-form-wrapper.active {
+        display: block;
+    }
+
+    .auth-container.mobile-layout .welcome-slider {
+        display: block;
+        transform: none !important;
+    }
+
+    .auth-container.mobile-layout .welcome-content {
+        display: none;
+    }
+
+    .auth-container.mobile-layout .welcome-content.active {
+        display: flex;
+    }
+}
