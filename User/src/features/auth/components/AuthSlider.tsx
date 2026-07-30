@@ -29,7 +29,8 @@ export default function AuthSlider() {
             <LoginForm 
               onSubmit={loginMutation.mutate} 
               isLoading={loginMutation.isPending} 
-              error={loginMutation.error?.response?.data?.message} 
+              error={loginMutation.error?.response?.data?.message}
+              errors={loginMutation.error?.response?.data?.errors}
             />
             <SocialButtons />
           </div>
@@ -47,7 +48,8 @@ export default function AuthSlider() {
             <RegisterForm 
               onSubmit={registerMutation.mutate} 
               isLoading={registerMutation.isPending} 
-              error={registerMutation.error?.response?.data?.message} 
+              error={registerMutation.error?.response?.data?.message}
+              errors={registerMutation.error?.response?.data?.errors}
             />
             <SocialButtons />
           </div>

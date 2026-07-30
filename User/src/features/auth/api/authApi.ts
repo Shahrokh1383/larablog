@@ -41,5 +41,13 @@ export const authApi = {
     );
     return data;
   },
+
+  verifyEmail: async (id: string, hash: string, params: Record<string, string | null>) => {
+    const { data } = await httpClient.get<{ message: string }>(
+      endpoints.auth.emailVerify(id, hash),
+      { params }
+    );
+    return data;
+  },
   // OAuth redirect is a simple window.location redirect; no fetch needed.
 };

@@ -30,9 +30,11 @@
     "User\\next.config.mjs",
     "User\\next-env.d.ts",
     "User\\jsconfig.json",
-    "User\\eslint.config.mjs"
+    "User\\eslint.config.mjs",
+    "back-end\\config",
+    "roadmap.txt"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-07-30T15:00:33.364Z",
+  "lastModified": "2026-07-30T15:43:03.733Z",
   "version": 1
 }

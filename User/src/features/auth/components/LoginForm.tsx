@@ -6,9 +6,10 @@ interface LoginFormProps {
   onSubmit: (data: { email: string; password: string; remember: boolean }) => void;
   isLoading?: boolean;
   error?: string | null;
+  errors?: Record<string, string[]>;
 }
 
-export default function LoginForm({ onSubmit, isLoading, error }: LoginFormProps) {
+export default function LoginForm({ onSubmit, isLoading, error, errors }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -25,19 +26,20 @@ export default function LoginForm({ onSubmit, isLoading, error }: LoginFormProps
         <label className="form-label">Email</label>
         <input
           type="email"
-          className="form-control"
+          className={`form-control ${errors?.email ? 'is-invalid' : ''}`}
           placeholder="you@example.com"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {errors?.email && <div className="invalid-feedback d-block">{errors.email[0]}</div>}
       </div>
       <div className="form-group">
         <label className="form-label">Password</label>
         <div className="password-input-wrapper">
           <input
             type={showPassword ? 'text' : 'password'}
-            className="form-control"
+            className={`form-control ${errors?.password ? 'is-invalid' : ''}`}
             placeholder="••••••••"
             required
             value={password}
@@ -52,6 +54,7 @@ export default function LoginForm({ onSubmit, isLoading, error }: LoginFormProps
             <i className={`fa-sharp fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </button>
         </div>
+        {errors?.password && <div className="invalid-feedback d-block">{errors.password[0]}</div>}
       </div>
       <div className="form-group form-options">
         <label className="remember-me">

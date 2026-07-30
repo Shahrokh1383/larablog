@@ -11,7 +11,7 @@ export default function AuthLayoutClient({ children }: { children: React.ReactNo
   
   // Determine layout state based on route
   const isSignup = pathname.includes('register');
-  const isSinglePanel = pathname.includes('forgot') || pathname.includes('reset');
+  const isSinglePanel = pathname.includes('forgot') || pathname.includes('reset') || pathname.includes('verify-email');
 
   return (
     <div className="auth-body">

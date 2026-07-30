@@ -11,9 +11,10 @@ interface RegisterFormProps {
   }) => void;
   isLoading?: boolean;
   error?: string | null;
+  errors?: Record<string, string[]>;
 }
 
-export default function RegisterForm({ onSubmit, isLoading, error }: RegisterFormProps) {
+export default function RegisterForm({ onSubmit, isLoading, error, errors }: RegisterFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,30 +34,32 @@ export default function RegisterForm({ onSubmit, isLoading, error }: RegisterFor
         <label className="form-label">Full Name</label>
         <input
           type="text"
-          className="form-control"
+          className={`form-control ${errors?.name ? 'is-invalid' : ''}`}
           placeholder="John Doe"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        {errors?.name && <div className="invalid-feedback d-block">{errors.name[0]}</div>}
       </div>
       <div className="form-group">
         <label className="form-label">Email</label>
         <input
           type="email"
-          className="form-control"
+          className={`form-control ${errors?.email ? 'is-invalid' : ''}`}
           placeholder="you@example.com"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {errors?.email && <div className="invalid-feedback d-block">{errors.email[0]}</div>}
       </div>
       <div className="form-group">
         <label className="form-label">Password</label>
         <div className="password-input-wrapper">
           <input
             type={showPassword ? 'text' : 'password'}
-            className="form-control"
+            className={`form-control ${errors?.password ? 'is-invalid' : ''}`}
             placeholder="••••••••"
             required
             value={password}
@@ -66,6 +69,7 @@ export default function RegisterForm({ onSubmit, isLoading, error }: RegisterFor
             <i className={`fa-sharp fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
           </button>
         </div>
+        {errors?.password && <div className="invalid-feedback d-block">{errors.password[0]}</div>}
       </div>
       <div className="form-group">
         <label className="form-label">Confirm Password</label>

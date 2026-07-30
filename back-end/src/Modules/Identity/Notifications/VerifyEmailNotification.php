@@ -24,15 +24,28 @@ class VerifyEmailNotification extends Notification
             ->to($notifiable->email);
     }
 
-    protected function verificationUrl(User $notifiable): string
+        protected function verificationUrl(User $notifiable): string
     {
-        return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+        
+        $params = [
+            'id'   => (string) $notifiable->getKey(),
+            'hash' => sha1($notifiable->getEmailForVerification()),
+        ];
+
+        // Generate the backend signed URL to get expires and signature
+        $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
             'verification.verify',
             now()->addMinutes(config('auth.verification.expire', 60)),
-            [
-                'id'   => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
+            $params
         );
+
+        // Parse the backend URL to extract the query parameters (expires, signature)
+        parse_str(parse_url($signedUrl, PHP_URL_QUERY), $query);
+
+        // Merge id, hash, expires, and signature for the frontend URL
+        $frontendQuery = http_build_query(array_merge($params, $query));
+
+        return "{$frontendUrl}/verify-email?{$frontendQuery}";
     }
 }
