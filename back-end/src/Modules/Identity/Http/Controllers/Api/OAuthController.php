@@ -4,8 +4,6 @@ namespace Modules\Identity\Http\Controllers\Api;
 
 use Modules\Identity\Services\OAuthService;
 use Modules\Identity\DTOs\OAuthCallbackDTO;
-use Modules\Identity\Http\Resources\UserResource;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,7 +17,7 @@ class OAuthController extends Controller
         return $this->oauthService->redirect($provider);
     }
 
-    public function callback(Request $request, string $provider): JsonResponse
+    public function callback(Request $request, string $provider): RedirectResponse
     {
         $dto = new OAuthCallbackDTO(
             provider: $provider,
@@ -29,9 +27,9 @@ class OAuthController extends Controller
 
         $result = $this->oauthService->callback($dto);
 
-        return response()->json([
-            'user'  => new UserResource($result['user']),
-            'token' => $result['token'],
-        ]);
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+        
+        // Redirect to frontend with token
+        return redirect()->to("{$frontendUrl}/oauth-callback?token={$result['token']}");
     }
 }

@@ -12,15 +12,20 @@ class FindOrCreateSocialUserAction
         $user = User::where('email', $socialUser->getEmail())->first();
 
         if (! $user) {
+            // Fallback to nickname or email if name is null (common in GitHub)
+            $name = $socialUser->getName() ?? $socialUser->getNickname() ?? $socialUser->getEmail();
+
             $user = User::create([
-                'name'     => $socialUser->getName(),
+                'name'     => $name,
                 'email'    => $socialUser->getEmail(),
                 'password' => bcrypt(\Illuminate\Support\Str::random(32)),
             ]);
+            
             $user->assignRole('user');
+            
+            // Social providers already verified the email
+            $user->markEmailAsVerified();
         }
-
-        // Optionally store provider_id in a dedicated table; skipping for brevity.
 
         return $user;
     }

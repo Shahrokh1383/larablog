@@ -6,8 +6,8 @@ export const endpoints = {
     user: '/user',
     forgotPassword: '/forgot-password',
     resetPassword: '/reset-password',
-    oauthRedirect: (provider: string) => `/auth/oauth/${provider}/redirect`,
-    oauthCallback: (provider: string) => `/auth/oauth/${provider}/callback`,
+    oauthRedirect: (provider: string) => `/oauth/${provider}/redirect`,
+    oauthCallback: (provider: string) => `/oauth/${provider}/callback`,
     emailVerify: (id: string, hash: string) => `/email/verify/${id}/${hash}`,
   },
 };

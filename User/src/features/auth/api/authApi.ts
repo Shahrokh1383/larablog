@@ -27,6 +27,14 @@ export const authApi = {
     const { data } = await httpClient.get<User>(endpoints.auth.user);
     return data;
   },
+  getUserWithToken: async (token: string) => {
+    const { data } = await httpClient.get<User>('/user', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return data;
+  },
   forgotPassword: async (payload: ForgotPasswordData) => {
     const { data } = await httpClient.post<{ message: string }>(
       endpoints.auth.forgotPassword,

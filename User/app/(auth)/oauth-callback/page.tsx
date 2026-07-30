@@ -1,41 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useAuth } from '@/features/auth/context/AuthContext';
-import httpClient from '@/shared/api/httpClient';
-import { endpoints } from '@/shared/api/endpoints';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { authApi } from '@/features/auth/api/authApi';
 
 export default function OAuthCallbackPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const { setUser } = useAuth();
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const provider = searchParams.get('provider');
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
+    const token = searchParams.get('token');
 
-    if (provider && code) {
-      httpClient
-        .get(`${endpoints.auth.oauthCallback(provider)}?code=${code}&state=${state}`)
-        .then((res) => {
-          setUser(res.data.user);
-          window.location.href = '/dashboard';
+    if (token) {
+      // Fetch user details using the token
+      authApi.getUserWithToken(token)
+        .then((user) => {
+          queryClient.setQueryData(['auth', 'user'], user);
+          router.push('/dashboard');
         })
-        .catch(() => setError('OAuth failed'));
+        .catch(() => setError('Authentication failed. Please try again.'));
     } else {
-      // If token was passed directly in URL (alternative flow)
-      const token = searchParams.get('token');
-      if (token) {
-        // store token in localStorage? Not recommended for Sanctum cookie.
-        // Better: backend redirects with token, we store it in cookie via /login response.
-        // For now, navigate to dashboard; user will be fetched.
-        window.location.href = '/dashboard';
-      }
+      setError('No authentication token provided.');
     }
-  }, [searchParams, setUser]);
+  }, [searchParams, router, queryClient]);
 
-  if (error) return <p className="text-center mt-5">{error}</p>;
+  if (error) return <p className="text-center mt-5 text-danger">{error}</p>;
   return <p className="text-center mt-5">Completing authentication...</p>;
 }

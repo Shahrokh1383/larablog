@@ -20,7 +20,9 @@ class OAuthService
         $this->validateProvider($provider);
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($provider);
-        return $driver->redirect();
+        
+        // Add ->stateless() to prevent the session dependency in API routes
+        return $driver->stateless()->redirect();
     }
 
     public function callback(OAuthCallbackDTO $dto): array
