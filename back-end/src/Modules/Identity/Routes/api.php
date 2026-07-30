@@ -28,6 +28,7 @@ Route::post('reset-password', [PasswordResetController::class, 'reset']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
     // Additional authenticated identity routes can go here
 });

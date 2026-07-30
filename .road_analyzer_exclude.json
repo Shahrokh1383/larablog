@@ -12,7 +12,6 @@
     "back-end\\resources",
     "back-end\\public",
     "back-end\\database",
-    "back-end\\config",
     "back-end\\bootstrap",
     "back-end\\app",
     "back-end\\README.md",
@@ -24,7 +23,6 @@
     "back-end\\composer.json",
     "back-end\\artisan",
     "back-end\\tests",
-    "back-end",
     "User\\tsconfig.json",
     "User\\README.md",
     "User\\package.json",
@@ -35,6 +33,6 @@
     "User\\eslint.config.mjs"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-07-30T13:55:05.407Z",
+  "lastModified": "2026-07-30T15:00:33.364Z",
   "version": 1
 }
