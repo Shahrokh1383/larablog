@@ -17,7 +17,10 @@ class AdminUserController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $users = $this->userService->getAllUsers($request->input('per_page', 15));
+        $users = $this->userService->getAllUsers(
+            $request->input('per_page', 15),
+            $request->input('search')
+        );
         
         return response()->json([
             'data' => UserResource::collection($users->items()),

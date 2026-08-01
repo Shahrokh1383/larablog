@@ -1,43 +1,6 @@
 # Larablog Implementation Master Plan (SSOT)
 *Strictly adhering to the Architecture Constitution*
 
-## Phase 1: Bootstrap, Identity Module & Authentication
-**Goal:** Establish the foundational architecture, configure the Shared Kernel, and implement the `Identity` Bounded Context (Auth, Roles, OAuth).
-
-### Backend (`src/Modules/Identity/`)
-1. **Core Setup:**
-   - Move Laravel business code to `src/Modules/`.
-   - Configure PSR-4 autoloading in `composer.json`.
-   - Setup lean Shared Kernel: `src/Shared/Models/User.php`, `src/Shared/ValueObjects/Email.php`, `src/Shared/Traits/HasUuid.php`.
-   - Install Sanctum, Spatie Permission, Socialite, Fortify (for password reset logic only).
-2. **Database:** Flat migrations prefixed with `identity_` (e.g., `2024_01_01_000000_identity_create_users_table.php`).
-3. **Implementation:**
-   - **Models:** `User` (extends Shared Kernel User, uses `HasRoles`, `HasUuid`).
-   - **DTOs:** `UserRegisterDTO`, `UserLoginDTO`, `OAuthCallbackDTO`, **`AuthorDTO`** (for public author data, used by `AuthorService`).
-   - **Actions:** `CreateUserAction`, `AssignRoleAction`, `FindOrCreateSocialUserAction`.
-   - **Services:** `AuthService` (Login, Register, Logout), `OAuthService` (Redirect, Callback), **`AuthorService`** (implements `Contracts/AuthorServiceInterface`, returns `AuthorDTO`, not Resource).
-   - **Contracts:** `AuthServiceInterface` (if needed), **`AuthorServiceInterface`** (exposes `findByUsername(string $username): AuthorDTO` and `listAuthors(): array`).
-   - **Http:** `AuthController`, `OAuthController`. FormRequests: `StoreRegisterRequest`, `StoreLoginRequest`. **Controllers wrap results from Services into API Resources** (e.g., `AuthController` returns `UserResource`, `AuthorController` returns `AuthorResource` using `AuthorDTO`).
-   - **Resources:** `UserResource`, `AuthorResource`.
-   - **Routes:** `Routes/api.php` (public auth + author endpoints), `Routes/admin.php` (user management - placeholder).
-   - **Policies:** `UserPolicy`.
-4. **Route Loading Setup:** In root `routes/api.php`, only include module route files: `require base_path('src/Modules/Identity/Routes/api.php');`, etc. Same for `admin.php` and `web.php` as needed.
-5. **Architecture Tests:** Write Pest architecture tests ensuring `Identity` does not import future modules. **These will be expanded in every subsequent phase.**
-
-### Frontend - Public Next.js (`src/features/auth/`)
-1. **API:** `authApi.ts` (pure fetch functions: `login`, `register`, `forgotPassword`).
-2. **Hooks:** `useLogin()`, `useRegister()`, `useAuth()` (context hook), `useOAuthRedirect()`.
-3. **Context:** `AuthProvider.tsx` (Sanctum cookie state management).
-4. **Components:** `LoginForm.tsx`, `RegisterForm.tsx`, `SocialButtons.tsx` (presentational only).
-5. **Pages:** `app/(auth)/login/page.tsx`, `app/(auth)/register/page.tsx` (Thin orchestrators).
-
-### Frontend - Admin React Vite (`src/features/auth/`)
-1. **API:** `authApi.ts` (Token-based login).
-2. **Hooks:** `useAdminLogin()`, `useAdminAuth()`.
-3. **Components:** `LoginForm.tsx`.
-4. **App:** `pages/Login.tsx`.
-
----
 
 ## Phase 2: Content Module & Admin CRUD (Posts, Categories, Tags)
 **Goal:** Implement the `Content` Bounded Context for managing core blog entities via the Admin panel.

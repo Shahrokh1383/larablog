@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../api/usersApi';
 
-export function useUsers(page = 1) {
+export function useUsers(page = 1, search = '') {
   return useQuery({
-    queryKey: ['users', 'list', page],
-    queryFn: () => usersApi.getAll(page),
+    queryKey: ['users', 'list', page, search],
+    queryFn: () => usersApi.getAll(page, search),
   });
 }
 

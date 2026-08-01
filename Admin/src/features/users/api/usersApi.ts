@@ -3,9 +3,11 @@ import type { AdminUser, UpdateRolePayload, UpdatePasswordPayload } from '../typ
 import type { PaginatedResponse } from '@/shared/types/api';
 
 export const usersApi = {
-  getAll: async (page = 1): Promise<PaginatedResponse<AdminUser>> => {
-    const response = await httpClient.get('/admin/users', { params: { page } });
-    return response.data; // { data: AdminUser[], meta: {...} }
+  getAll: async (page = 1, search = ''): Promise<PaginatedResponse<AdminUser>> => {
+    const response = await httpClient.get('/admin/users', { 
+      params: { page, search } 
+    });
+    return response.data; 
   },
 
   updateRole: async (userId: string, payload: UpdateRolePayload): Promise<{ message: string, user: AdminUser }> => {
