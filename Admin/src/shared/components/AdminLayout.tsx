@@ -13,6 +13,9 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: 'fa-tachometer-alt' },
+    { to: '/posts', label: 'Posts', icon: 'fa-newspaper' },
+    { to: '/categories', label: 'Categories', icon: 'fa-folder' },
+    { to: '/tags', label: 'Tags', icon: 'fa-tags' },
   ];
 
   // Conditionally add User Management link for admins
