@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 
+const ALLOWED_PANEL_ROLES = ['admin', 'editor', 'author'];
+
 export function useAdminAuth() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -28,10 +30,13 @@ export function useAdminAuth() {
     }
   };
 
+  // Check if user exists AND has at least one of the allowed roles
+  const isAuthorized = !!user && user.roles.some(role => ALLOWED_PANEL_ROLES.includes(role));
+
   return {
     user: user ?? null,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: isAuthorized,
     logout,
   };
 }

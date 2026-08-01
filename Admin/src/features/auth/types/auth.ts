@@ -4,6 +4,7 @@ export interface AuthUser {
   email: string;
   avatar: string | null;
   bio: string | null;
+  roles: string[];
   created_at: string;
 }
 

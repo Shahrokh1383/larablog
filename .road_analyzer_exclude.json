@@ -1,17 +1,14 @@
 {
   "excludedPaths": [
     "doc",
-    "Admin",
     "lara-blog (Demo)",
     "todo",
     "fix2.txt",
     "fix.txt",
     "content.txt",
     "back-end\\storage",
-    "back-end\\routes",
     "back-end\\resources",
     "back-end\\public",
-    "back-end\\database",
     "back-end\\bootstrap",
     "back-end\\app",
     "back-end\\README.md",
@@ -32,9 +29,18 @@
     "User\\jsconfig.json",
     "User\\eslint.config.mjs",
     "back-end\\config",
-    "roadmap.txt"
+    "roadmap.txt",
+    "Admin\\vite.config.ts",
+    "Admin\\vite-env.d.ts",
+    "Admin\\tsconfig.json",
+    "Admin\\README.md",
+    "Admin\\package.json",
+    "Admin\\package-lock.json",
+    "Admin\\eslint.config.js",
+    "Admin\\public",
+    "back-end\\database\\factories"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-07-30T15:43:03.733Z",
+  "lastModified": "2026-08-01T13:57:26.119Z",
   "version": 1
 }
