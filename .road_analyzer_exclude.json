@@ -19,7 +19,6 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "back-end\\tests",
     "User\\tsconfig.json",
     "User\\README.md",
     "User\\package.json",
@@ -38,9 +37,13 @@
     "Admin\\package-lock.json",
     "Admin\\eslint.config.js",
     "Admin\\public",
-    "back-end\\database\\factories"
+    "back-end\\database\\factories",
+    "Admin",
+    "back-end\\database\\seeders",
+    "back-end\\routes",
+    "back-end\\src\\Modules\\Identity"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-01T13:57:26.119Z",
+  "lastModified": "2026-08-01T15:35:39.294Z",
   "version": 1
 }
