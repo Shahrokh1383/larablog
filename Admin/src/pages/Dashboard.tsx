@@ -1,7 +1,9 @@
 import { useAdminAuth } from '@/features/auth';
+import { Link } from 'react-router-dom';
 
 export default function DashboardPage() {
   const { user, logout } = useAdminAuth();
+  const isAdmin = user?.roles.includes('admin');
 
   return (
     <div className="container py-5">
@@ -12,6 +14,15 @@ export default function DashboardPage() {
         </button>
       </div>
       <p>Welcome, {user?.name}!</p>
+      
+      {isAdmin && (
+        <div className="mt-4">
+          <h5>Admin Tools</h5>
+          <Link to="/users" className="btn btn-primary">
+            <i className="fas fa-users me-2"></i>Manage Users
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
