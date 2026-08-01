@@ -4,8 +4,9 @@ namespace Modules\Content\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Shared\Traits\HasUuid;
-use Shared\Models\User;
+use Shared\Models\User; // Allowed – Shared Kernel
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Modules\Content\PostFactory;
 
 class Post extends Model
 {
@@ -49,5 +50,10 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'content_post_tag', 'post_id', 'tag_id');
+    }
+
+    protected static function newFactory(): PostFactory
+    {
+        return PostFactory::new();
     }
 }

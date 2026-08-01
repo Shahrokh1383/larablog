@@ -4,11 +4,19 @@ namespace Shared\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Shared\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Modules\Identity\UserFactory;
 
 class User extends Authenticatable
 {
-    use HasUuid;
+    use HasUuid, HasFactory;
 
-    // Shared model attributes: nothing else, only truly common behaviour.
-    // Identity module will extend this.
+    /**
+     * Use the Identity module factory (produces Modules\Identity\Models\User)
+     * which extends this Shared user. This keeps boundaries clean.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
 }

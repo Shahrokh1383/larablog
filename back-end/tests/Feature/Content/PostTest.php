@@ -2,10 +2,11 @@
 
 use Modules\Identity\Models\User;
 use Modules\Content\Models\Post;
-use Modules\Content\Models\Category;
-use Modules\Content\Models\Tag;
 use Spatie\Permission\Models\Role;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\{actingAs, getJson, postJson, putJson, deleteJson};
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Role::create(['name' => 'admin', 'guard_name' => 'web']);
@@ -16,7 +17,7 @@ beforeEach(function () {
 it('author can create a post', function () {
     $author = User::factory()->create()->assignRole('author');
     actingAs($author)
-        ->postJson('/admin/posts', [
+        ->postJson('/api/admin/posts', [
             'title' => 'My Post',
             'body'  => 'Lorem ipsum dolor sit amet.',
         ])
@@ -29,7 +30,7 @@ it('author can update own post', function () {
     $author = User::factory()->create()->assignRole('author');
     $post = Post::factory()->create(['user_id' => $author->id]);
     actingAs($author)
-        ->putJson("/admin/posts/{$post->id}", ['title' => 'Updated Title'])
+        ->putJson("/api/admin/posts/{$post->id}", ['title' => 'Updated Title'])
         ->assertOk()
         ->assertJsonPath('data.title', 'Updated Title');
 });
@@ -39,7 +40,7 @@ it('author cannot update another author post', function () {
     $author2 = User::factory()->create()->assignRole('author');
     $post = Post::factory()->create(['user_id' => $author1->id]);
     actingAs($author2)
-        ->putJson("/admin/posts/{$post->id}", ['title' => 'Hacked'])
+        ->putJson("/api/admin/posts/{$post->id}", ['title' => 'Hacked'])
         ->assertForbidden();
 });
 
@@ -48,7 +49,7 @@ it('editor can update any post', function () {
     $author = User::factory()->create()->assignRole('author');
     $post = Post::factory()->create(['user_id' => $author->id]);
     actingAs($editor)
-        ->putJson("/admin/posts/{$post->id}", ['title' => 'Editor Change'])
+        ->putJson("/api/admin/posts/{$post->id}", ['title' => 'Editor Change'])
         ->assertOk();
 });
 
@@ -57,7 +58,7 @@ it('admin can delete any post', function () {
     $author = User::factory()->create()->assignRole('author');
     $post = Post::factory()->create(['user_id' => $author->id]);
     actingAs($admin)
-        ->deleteJson("/admin/posts/{$post->id}")
+        ->deleteJson("/api/admin/posts/{$post->id}")
         ->assertNoContent();
 });
 
@@ -65,6 +66,6 @@ it('author can delete own post', function () {
     $author = User::factory()->create()->assignRole('author');
     $post = Post::factory()->create(['user_id' => $author->id]);
     actingAs($author)
-        ->deleteJson("/admin/posts/{$post->id}")
+        ->deleteJson("/api/admin/posts/{$post->id}")
         ->assertNoContent();
 });

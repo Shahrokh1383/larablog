@@ -14,4 +14,5 @@ test('Content module may only use Shared kernel classes')
     ->expect('Modules\\Content')
     ->toUse('Shared\\Models\\User')
     ->toUse('Shared\\Traits\\HasUuid')
-    ->toUse('Shared\\ValueObjects\\Slug');
+    ->toUse('Shared\\ValueObjects\\Slug')
+    ->toUse('Shared\\Contracts\\HasRolesContract');

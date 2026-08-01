@@ -9,6 +9,7 @@ use Modules\Content\Actions\AssignTagsToPostAction;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class PostService
 {
@@ -17,6 +18,11 @@ class PostService
         private CalculateReadingTimeAction $calculateReadingTimeAction,
         private AssignTagsToPostAction $assignTagsToPostAction
     ) {}
+
+    public function getAll(): Collection
+    {
+        return Post::with(['user', 'category', 'tags'])->latest()->get();
+    }
 
     public function create(PostCreateDTO $dto): Post
     {
@@ -73,7 +79,7 @@ class PostService
 
         if ($dto->isPublished !== null) {
             $data['is_published'] = $dto->isPublished;
-            $data['published_at'] = $dto->isPublished ? now() : null; // simple logic
+            $data['published_at'] = $dto->isPublished ? now() : null;
         }
 
         if ($dto->publishedAt !== null) {

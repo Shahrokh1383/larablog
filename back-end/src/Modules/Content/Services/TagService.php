@@ -5,12 +5,18 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Tag;
 use Modules\Content\Actions\GenerateSlugAction;
 use Modules\Content\DTOs\TagCreateDTO;
+use Illuminate\Database\Eloquent\Collection;
 
 class TagService
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction
     ) {}
+
+    public function getAll(): Collection
+    {
+        return Tag::orderBy('name')->get();
+    }
 
     public function create(TagCreateDTO $dto): Tag
     {

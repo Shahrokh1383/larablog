@@ -37,13 +37,13 @@
     "Admin\\package-lock.json",
     "Admin\\eslint.config.js",
     "Admin\\public",
-    "back-end\\database\\factories",
     "Admin",
     "back-end\\database\\seeders",
     "back-end\\routes",
-    "back-end\\src\\Modules\\Identity"
+    "back-end\\src\\Modules\\Identity",
+    "back-end\\src\\Shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-01T15:35:39.294Z",
+  "lastModified": "2026-08-01T17:04:15.067Z",
   "version": 1
 }

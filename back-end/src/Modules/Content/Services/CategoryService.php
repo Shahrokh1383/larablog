@@ -5,12 +5,18 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Category;
 use Modules\Content\Actions\GenerateSlugAction;
 use Modules\Content\DTOs\CategoryCreateDTO;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryService
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction
     ) {}
+
+    public function getAll(): Collection
+    {
+        return Category::orderBy('name')->get();
+    }
 
     public function create(CategoryCreateDTO $dto): Category
     {

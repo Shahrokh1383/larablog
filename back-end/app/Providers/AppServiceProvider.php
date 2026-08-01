@@ -10,6 +10,11 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // Register module service providers from config/modules.php
+        foreach (config('modules.enabled', []) as $provider) {
+            $this->app->register($provider);
+        }
+
         if ($this->app->environment('testing')) {
             $this->app->singleton(\Tests\Support\SmtpSinkService::class, function () {
                 return new \Tests\Support\SmtpSinkService();
@@ -19,7 +24,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Attach X-Mailer header to every outgoing email
         Event::listen(MessageSending::class, function (MessageSending $event) {
             $event->message->getHeaders()->addTextHeader(
                 'X-Mailer', config('app.name', 'Larablog')

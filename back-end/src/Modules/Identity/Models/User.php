@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\Modules\Identity\UserFactory;
 
-class User extends BaseUser implements MustVerifyEmail
+class User extends BaseUser implements MustVerifyEmail, \Shared\Contracts\HasRolesContract
 {
     use HasApiTokens, HasRoles, Notifiable, HasFactory;
 

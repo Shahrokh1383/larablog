@@ -10,9 +10,12 @@ use Modules\Content\Http\Resources\TagResource;
 use Modules\Content\DTOs\TagCreateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TagController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private TagService $tagService
     ) {
@@ -21,7 +24,7 @@ class TagController extends Controller
 
     public function index()
     {
-        $tags = Tag::orderBy('name')->get();
+        $tags = $this->tagService->getAll();
         return TagResource::collection($tags);
     }
 

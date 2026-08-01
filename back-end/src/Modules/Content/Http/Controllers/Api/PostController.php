@@ -11,9 +11,12 @@ use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PostController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private PostService $postService
     ) {
@@ -22,7 +25,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::with(['user', 'category', 'tags'])->latest()->get();
+        $posts = $this->postService->getAll();
         return PostResource::collection($posts);
     }
 
