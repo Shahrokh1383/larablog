@@ -6,6 +6,7 @@ import LoginPage from '@/pages/Login';
 import DashboardPage from '@/pages/Dashboard';
 import UsersPage from '@/pages/Users';
 import PostsPage from '@/pages/Posts';
+import PostEditorPage from '@/pages/PostEditor';
 import CategoriesPage from '@/pages/Categories';
 import TagsPage from '@/pages/Tags';
 
@@ -14,7 +15,6 @@ export default function AppRouter() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       
-      {/* All authenticated routes share the AdminLayout */}
       <Route
         element={
           <RequireAuth>
@@ -24,10 +24,11 @@ export default function AppRouter() {
       >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts/editor" element={<PostEditorPage />} />
+        <Route path="/posts/editor/:id" element={<PostEditorPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/tags" element={<TagsPage />} />
         
-        {/* Admin-only routes */}
         <Route
           path="/users"
           element={

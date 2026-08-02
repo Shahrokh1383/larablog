@@ -3,7 +3,6 @@ export { usePosts } from './hooks/usePosts';
 export { usePostMutations } from './hooks/usePostMutations';
 export { default as PostDataTable } from './components/PostDataTable';
 export { default as PostForm } from './components/PostForm';
-export { default as PostFormModal } from './components/PostFormModal';
 export { default as RichTextEditor } from './components/RichTextEditor';
 export { default as MultiSelectTags } from './components/MultiSelectTags';
 export type { Post, PostFormData, PostTag } from './types/post';

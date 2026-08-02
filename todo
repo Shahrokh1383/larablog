@@ -2,33 +2,6 @@
 *Strictly adhering to the Architecture Constitution*
 
 
-## Phase 2: Content Module & Admin CRUD (Posts, Categories, Tags)
-**Goal:** Implement the `Content` Bounded Context for managing core blog entities via the Admin panel.
-
-### Backend (`src/Modules/Content/`)
-1. **Database:** Flat migrations: `content_create_categories_table`, `content_create_tags_table`, `content_create_posts_table`, `content_create_post_tag_table`.
-2. **Implementation:**
-   - **Models:** `Category`, `Tag`, `Post`. (Eloquent = Domain Entities. Use Local Scopes for published/filtering).
-   - **ValueObjects:** Use `Shared\ValueObjects\Slug`.
-   - **Actions:** `CalculateReadingTimeAction` (atomic step, triggered before saving), `GenerateSlugAction`, `AssignTagsToPostAction`.
-   - **Services:** `PostService` (CRUD orchestration, transactions), `CategoryService`, `TagService`.
-   - **DTOs:** `PostCreateDTO`, `PostUpdateDTO`, `CategoryCreateDTO`.
-   - **Http:** `Api/PostController`, `Api/CategoryController`, `Api/TagController`.
-   - **Requests:** `StorePostRequest`, `UpdatePostRequest`, etc.
-   - **Resources:** `PostResource`, `CategoryResource`, `TagResource`.
-   - **Policies:** `PostPolicy` (Author can only edit own posts; Editor/Admin can edit all), `CategoryPolicy`.
-   - **Routes:** `Routes/admin.php` (protected by `auth:sanctum` and Spatie roles).
-3. **Architecture Tests:** Ensure `Content` does not import any Model from `Identity`, `Engagement`, etc. Allow only `Shared\Models\User` and `Identity\Services\Contracts\*`.
-
-### Frontend - Admin React Vite (`src/features/posts/`, `categories/`, `tags/`)
-1. **Structure per feature:**
-   - `api/postsApi.ts`
-   - `hooks/usePosts.ts` (React Query for list), `usePostMutations.ts` (Create/Update/Delete).
-   - `components/PostForm.tsx`, `PostDataTable.tsx`.
-2. **Pages:** `pages/Posts.tsx`, `pages/PostEditor.tsx` (Thin orchestrators).
-3. **Query Keys:** Export `postKeys`, `categoryKeys`, `tagKeys` from their respective `index.ts` barrels.
-
----
 
 ## Phase 3: Public Read APIs & Next.js Public Site
 **Goal:** Expose public APIs for the Next.js frontend to render SSR/SSG pages.
