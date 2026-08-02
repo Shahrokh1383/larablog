@@ -1,4 +1,4 @@
-]<?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use Modules\Content\Http\Controllers\Api\PostPublicController;
@@ -13,7 +13,6 @@ Route::prefix('posts')->group(function () {
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryPublicController::class, 'index']);
-    Route::get('/popular', [TagPublicController::class, 'popular']);
     Route::get('{slug}/posts', [CategoryPublicController::class, 'posts']);
 });
 

@@ -1,6 +1,6 @@
 <?php
 
-use Modules\Identity\Models\User;   // <-- CHANGED
+use Modules\Identity\Models\User;
 
 return [
 
@@ -13,6 +13,10 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => null,
         ],
     ],
 

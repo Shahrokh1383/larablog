@@ -12,14 +12,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Default to 'light' for SSR, then sync with DOM in useEffect
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    // On mount, read from localStorage or default to light
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
+    // Sync with the attribute set by the inline script in layout.tsx
+    const currentTheme = document.documentElement.getAttribute('data-theme') as Theme | null;
+    if (currentTheme) {
+      setTheme(currentTheme);
+    } else {
+      // Fallback to localStorage if attribute somehow missing
+      const savedTheme = localStorage.getItem('theme') as Theme | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
     }
   }, []);
 

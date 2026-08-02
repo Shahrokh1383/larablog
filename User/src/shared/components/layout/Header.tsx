@@ -1,3 +1,4 @@
+// src/shared/components/layout/Header.tsx
 'use client';
 
 import Link from 'next/link';
@@ -64,7 +65,14 @@ export default function Header() {
                 </Link>
               )}
 
-              <button className="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded={isMenuOpen} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {/* FIX: Added 'active' class toggle */}
+              <button 
+                className={`hamburger ${isMenuOpen ? 'active' : ''}`} 
+                id="hamburgerBtn" 
+                aria-label="Menu" 
+                aria-expanded={isMenuOpen} 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
                 <span className="hamburger-line"></span>
                 <span className="hamburger-line"></span>
                 <span className="hamburger-line"></span>
@@ -74,21 +82,19 @@ export default function Header() {
         </nav>
 
         {/* Search Overlay */}
-        {isSearchOpen && (
-          <div className="search-overlay active" id="searchOverlay">
-            <div className="search-overlay-content">
-              <button className="search-close" onClick={() => setIsSearchOpen(false)}>
-                <i className="fa-sharp fa-solid fa-xmark"></i>
+        <div className={`search-overlay ${isSearchOpen ? 'active' : ''}`} id="searchOverlay">
+          <div className="search-overlay-content">
+            <button className="search-close" id="searchClose" onClick={() => setIsSearchOpen(false)}>
+              <i className="fa-sharp fa-solid fa-xmark"></i>
+            </button>
+            <form className="search-form" action="/search" method="get">
+              <input type="text" name="q" className="search-input" placeholder="Search articles, topics, authors..." autoComplete="off" autoFocus={isSearchOpen} />
+              <button type="submit" className="search-submit">
+                <i className="fa-sharp fa-solid fa-magnifying-glass"></i>
               </button>
-              <form className="search-form" action="/search" method="get">
-                <input type="text" name="q" className="search-input" placeholder="Search articles, topics, authors..." autoComplete="off" autoFocus />
-                <button type="submit" className="search-submit">
-                  <i className="fa-sharp fa-solid fa-magnifying-glass"></i>
-                </button>
-              </form>
-            </div>
+            </form>
           </div>
-        )}
+        </div>
       </header>
 
       {/* Mobile Menu Overlay */}
