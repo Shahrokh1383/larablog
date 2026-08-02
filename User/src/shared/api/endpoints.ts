@@ -10,4 +10,10 @@ export const endpoints = {
     oauthCallback: (provider: string) => `/oauth/${provider}/callback`,
     emailVerify: (id: string, hash: string) => `/email/verify/${id}/${hash}`,
   },
+  content: {
+    categories: '/categories',
+    categoryPosts: (slug: string) => `/categories/${slug}/posts`,
+    tags: '/tags',
+    popularTags: '/tags/popular',
+  },
 };
