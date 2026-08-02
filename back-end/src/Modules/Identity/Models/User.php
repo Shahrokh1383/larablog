@@ -15,7 +15,12 @@ class User extends BaseUser implements MustVerifyEmail, \Shared\Contracts\HasRol
     use HasApiTokens, HasRoles, Notifiable, HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
+        'username',
+        'avatar',
+        'bio',
     ];
 
     protected $hidden = [

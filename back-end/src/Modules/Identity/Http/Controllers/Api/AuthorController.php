@@ -2,30 +2,29 @@
 
 namespace Modules\Identity\Http\Controllers\Api;
 
-use Modules\Identity\Http\Resources\AuthorResource;
-use Modules\Identity\Services\Contracts\AuthorServiceInterface;
 use Illuminate\Http\JsonResponse;
+use Modules\Identity\Services\Contracts\AuthorServiceInterface;
+use Modules\Identity\Http\Resources\AuthorResource;
 use Illuminate\Routing\Controller;
 
 class AuthorController extends Controller
 {
-    public function __construct(protected AuthorServiceInterface $authorService) {}
-
-    public function show(string $username): JsonResponse
-    {
-        $authorDTO = $this->authorService->findByUsername($username);
-
-        if (! $authorDTO) {
-            return response()->json(['message' => 'Author not found'], 404);
-        }
-
-        return response()->json(new AuthorResource($authorDTO));
-    }
+    public function __construct(
+        private AuthorServiceInterface $authorService
+    ) {}
 
     public function index(): JsonResponse
     {
-        $authors = $this->authorService->listAuthors();
+        $authors = $this->authorService->getAllAuthors();
+        return AuthorResource::collection(collect($authors))->response();
+    }
 
-        return response()->json(AuthorResource::collection($authors));
+    public function show(string $username): JsonResponse
+    {
+        $author = $this->authorService->getByUsername($username);
+        if (!$author) {
+            abort(404, 'Author not found');
+        }
+        return (new AuthorResource($author))->response();
     }
 }

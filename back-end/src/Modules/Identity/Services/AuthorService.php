@@ -2,37 +2,46 @@
 
 namespace Modules\Identity\Services;
 
-use Modules\Identity\DTOs\AuthorDTO;
 use Modules\Identity\Models\User;
+use Modules\Identity\DTOs\AuthorDTO;
 use Modules\Identity\Services\Contracts\AuthorServiceInterface;
+use Illuminate\Support\Collection;
 
 class AuthorService implements AuthorServiceInterface
 {
-    public function findByUsername(string $username): ?AuthorDTO
+    public function getByUserId(string|int $userId): ?AuthorDTO
     {
-        $user = User::where('email', $username)->first(); // Using email as username for now; adjust as needed.
-
-        if (! $user) return null;
-
-        return $this->toDTO($user);
+        $user = User::find($userId);
+        return $user ? $this->toDTO($user) : null;
     }
 
-    public function listAuthors(): array
+    public function getByUserIds(array $userIds): array
     {
-        return User::whereHas('roles', fn($q) => $q->where('name', 'user'))
-            ->get()
-            ->map(fn($u) => $this->toDTO($u))
-            ->all();
+        $users = User::whereIn('id', $userIds)->get();
+        return $users->mapWithKeys(function (User $user) {
+            return [$user->id => $this->toDTO($user)];
+        })->all();
     }
 
-    protected function toDTO(User $user): AuthorDTO
+    public function getByUsername(string $username): ?AuthorDTO
+    {
+        $user = User::where('username', $username)->first();
+        return $user ? $this->toDTO($user) : null;
+    }
+
+    public function getAllAuthors(): array
+    {
+        return User::has('posts')->get()->map(fn (User $u) => $this->toDTO($u))->all();
+    }
+
+    private function toDTO(User $user): AuthorDTO
     {
         return new AuthorDTO(
             id:       $user->id,
-            username: $user->email,
             name:     $user->name,
-            avatar:   $user->avatar ?? null,
-            bio:      $user->bio ?? null,
+            username: $user->username,
+            avatar:   $user->avatar,
+            bio:      $user->bio,
         );
     }
 }

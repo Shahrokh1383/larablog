@@ -9,6 +9,8 @@ use Modules\Content\Actions\AssignTagsToPostAction;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
+use Modules\Identity\Services\Contracts\AuthorServiceInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,7 +19,8 @@ class PostService
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
-        private AssignTagsToPostAction $assignTagsToPostAction
+        private AssignTagsToPostAction $assignTagsToPostAction,
+        private AuthorServiceInterface $authorService,
     ) {}
 
     public function getAll(?string $search = null, ?HasRolesContract $user = null): Collection
@@ -38,7 +41,7 @@ class PostService
     {
         $slug = $this->generateSlugAction->execute($dto->title, Post::class);
         $readingTime = $this->calculateReadingTimeAction->execute($dto->body);
-        
+
         $publishedAt = $dto->publishedAt;
         if ($dto->isPublished && !$publishedAt) {
             $publishedAt = now();
@@ -119,5 +122,69 @@ class PostService
     public function delete(Post $post): void
     {
         $post->delete();
+    }
+
+    public function getHomeData(int $perPage = 10): LengthAwarePaginator
+    {
+        $posts = Post::with(['category', 'tags'])
+            ->published()
+            ->latest('published_at')
+            ->paginate($perPage);
+
+        $authorIds = $posts->pluck('user_id')->unique()->toArray();
+        $authors = $this->authorService->getByUserIds($authorIds);
+
+        $posts->getCollection()->transform(function (Post $post) use ($authors) {
+            $post->author = isset($authors[$post->user_id])
+                ? $authors[$post->user_id]->toArray()
+                : null;
+            return $post;
+        });
+
+        return $posts;
+    }
+
+    public function getBySlug(string $slug): ?Post
+    {
+        $post = Post::with(['category', 'tags'])
+            ->where('slug', $slug)
+            ->published()
+            ->first();
+
+        if (!$post) {
+            return null;
+        }
+
+        $author = $this->authorService->getByUserId($post->user_id);
+        $post->author = $author?->toArray();
+
+        return $post;
+    }
+
+    public function getRelatedPosts(string $slug, int $limit = 3): array
+    {
+        $post = Post::where('slug', $slug)->published()->first();
+        if (!$post) {
+            return [];
+        }
+
+        $related = Post::with(['category', 'tags'])
+            ->published()
+            ->where('id', '!=', $post->id)
+            ->where('category_id', $post->category_id)
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
+
+        $authorIds = $related->pluck('user_id')->unique()->toArray();
+        $authors = $this->authorService->getByUserIds($authorIds);
+
+        $related->each(function (Post $p) use ($authors) {
+            $p->author = isset($authors[$p->user_id])
+                ? $authors[$p->user_id]->toArray()
+                : null;
+        });
+
+        return $related->all();
     }
 }

@@ -2,13 +2,24 @@
 
 namespace Modules\Identity\DTOs;
 
-final readonly class AuthorDTO
+final class AuthorDTO
 {
     public function __construct(
-        public string $id,
-        public string $username,
-        public string $name,
-        public ?string $avatar,
-        public ?string $bio,
+        public readonly string|int $id,
+        public readonly string $name,
+        public readonly string $username,
+        public readonly ?string $avatar = null,
+        public readonly ?string $bio = null,
     ) {}
+
+    public function toArray(): array
+    {
+        return [
+            'id'       => $this->id,
+            'name'     => $this->name,
+            'username' => $this->username,
+            'avatar'   => $this->avatar,
+            'bio'      => $this->bio,
+        ];
+    }
 }
