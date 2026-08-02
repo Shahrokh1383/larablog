@@ -3,6 +3,7 @@
 namespace Modules\Content\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Shared\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\Modules\Content\CategoryFactory;
@@ -18,6 +19,14 @@ class Category extends Model
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        if ($term) {
+            return $query->where('name', 'like', "%{$term}%");
+        }
+        return $query;
     }
 
     protected static function newFactory(): CategoryFactory

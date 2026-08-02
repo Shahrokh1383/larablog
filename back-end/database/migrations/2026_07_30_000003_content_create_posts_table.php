@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('reading_time')->default(0); // in minutes
+            $table->unsignedBigInteger('views')->default(0);
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('category_id')->nullable()->constrained('content_categories')->nullOnDelete();
             $table->timestamps();

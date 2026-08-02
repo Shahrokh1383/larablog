@@ -154,17 +154,6 @@ PROJECT STRUCTURE
 │   │   └── 📄 layout.tsx
 │   ├── 📄 layout.tsx
 │   └── 📄 page.tsx
-├── 📁 public/
-│   └── 📁 assets/
-│       ├── 📁 bootstrap-pack/
-│       │   ├── 📁 css/
-│       │   │   └── 📄 bootstrap.min.css
-│       │   └── 📁 js/
-│       │       └── 📄 bootstrap.min.js
-│       └── 📁 FontAwesome/
-│           ├── 📁 css/
-│           │   └── 📄 all.css
-│           └── 📁 webfonts/
 └── 📁 src/
     ├── 📁 features/
     │   └── 📁 auth/

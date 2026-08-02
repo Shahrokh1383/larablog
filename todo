@@ -19,10 +19,10 @@
 1. **Features:** Create `features/posts/`, `features/authors/`, `features/categories/`, `features/tags/`.
 2. **Hooks (React Query):**
    - `useHomeData()`, `usePost(slug)`, `useAuthor(username)`, `useCategories(filters)`.
-3. **Components:** Pure presentational (e.g., `PostCard.tsx`, `AuthorBox.tsx`, `CategoryList.tsx`).
+3. **Components:** Pure presentational
 4. **Pages (App Router - Thin Orchestrators):**
    - `app/(public)/page.tsx` (Home)
-   - `app/(public)/post/[slug]/page.tsx` (Uses `generateMetadata` for SEO). *Note: `generateMetadata` must be exported from a Server Component; the page may delegate to a Client Component for interactive parts.*
+   - `app/(public)/post/[slug]/page.tsx`. *Note: `generateMetadata` must be exported from a Server Component; the page may delegate to a Client Component for interactive parts.*
    - `app/(public)/category/[slug]/page.tsx`
    - `app/(public)/author/[username]/page.tsx`
 5. **SEO:** Implement `shared/lib/seo.ts` and JSON-LD for posts.

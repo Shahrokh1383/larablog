@@ -1,0 +1,1505 @@
+خیلی خب ما باید به پیاده سازی فرانت اند مربوط به صفحات Category و Tags بطور کامل و دقیق بپردازیم ابتدا ازت میخوام که بیای دو کار رو در کدبیسم انجام بدی :
+
+1 : بیای صفحه home یا همان index وبسایتم رو تمام محتواش رو بصورت یک placeholder ایجاد کنی و بیای فوتر و هدر و navbar رو بطور کامل و دقیق یاده سازی کنی طبق پروتوتایپ پروژم و این بخش ها در تمام صفحات پروژم بصورت مشترک هستن
+
+پروتوتایپ هدر و فوتر رو برات در زیر بطور کامل و دقیق قرار میدم 
+
+برای هدر :
+<!-- ==================== HEADER / NAVBAR ==================== -->
+    <header class="site-header" id="siteHeader">
+        <nav class="navbar-custom">
+            <div class="nav-container">
+                <!-- Logo -->
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon">
+                        <i class="fa-sharp fa-solid fa-blog"></i>
+                    </span>
+                    <span class="logo-text">Lara<span class="logo-accent">Blog</span></span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <ul class="nav-links" id="navLinks">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link active">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="category.html" class="nav-link">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="tags.html" class="nav-link">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="authors.html" class="nav-link">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+
+                <!-- Right Actions -->
+                <div class="nav-actions">
+                    <!-- Search Button -->
+                    <button class="btn-icon" aria-label="Search" id="searchToggle">
+                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                    </button>
+
+                    <!-- Dark/Light Mode Toggle -->
+                    <button class="btn-icon theme-toggle" aria-label="Toggle theme" id="themeToggle">
+                        <i class="fa-sharp fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Dashboard Link (Desktop) -->
+                    <a href="dashboard.html" class="btn-dashboard d-none d-lg-inline-flex">
+                        <i class="fa-sharp fa-solid fa-gauge-high"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <!-- Hamburger Menu Button -->
+                    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-overlay-content">
+                <button class="search-close" id="searchClose">
+                    <i class="fa-sharp fa-solid fa-xmark"></i>
+                </button>
+                <form class="search-form" action="search.html" method="get">
+                    <input type="text" name="q" class="search-input" placeholder="Search articles, topics, authors..." autocomplete="off">
+                    <button type="submit" class="search-submit">
+                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MOBILE MENU OVERLAY ==================== -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-bg"></div>
+        <div class="mobile-menu-content">
+            <ul class="mobile-nav-links">
+                <li class="mobile-nav-item">
+                    <a href="index.html" class="mobile-nav-link active">Home</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="category.html" class="mobile-nav-link">Categories</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="tags.html" class="mobile-nav-link">Tags</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="authors.html" class="mobile-nav-link">Authors</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="about.html" class="mobile-nav-link">About</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="contact.html" class="mobile-nav-link">Contact</a>
+                </li>
+                <li class="mobile-nav-item">
+                    <a href="dashboard.html" class="mobile-nav-link mobile-dashboard-link">
+                        <i class="fa-sharp fa-solid fa-gauge-high"></i>
+                        Dashboard
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+برای فوتر :
+
+  <!-- ==================== FOOTER ==================== -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row g-4">
+                    <!-- About Column -->
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-about">
+                            <a href="index.html" class="footer-logo">
+                                <i class="fa-sharp fa-solid fa-blog"></i>
+                                <span>Lara<span class="logo-accent">Blog</span></span>
+                            </a>
+                            <p class="footer-about-text">
+                                LaraBlog is a professional platform for sharing knowledge, ideas, and stories.
+                                We are committed to quality content and exceptional user experience.
+                            </p>
+                            <div class="footer-social">
+                                <a href="#" class="social-link" aria-label="Twitter">
+                                    <i class="fa-brands fa-x-twitter"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="LinkedIn">
+                                    <i class="fa-brands fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="GitHub">
+                                    <i class="fa-brands fa-github"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="YouTube">
+                                    <i class="fa-brands fa-youtube"></i>
+                                </a>
+                                <a href="#" class="social-link" aria-label="Discord">
+                                    <i class="fa-brands fa-discord"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-lg-2 col-md-6">
+                        <h4 class="footer-heading">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="category.html">Categories</a></li>
+                            <li><a href="tags.html">Tags</a></li>
+                            <li><a href="authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-lg-4 col-md-6">
+                        <h4 class="footer-heading">Contact Us</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="fa-sharp fa-solid fa-location-dot"></i>
+                                <span>123 Innovation Drive, Tech City, CA 94043</span>
+                            </li>
+                            <li>
+                                <i class="fa-sharp fa-solid fa-envelope"></i>
+                                <a href="mailto:LaraBlog@gmail.com">LaraBlog@gmail.com</a>
+                            </li>
+                            <li>
+                                <i class="fa-sharp fa-solid fa-phone"></i>
+                                <a href="tel:+1234567890">+1 (234) 567-890</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">
+                        © 2024 <span>LaraBlog</span>. All rights reserved.
+                    </p>
+                    <div class="footer-bottom-links">
+                        <a href="privacy.html">Privacy Policy</a>
+                        <span class="divider">|</span>
+                        <a href="terms.html">Terms & Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== BACK TO TOP BUTTON ==================== -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fa-sharp fa-solid fa-arrow-up"></i>
+    </button>
+
+
+ما باید هدر و فوتر رو ایجاد کنیم که در همه صفحاتی که قراره در اینده ایجاد کنیم از همین فوتر و هدر استفاده کنیم و برای صفحه home فعلا میخوام که یک placeholder ایجاد کنی 
+
+2 : پس از ایجاد موارد بالا دقیق طبق پروتوتایپ حالا باید به پیاده سازی صفحات Tags و Categories بپردازیم که در زیر برات بطور کامل کل پروتوتایپ رو قراار میدم
+
+lara-blog (Demo)\category.html :
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Development – LaraBlog Category">
+    <meta name="theme-color" content="#FF2D20">
+    <title>Development — LaraBlog Category</title>
+
+    <!-- Bootstrap 5.2 CSS -->
+    <link rel="stylesheet" href="assets/bootstrap-pack/css/bootstrap.min.css">
+
+    <!-- FontAwesome Pro 7.2 (All Styles via Webfonts) -->
+    <link rel="stylesheet" href="assets/FontAwesome/css/all.css">
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="assets/css/app.css">
+    <!-- Page‑Specific Styles -->
+    <link rel="stylesheet" href="assets/css/category.css">
+</head>
+<body>
+
+    <!-- ==================== HEADER / NAVBAR (reused) ==================== -->
+    <header class="site-header" id="siteHeader">
+        <nav class="navbar-custom">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon"><i class="fa-sharp fa-solid fa-blog"></i></span>
+                    <span class="logo-text">Lara<span class="logo-accent">Blog</span></span>
+                </a>
+
+                <ul class="nav-links" id="navLinks">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="category.html" class="nav-link active">Categories</a></li>
+                    <li class="nav-item"><a href="tags.html" class="nav-link">Tags</a></li>
+                    <li class="nav-item"><a href="authors.html" class="nav-link">Authors</a></li>
+                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <button class="btn-icon" aria-label="Search" id="searchToggle">
+                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button class="btn-icon theme-toggle" aria-label="Toggle theme" id="themeToggle">
+                        <i class="fa-sharp fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <a href="dashboard.html" class="btn-dashboard d-none d-lg-inline-flex">
+                        <i class="fa-sharp fa-solid fa-gauge-high"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-overlay-content">
+                <button class="search-close" id="searchClose"><i class="fa-sharp fa-solid fa-xmark"></i></button>
+                <form class="search-form" action="search.html" method="get">
+                    <input type="text" name="q" class="search-input" placeholder="Search articles, topics, authors..." autocomplete="off">
+                    <button type="submit" class="search-submit"><i class="fa-sharp fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MOBILE MENU OVERLAY ==================== -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-bg"></div>
+        <div class="mobile-menu-content">
+            <ul class="mobile-nav-links">
+                <li class="mobile-nav-item"><a href="index.html" class="mobile-nav-link">Home</a></li>
+                <li class="mobile-nav-item"><a href="category.html" class="mobile-nav-link active">Categories</a></li>
+                <li class="mobile-nav-item"><a href="tags.html" class="mobile-nav-link">Tags</a></li>
+                <li class="mobile-nav-item"><a href="authors.html" class="mobile-nav-link">Authors</a></li>
+                <li class="mobile-nav-item"><a href="about.html" class="mobile-nav-link">About</a></li>
+                <li class="mobile-nav-item"><a href="contact.html" class="mobile-nav-link">Contact</a></li>
+                <li class="mobile-nav-item"><a href="dashboard.html" class="mobile-nav-link mobile-dashboard-link">
+                    <i class="fa-sharp fa-solid fa-gauge-high"></i> Dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main>
+        <!-- Category Hero -->
+        <section class="category-hero">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+            <div class="container">
+                <div class="category-hero-content">
+                    <span class="category-hero-icon"><i class="fa-sharp fa-solid fa-code"></i></span>
+                    <h1 class="category-hero-title">Development</h1>
+                    <p class="category-hero-desc">
+                        Explore the latest articles, tutorials, and insights on web development, software engineering, and best practices.
+                    </p>
+                    <div class="category-hero-meta">
+                        <span><i class="fa-sharp fa-solid fa-file-lines"></i> 45 Articles</span>
+                        <span><i class="fa-sharp fa-solid fa-users"></i> 12 Authors</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Posts Grid -->
+        <section class="category-posts section-padding">
+            <div class="container">
+                <div class="row">
+                    <!-- Main Content: Post Cards -->
+                    <div class="col-lg-8">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="section-title mb-0"><span class="text-gradient">Latest</span> in Development</h2>
+                            <div class="sort-dropdown">
+                                <select class="form-select sort-select" id="sortPosts">
+                                    <option value="newest" selected>Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="popular">Most Popular</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-4" id="postsGrid">
+                            <!-- Post Card 1 -->
+                            <div class="col-md-6">
+                                <article class="post-card post-card-standard">
+                                    <div class="post-card-image">
+                                        <img src="https://picsum.photos/seed/catdev1/600/350" alt="Laravel Clean Architecture" loading="lazy">
+                                        <span class="post-card-badge">Development</span>
+                                    </div>
+                                    <div class="post-card-body">
+                                        <div class="post-card-meta">
+                                            <span class="post-card-date">Mar 5, 2024</span>
+                                            <span class="post-card-read-time">8 min read</span>
+                                        </div>
+                                        <h3 class="post-card-title"><a href="post.html">The Complete Guide to Clean Architecture in Laravel 11</a></h3>
+                                        <p class="post-card-excerpt">A deep dive into clean architecture patterns and how to implement them in your Laravel projects.</p>
+                                        <div class="post-card-footer">
+                                            <div class="post-card-author">
+                                                <img src="https://picsum.photos/seed/author1/40/40" alt="Alex Morgan" class="author-avatar">
+                                                <span class="author-name">Alex Morgan</span>
+                                            </div>
+                                            <a href="post.html" class="post-card-read-more"><i class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <!-- Post Card 2 -->
+                            <div class="col-md-6">
+                                <article class="post-card post-card-standard">
+                                    <div class="post-card-image">
+                                        <img src="https://picsum.photos/seed/catdev2/600/350" alt="Vue 3 Composition API" loading="lazy">
+                                        <span class="post-card-badge">Development</span>
+                                    </div>
+                                    <div class="post-card-body">
+                                        <div class="post-card-meta">
+                                            <span class="post-card-date">Mar 2, 2024</span>
+                                            <span class="post-card-read-time">6 min read</span>
+                                        </div>
+                                        <h3 class="post-card-title"><a href="post.html">Mastering Vue 3 Composition API</a></h3>
+                                        <p class="post-card-excerpt">Learn how to leverage the Composition API to write cleaner, more maintainable Vue components.</p>
+                                        <div class="post-card-footer">
+                                            <div class="post-card-author">
+                                                <img src="https://picsum.photos/seed/author2/40/40" alt="Sarah Chen" class="author-avatar">
+                                                <span class="author-name">Sarah Chen</span>
+                                            </div>
+                                            <a href="post.html" class="post-card-read-more"><i class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <!-- Post Card 3 -->
+                            <div class="col-md-6">
+                                <article class="post-card post-card-standard">
+                                    <div class="post-card-image">
+                                        <img src="https://picsum.photos/seed/catdev3/600/350" alt="Node.js Performance" loading="lazy">
+                                        <span class="post-card-badge">Development</span>
+                                    </div>
+                                    <div class="post-card-body">
+                                        <div class="post-card-meta">
+                                            <span class="post-card-date">Feb 28, 2024</span>
+                                            <span class="post-card-read-time">5 min read</span>
+                                        </div>
+                                        <h3 class="post-card-title"><a href="post.html">Node.js Performance Optimization Tips</a></h3>
+                                        <p class="post-card-excerpt">Practical techniques to speed up your Node.js applications and reduce latency.</p>
+                                        <div class="post-card-footer">
+                                            <div class="post-card-author">
+                                                <img src="https://picsum.photos/seed/author3/40/40" alt="David Kumar" class="author-avatar">
+                                                <span class="author-name">David Kumar</span>
+                                            </div>
+                                            <a href="post.html" class="post-card-read-more"><i class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <!-- Post Card 4 -->
+                            <div class="col-md-6">
+                                <article class="post-card post-card-standard">
+                                    <div class="post-card-image">
+                                        <img src="https://picsum.photos/seed/catdev4/600/350" alt="Docker for Devs" loading="lazy">
+                                        <span class="post-card-badge">Development</span>
+                                    </div>
+                                    <div class="post-card-body">
+                                        <div class="post-card-meta">
+                                            <span class="post-card-date">Feb 22, 2024</span>
+                                            <span class="post-card-read-time">7 min read</span>
+                                        </div>
+                                        <h3 class="post-card-title"><a href="post.html">Docker for Web Developers: A Practical Guide</a></h3>
+                                        <p class="post-card-excerpt">Get started with Docker and containerize your development environment with ease.</p>
+                                        <div class="post-card-footer">
+                                            <div class="post-card-author">
+                                                <img src="https://picsum.photos/seed/author4/40/40" alt="Emily White" class="author-avatar">
+                                                <span class="author-name">Emily White</span>
+                                            </div>
+                                            <a href="post.html" class="post-card-read-more"><i class="fa-sharp fa-solid fa-arrow-right"></i></a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav class="pagination-wrapper mt-5" aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fa-sharp fa-solid fa-chevron-left"></i></a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><span class="page-link">...</span></li>
+                                <li class="page-item"><a class="page-link" href="#">8</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#"><i class="fa-sharp fa-solid fa-chevron-right"></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside class="col-lg-4">
+                        <div class="sidebar">
+                            <!-- All Categories List -->
+                            <div class="sidebar-card">
+                                <h4 class="sidebar-title">All Categories</h4>
+                                <ul class="categories-sidebar-list">
+                                    <li><a href="category.html" class="active"><i class="fa-sharp fa-solid fa-code"></i> Development <span>45</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-palette"></i> Design <span>32</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-chart-line"></i> Business <span>28</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-shield-halved"></i> Security <span>19</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-robot"></i> AI & ML <span>22</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-mobile-screen"></i> Mobile <span>15</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-cloud"></i> Cloud <span>12</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-ellipsis"></i> More <span>35</span></a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Popular Tags -->
+                            <div class="sidebar-card">
+                                <h4 class="sidebar-title">Popular Tags</h4>
+                                <div class="tag-cloud">
+                                    <a href="#" class="tag-badge">Laravel</a>
+                                    <a href="#" class="tag-badge">Vue.js</a>
+                                    <a href="#" class="tag-badge">React</a>
+                                    <a href="#" class="tag-badge">Node.js</a>
+                                    <a href="#" class="tag-badge">Docker</a>
+                                    <a href="#" class="tag-badge">TypeScript</a>
+                                    <a href="#" class="tag-badge">Clean Code</a>
+                                </div>
+                            </div>
+
+                            <!-- Newsletter -->
+                            <div class="sidebar-card newsletter-sidebar">
+                                <h4 class="sidebar-title">Newsletter</h4>
+                                <p>Get the best articles delivered to your inbox.</p>
+                                <form class="newsletter-sidebar-form">
+                                    <input type="email" class="form-control" placeholder="your@email.com" required>
+                                    <button type="submit" class="btn btn-primary-custom w-100 mt-2">Subscribe</button>
+                                </form>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== FOOTER (reused) ==================== -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-about">
+                            <a href="index.html" class="footer-logo">
+                                <i class="fa-sharp fa-solid fa-blog"></i>
+                                <span>Lara<span class="logo-accent">Blog</span></span>
+                            </a>
+                            <p class="footer-about-text">LaraBlog is a professional platform for sharing knowledge, ideas, and stories. We are committed to quality content and exceptional user experience.</p>
+                            <div class="footer-social">
+                                <a href="#" class="social-link" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                                <a href="#" class="social-link" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                                <a href="#" class="social-link" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                                <a href="#" class="social-link" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="#" class="social-link" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <h4 class="footer-heading">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="category.html">Categories</a></li>
+                            <li><a href="tags.html">Tags</a></li>
+                            <li><a href="authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <h4 class="footer-heading">Topics</h4>
+                        <ul class="footer-links">
+                            <li><a href="category.html">Development</a></li>
+                            <li><a href="category.html">Design</a></li>
+                            <li><a href="category.html">Business</a></li>
+                            <li><a href="category.html">Security</a></li>
+                            <li><a href="category.html">AI & ML</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <h4 class="footer-heading">Contact Us</h4>
+                        <ul class="footer-contact">
+                            <li><i class="fa-sharp fa-solid fa-location-dot"></i> <span>123 Innovation Drive, Tech City, CA 94043</span></li>
+                            <li><i class="fa-sharp fa-solid fa-envelope"></i> <a href="mailto:hello@larablog.com">hello@larablog.com</a></li>
+                            <li><i class="fa-sharp fa-solid fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">© 2024 <span>LaraBlog</span>. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="privacy.html">Privacy Policy</a>
+                        <span class="divider">|</span>
+                        <a href="terms.html">Terms & Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fa-sharp fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="assets/bootstrap-pack/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Shared Scripts -->
+    <script src="assets/js/app.js"></script>
+    <!-- Page‑Specific Scripts -->
+    <script src="assets/js/category.js"></script>
+</body>
+</html>
+
+lara-blog (Demo)\tags.html :
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse all tags on LaraBlog - Laravel, Vue, React, and more.">
+    <meta name="theme-color" content="#FF2D20">
+    <title>Tags — LaraBlog</title>
+
+    <!-- Bootstrap 5.2 CSS -->
+    <link rel="stylesheet" href="assets/bootstrap-pack/css/bootstrap.min.css">
+
+    <!-- FontAwesome Pro 7.2 (All Styles via Webfonts) -->
+    <link rel="stylesheet" href="assets/FontAwesome/css/all.css">
+
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="assets/css/app.css">
+    <!-- Page‑Specific Styles -->
+    <link rel="stylesheet" href="assets/css/tags.css">
+</head>
+<body>
+
+    <!-- ==================== HEADER / NAVBAR (reused) ==================== -->
+    <header class="site-header" id="siteHeader">
+        <nav class="navbar-custom">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon"><i class="fa-sharp fa-solid fa-blog"></i></span>
+                    <span class="logo-text">Lara<span class="logo-accent">Blog</span></span>
+                </a>
+
+                <ul class="nav-links" id="navLinks">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="category.html" class="nav-link">Categories</a></li>
+                    <li class="nav-item"><a href="tags.html" class="nav-link active">Tags</a></li>
+                    <li class="nav-item"><a href="authors.html" class="nav-link">Authors</a></li>
+                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <button class="btn-icon" aria-label="Search" id="searchToggle">
+                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button class="btn-icon theme-toggle" aria-label="Toggle theme" id="themeToggle">
+                        <i class="fa-sharp fa-solid fa-moon" id="themeIcon"></i>
+                    </button>
+                    <a href="dashboard.html" class="btn-dashboard d-none d-lg-inline-flex">
+                        <i class="fa-sharp fa-solid fa-gauge-high"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <div class="search-overlay-content">
+                <button class="search-close" id="searchClose"><i class="fa-sharp fa-solid fa-xmark"></i></button>
+                <form class="search-form" action="search.html" method="get">
+                    <input type="text" name="q" class="search-input" placeholder="Search articles, topics, authors..." autocomplete="off">
+                    <button type="submit" class="search-submit"><i class="fa-sharp fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== MOBILE MENU OVERLAY ==================== -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-bg"></div>
+        <div class="mobile-menu-content">
+            <ul class="mobile-nav-links">
+                <li class="mobile-nav-item"><a href="index.html" class="mobile-nav-link">Home</a></li>
+                <li class="mobile-nav-item"><a href="category.html" class="mobile-nav-link">Categories</a></li>
+                <li class="mobile-nav-item"><a href="tags.html" class="mobile-nav-link active">Tags</a></li>
+                <li class="mobile-nav-item"><a href="authors.html" class="mobile-nav-link">Authors</a></li>
+                <li class="mobile-nav-item"><a href="about.html" class="mobile-nav-link">About</a></li>
+                <li class="mobile-nav-item"><a href="contact.html" class="mobile-nav-link">Contact</a></li>
+                <li class="mobile-nav-item"><a href="dashboard.html" class="mobile-nav-link mobile-dashboard-link">
+                    <i class="fa-sharp fa-solid fa-gauge-high"></i> Dashboard</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main>
+        <!-- Tags Hero -->
+        <section class="tags-hero">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+            <div class="container">
+                <div class="tags-hero-content">
+                    <span class="tags-hero-icon"><i class="fa-sharp fa-solid fa-tags"></i></span>
+                    <h1 class="tags-hero-title">Browse by <span class="text-gradient">Tag</span></h1>
+                    <p class="tags-hero-desc">
+                        Explore all topics and find exactly what you're looking for. Click any tag to see related articles.
+                    </p>
+                    <!-- Tag Search/Filter -->
+                    <div class="tag-search-wrapper">
+                        <i class="fa-sharp fa-solid fa-search search-icon"></i>
+                        <input type="text" id="tagFilter" class="tag-search-input" placeholder="Filter tags... (e.g. Laravel, React)" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tags Grid Section -->
+        <section class="tags-grid-section section-padding">
+            <div class="container">
+                <div class="row">
+                    <!-- Main Content: Tag Cloud/Grid -->
+                    <div class="col-lg-8">
+                        <div class="section-header">
+                            <h2 class="section-title">All <span class="text-gradient">Tags</span></h2>
+                            <p class="section-desc">Click on a tag to discover articles on that topic</p>
+                        </div>
+
+                        <div class="row g-4" id="tagsGrid">
+                            <!-- Tag cards will be injected via JS or here static for demo -->
+                            <!-- We'll use static markup that JS can filter -->
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="laravel">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-laravel"></i></div>
+                                    <h4 class="tag-card-name">Laravel</h4>
+                                    <span class="tag-card-count">24 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="vue">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-vuejs"></i></div>
+                                    <h4 class="tag-card-name">Vue.js</h4>
+                                    <span class="tag-card-count">18 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="react">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-react"></i></div>
+                                    <h4 class="tag-card-name">React</h4>
+                                    <span class="tag-card-count">21 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="node">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-node"></i></div>
+                                    <h4 class="tag-card-name">Node.js</h4>
+                                    <span class="tag-card-count">15 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="docker">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-docker"></i></div>
+                                    <h4 class="tag-card-name">Docker</h4>
+                                    <span class="tag-card-count">9 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="typescript">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-js"></i></div>
+                                    <h4 class="tag-card-name">TypeScript</h4>
+                                    <span class="tag-card-count">14 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="clean-code">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-feather"></i></div>
+                                    <h4 class="tag-card-name">Clean Code</h4>
+                                    <span class="tag-card-count">11 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="database">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-database"></i></div>
+                                    <h4 class="tag-card-name">Database</h4>
+                                    <span class="tag-card-count">13 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="testing">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-flask"></i></div>
+                                    <h4 class="tag-card-name">Testing</h4>
+                                    <span class="tag-card-count">8 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="security">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-shield-halved"></i></div>
+                                    <h4 class="tag-card-name">Security</h4>
+                                    <span class="tag-card-count">7 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="devops">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-infinity"></i></div>
+                                    <h4 class="tag-card-name">DevOps</h4>
+                                    <span class="tag-card-count">10 articles</span>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 tag-card-col" data-tag="ai">
+                                <a href="#" class="tag-card">
+                                    <div class="tag-card-icon"><i class="fa-sharp fa-solid fa-robot"></i></div>
+                                    <h4 class="tag-card-name">AI & ML</h4>
+                                    <span class="tag-card-count">16 articles</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- No results message (hidden by default) -->
+                        <div id="noTagsFound" class="text-center mt-4" style="display: none;">
+                            <i class="fa-sharp fa-solid fa-circle-exclamation fa-2x text-muted mb-3"></i>
+                            <h5>No tags found</h5>
+                            <p class="text-muted">Try a different search term.</p>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside class="col-lg-4">
+                        <div class="sidebar">
+                            <!-- Popular Tags Cloud (styled differently) -->
+                            <div class="sidebar-card">
+                                <h4 class="sidebar-title">Popular Tags</h4>
+                                <div class="popular-tags-cloud">
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1.2rem;">Laravel</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1rem;">React</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1.4rem;">Vue.js</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 0.9rem;">Docker</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1.1rem;">Node.js</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1.3rem;">TypeScript</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 0.85rem;">Database</a>
+                                    <a href="#" class="popular-tag-badge" style="font-size: 1.05rem;">AI & ML</a>
+                                </div>
+                            </div>
+
+                            <!-- Categories -->
+                            <div class="sidebar-card">
+                                <h4 class="sidebar-title">Categories</h4>
+                                <ul class="categories-sidebar-list">
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-code"></i> Development <span>45</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-palette"></i> Design <span>32</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-chart-line"></i> Business <span>28</span></a></li>
+                                    <li><a href="category.html"><i class="fa-sharp fa-solid fa-shield-halved"></i> Security <span>19</span></a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Newsletter -->
+                            <div class="sidebar-card newsletter-sidebar">
+                                <h4 class="sidebar-title">Newsletter</h4>
+                                <p>Get the best articles delivered to your inbox.</p>
+                                <form class="newsletter-sidebar-form">
+                                    <input type="email" class="form-control" placeholder="your@email.com" required>
+                                    <button type="submit" class="btn btn-primary-custom w-100 mt-2">Subscribe</button>
+                                </form>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== FOOTER (reused) ==================== -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-about">
+                            <a href="index.html" class="footer-logo">
+                                <i class="fa-sharp fa-solid fa-blog"></i>
+                                <span>Lara<span class="logo-accent">Blog</span></span>
+                            </a>
+                            <p class="footer-about-text">LaraBlog is a professional platform for sharing knowledge, ideas, and stories. We are committed to quality content and exceptional user experience.</p>
+                            <div class="footer-social">
+                                <a href="#" class="social-link" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                                <a href="#" class="social-link" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                                <a href="#" class="social-link" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                                <a href="#" class="social-link" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                                <a href="#" class="social-link" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <h4 class="footer-heading">Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="category.html">Categories</a></li>
+                            <li><a href="tags.html">Tags</a></li>
+                            <li><a href="authors.html">Authors</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <h4 class="footer-heading">Topics</h4>
+                        <ul class="footer-links">
+                            <li><a href="category.html">Development</a></li>
+                            <li><a href="category.html">Design</a></li>
+                            <li><a href="category.html">Business</a></li>
+                            <li><a href="category.html">Security</a></li>
+                            <li><a href="category.html">AI & ML</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <h4 class="footer-heading">Contact Us</h4>
+                        <ul class="footer-contact">
+                            <li><i class="fa-sharp fa-solid fa-location-dot"></i> <span>123 Innovation Drive, Tech City, CA 94043</span></li>
+                            <li><i class="fa-sharp fa-solid fa-envelope"></i> <a href="mailto:hello@larablog.com">hello@larablog.com</a></li>
+                            <li><i class="fa-sharp fa-solid fa-phone"></i> <a href="tel:+1234567890">+1 (234) 567-890</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">© 2024 <span>LaraBlog</span>. All rights reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="privacy.html">Privacy Policy</a>
+                        <span class="divider">|</span>
+                        <a href="terms.html">Terms & Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fa-sharp fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="assets/bootstrap-pack/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Shared Scripts -->
+    <script src="assets/js/app.js"></script>
+    <!-- Page‑Specific Scripts -->
+    <script src="assets/js/tags.js"></script>
+</body>
+</html>
+
+lara-blog (Demo)\assets\css\category.css :
+/* ============================================================
+   LARABLOG - category.css
+   Styles for the Category Page
+   ============================================================ */
+
+/* ==================== CATEGORY HERO ==================== */
+.category-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--clr-bg-elevated), var(--clr-bg-alt));
+    padding: var(--spacing-3xl) 0;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--clr-border-light);
+}
+
+.category-hero .hero-bg-shapes {
+    z-index: 0;
+}
+
+.category-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.category-hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    border-radius: var(--radius-xl);
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(255, 45, 32, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+.category-hero-title {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-md);
+    color: var(--clr-text);
+}
+
+.category-hero-desc {
+    font-size: var(--fs-lg);
+    color: var(--clr-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--spacing-lg);
+    line-height: 1.7;
+}
+
+.category-hero-meta {
+    display: flex;
+    gap: var(--spacing-xl);
+    justify-content: center;
+    font-size: var(--fs-sm);
+    color: var(--clr-text-muted);
+    flex-wrap: wrap;
+}
+
+.category-hero-meta i {
+    margin-right: 6px;
+    color: var(--clr-primary);
+}
+
+/* ==================== SORT DROPDOWN ==================== */
+.sort-dropdown .sort-select {
+    background-color: var(--clr-card-bg);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    border-radius: var(--radius-full);
+    padding: 0.5rem 1rem;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5 1.5-1.5L8 8.5l3.5-3.5 1.5 1.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.sort-select:focus {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 4px var(--clr-primary-light);
+}
+
+/* ==================== POSTS GRID ==================== */
+.category-posts {
+    background: var(--clr-bg);
+}
+
+/* ==================== SIDEBAR CATEGORIES LIST ==================== */
+.categories-sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.categories-sidebar-list li {
+    margin-bottom: 2px;
+}
+
+.categories-sidebar-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    color: var(--clr-text);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.categories-sidebar-list a i {
+    width: 20px;
+    margin-right: var(--spacing-sm);
+    color: var(--clr-primary);
+}
+
+.categories-sidebar-list a span {
+    background: var(--clr-surface);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--clr-text-secondary);
+}
+
+.categories-sidebar-list a:hover,
+.categories-sidebar-list a.active {
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+}
+
+.categories-sidebar-list a.active span {
+    background: var(--clr-primary);
+    color: #fff;
+}
+
+/* Tag Cloud */
+.tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-badge {
+    padding: 6px 16px;
+    background: var(--clr-surface);
+    color: var(--clr-text-secondary);
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.tag-badge:hover {
+    background: var(--clr-primary);
+    color: #fff;
+}
+
+/* Newsletter Sidebar */
+.newsletter-sidebar-form .form-control {
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 991.98px) {
+    .category-hero-title {
+        font-size: var(--fs-3xl);
+    }
+    .sort-dropdown {
+        margin-top: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .category-hero {
+        padding: var(--spacing-2xl) 0;
+    }
+    .category-hero-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .category-hero-meta {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+}
+
+lara-blog (Demo)\assets\css\tags.css :
+/* ============================================================
+   LARABLOG - tags.css
+   Styles for the Tags Page
+   ============================================================ */
+
+/* ==================== TAGS HERO ==================== */
+.tags-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--clr-bg-elevated), var(--clr-bg-alt));
+    padding: var(--spacing-3xl) 0;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--clr-border-light);
+}
+
+.tags-hero .hero-bg-shapes {
+    z-index: 0;
+}
+
+.tags-hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.tags-hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    border-radius: var(--radius-xl);
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(255, 45, 32, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+.tags-hero-title {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-md);
+    color: var(--clr-text);
+}
+
+.tags-hero-desc {
+    font-size: var(--fs-lg);
+    color: var(--clr-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--spacing-xl);
+    line-height: 1.7;
+}
+
+/* Tag Search/Filter */
+.tag-search-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.tag-search-wrapper .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--clr-text-muted);
+    font-size: 1.2rem;
+}
+
+.tag-search-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    font-size: var(--fs-base);
+    background: var(--clr-card-bg);
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-full);
+    color: var(--clr-text);
+    transition: all var(--transition-base);
+}
+
+.tag-search-input:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 5px var(--clr-primary-light);
+}
+
+.tag-search-input::placeholder {
+    color: var(--clr-text-muted);
+}
+
+/* ==================== TAGS GRID ==================== */
+.tags-grid-section {
+    background: var(--clr-bg);
+}
+
+/* Tag Card */
+.tag-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl) var(--spacing-md);
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    text-align: center;
+    height: 100%;
+}
+
+.tag-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--clr-primary);
+    background: var(--clr-primary-light);
+}
+
+.tag-card-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+    font-size: var(--fs-2xl);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.tag-card:hover .tag-card-icon {
+    background: var(--clr-primary);
+    color: #fff;
+    box-shadow: var(--shadow-glow);
+}
+
+.tag-card-name {
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--clr-text);
+    margin: 0;
+}
+
+.tag-card-count {
+    font-size: var(--fs-xs);
+    color: var(--clr-text-muted);
+}
+
+/* ==================== POPULAR TAGS CLOUD ==================== */
+.popular-tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.popular-tag-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    background: var(--clr-surface);
+    color: var(--clr-text);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.popular-tag-badge:hover {
+    background: var(--clr-primary);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* ==================== SIDEBAR (same as category) ==================== */
+.categories-sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.categories-sidebar-list li {
+    margin-bottom: 2px;
+}
+
+.categories-sidebar-list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    color: var(--clr-text);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.categories-sidebar-list a i {
+    width: 20px;
+    margin-right: var(--spacing-sm);
+    color: var(--clr-primary);
+}
+
+.categories-sidebar-list a span {
+    background: var(--clr-surface);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--clr-text-secondary);
+}
+
+.categories-sidebar-list a:hover,
+.categories-sidebar-list a.active {
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+}
+
+/* Newsletter Sidebar */
+.newsletter-sidebar-form .form-control {
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 991.98px) {
+    .tags-hero-title {
+        font-size: var(--fs-3xl);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .tags-hero {
+        padding: var(--spacing-2xl) 0;
+    }
+    .tags-hero-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    .tag-card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: var(--fs-xl);
+    }
+    .tag-card {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .tag-search-input {
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+    }
+}
+
+lara-blog (Demo)\assets\js\category.js :
+/* ============================================================
+   LARABLOG - category.js
+   Scripts for the Category Page
+   ============================================================ */
+
+'use strict';
+
+(function () {
+    // ==================== SORT POSTS (Simulated) ====================
+    const sortSelect = document.getElementById('sortPosts');
+    const postsGrid = document.getElementById('postsGrid');
+
+    if (sortSelect && postsGrid) {
+        sortSelect.addEventListener('change', function () {
+            const sortBy = this.value;
+            const posts = Array.from(postsGrid.querySelectorAll('.col-md-6'));
+
+            // Simple sorting simulation based on data attribute or random
+            // Since we don't have real data, we'll just flip order or shuffle
+            if (sortBy === 'oldest') {
+                posts.reverse();
+            } else if (sortBy === 'popular') {
+                // Shuffle for demonstration
+                posts.sort(() => Math.random() - 0.5);
+            } else {
+                // Newest – reset to original order (just reload page? we'll keep as is)
+                // For demo, we'll just append them in the order they are now
+                // Since they are already in HTML order, we do nothing
+                return; // Keep original
+            }
+
+            // Clear and re-append
+            postsGrid.innerHTML = '';
+            posts.forEach(post => postsGrid.appendChild(post));
+        });
+    }
+
+    // ==================== PAGINATION ACTIVE STATE ====================
+    const paginationLinks = document.querySelectorAll('.pagination .page-link');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            // Prevent actual navigation for demo
+            e.preventDefault();
+            const parent = this.parentElement;
+            if (parent.classList.contains('disabled') || parent.classList.contains('active')) return;
+
+            // Remove active from all
+            document.querySelectorAll('.pagination .page-item').forEach(item => item.classList.remove('active'));
+            // Add active to clicked
+            parent.classList.add('active');
+        });
+    });
+
+})();
+
+lara-blog (Demo)\assets\js\tags.js :
+/* ============================================================
+   LARABLOG - tags.js
+   Scripts for the Tags Page (Tag Filter)
+   ============================================================ */
+
+'use strict';
+
+(function () {
+    const tagFilterInput = document.getElementById('tagFilter');
+    const tagCards = document.querySelectorAll('.tag-card-col');
+    const noTagsFound = document.getElementById('noTagsFound');
+
+    if (tagFilterInput && tagCards.length > 0) {
+        tagFilterInput.addEventListener('input', function () {
+            const filterTerm = this.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            tagCards.forEach(card => {
+                const tagValue = card.getAttribute('data-tag');
+                if (tagValue && tagValue.includes(filterTerm)) {
+                    card.style.display = '';
+                    card.style.opacity = '1';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                    card.style.opacity = '0';
+                }
+            });
+
+            // Show/hide no results message
+            if (noTagsFound) {
+                if (visibleCount === 0) {
+                    noTagsFound.style.display = 'block';
+                } else {
+                    noTagsFound.style.display = 'none';
+                }
+            }
+        });
+    }
+})();
+
+توجه داشته باش که برای تغییر حالت دارک مود به لایت مود هم از themeprovider.tsx باید استفاده در کل کدبیس که همین حالاهم انجام شده
+
+
