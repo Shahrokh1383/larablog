@@ -40,7 +40,6 @@
     "back-end\\database\\seeders",
     "back-end\\routes",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\database",
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\users",
@@ -61,6 +60,6 @@
     "back-end\\tests\\TestCase.php"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-02T17:36:51.224Z",
+  "lastModified": "2026-08-02T18:26:57.180Z",
   "version": 1
 }
