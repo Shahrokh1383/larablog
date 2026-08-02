@@ -4,12 +4,15 @@ namespace Modules\Content\Http\Controllers\Api;
 
 use Modules\Content\Models\Post;
 use Modules\Content\Services\PostService;
+use Modules\Content\Actions\UploadImageAction;
+use Modules\Content\Actions\DeleteImageAction;
 use Modules\Content\Http\Requests\StorePostRequest;
 use Modules\Content\Http\Requests\UpdatePostRequest;
 use Modules\Content\Http\Resources\PostResource;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -23,9 +26,10 @@ class PostController extends Controller
         $this->authorizeResource(Post::class, 'post');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $posts = $this->postService->getAll();
+        $search = $request->query('search');
+        $posts = $this->postService->getAll($search, $request->user());
         return PostResource::collection($posts);
     }
 
@@ -71,5 +75,26 @@ class PostController extends Controller
     {
         $this->postService->delete($post);
         return response()->json(null, 204);
+    }
+
+    public function uploadImage(Request $request, UploadImageAction $uploadImageAction): JsonResponse
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'max:5120'],
+        ]);
+
+        $url = $uploadImageAction->execute($request->file('image'));
+        return response()->json(['url' => $url], 200);
+    }
+
+    public function deleteImage(Request $request, DeleteImageAction $deleteImageAction): JsonResponse
+    {
+        $request->validate([
+            'url' => ['required', 'string'],
+        ]);
+
+        $deleted = $deleteImageAction->execute($request->input('url'));
+        
+        return response()->json(['success' => $deleted], 200);
     }
 }

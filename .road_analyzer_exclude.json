@@ -40,9 +40,16 @@
     "back-end\\database\\seeders",
     "back-end\\routes",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\src\\Shared"
+    "back-end\\src\\Shared",
+    "back-end\\tests",
+    "back-end\\database",
+    "Admin\\src\\features\\auth",
+    "Admin\\src\\features\\categories",
+    "Admin\\src\\features\\users",
+    "Admin\\src\\features\\tags",
+    "Admin\\src\\shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-01T17:23:06.744Z",
+  "lastModified": "2026-08-02T16:01:57.526Z",
   "version": 1
 }

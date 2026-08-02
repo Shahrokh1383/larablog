@@ -8,6 +8,7 @@ use Modules\Content\Actions\CalculateReadingTimeAction;
 use Modules\Content\Actions\AssignTagsToPostAction;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
+use Shared\Contracts\HasRolesContract;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -19,17 +20,31 @@ class PostService
         private AssignTagsToPostAction $assignTagsToPostAction
     ) {}
 
-    public function getAll(): Collection
+    public function getAll(?string $search = null, ?HasRolesContract $user = null): Collection
     {
-        return Post::with(['user', 'category', 'tags'])->latest()->get();
+        return Post::with(['user', 'category', 'tags'])
+            ->when($user && $user->hasRole('author'), function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                      ->orWhere('excerpt', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->get();
     }
 
     public function create(PostCreateDTO $dto): Post
     {
         $slug = $this->generateSlugAction->execute($dto->title, Post::class);
         $readingTime = $this->calculateReadingTimeAction->execute($dto->body);
+        
+        $publishedAt = $dto->publishedAt;
+        if ($dto->isPublished && !$publishedAt) {
+            $publishedAt = now();
+        }
 
-        $post = DB::transaction(function () use ($dto, $slug, $readingTime) {
+        $post = DB::transaction(function () use ($dto, $slug, $readingTime, $publishedAt) {
             $post = Post::create([
                 'title'           => $dto->title,
                 'slug'            => $slug,
@@ -37,7 +52,7 @@ class PostService
                 'excerpt'         => $dto->excerpt,
                 'featured_image'  => $dto->featuredImage,
                 'is_published'    => $dto->isPublished,
-                'published_at'    => $dto->publishedAt,
+                'published_at'    => $publishedAt,
                 'reading_time'    => $readingTime,
                 'user_id'         => $dto->userId,
                 'category_id'     => $dto->categoryId,
@@ -79,7 +94,11 @@ class PostService
 
         if ($dto->isPublished !== null) {
             $data['is_published'] = $dto->isPublished;
-            $data['published_at'] = $dto->isPublished ? now() : null;
+            if ($dto->isPublished && $post->published_at === null) {
+                $data['published_at'] = $dto->publishedAt ?? now();
+            } elseif (!$dto->isPublished) {
+                $data['published_at'] = null;
+            }
         }
 
         if ($dto->publishedAt !== null) {

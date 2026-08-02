@@ -2,8 +2,10 @@ import httpClient from '@/shared/api/httpClient';
 import type { Post, PostFormData } from '../types/post';
 
 export const postsApi = {
-  getAll: async (): Promise<Post[]> => {
-    const response = await httpClient.get('/admin/posts');
+  getAll: async (search?: string): Promise<Post[]> => {
+    const response = await httpClient.get('/admin/posts', {
+      params: search ? { search } : {},
+    });
     return response.data.data;
   },
 
@@ -24,5 +26,20 @@ export const postsApi = {
 
   delete: async (id: string): Promise<void> => {
     await httpClient.delete(`/admin/posts/${id}`);
+  },
+
+  uploadImage: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await httpClient.post('/admin/posts/upload-image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url;
+  },
+
+  deleteImage: async (url: string): Promise<void> => {
+    await httpClient.delete('/admin/posts/delete-image', {
+      data: { url },
+    });
   },
 };
