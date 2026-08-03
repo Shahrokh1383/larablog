@@ -9,10 +9,8 @@ use Modules\Content\Actions\AssignTagsToPostAction;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
-use Modules\Identity\Services\Contracts\AuthorServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
 
 class PostService
 {
@@ -20,21 +18,20 @@ class PostService
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
         private AssignTagsToPostAction $assignTagsToPostAction,
-        private AuthorServiceInterface $authorService,
     ) {}
 
-    public function getAll(?string $search = null, ?HasRolesContract $user = null): Collection
+    public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
         return Post::with(['user', 'category', 'tags'])
             ->when($user && $user->hasRole('author'), function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+            $query->where('user_id', $user->id);
             })
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
-                      ->orWhere('excerpt', 'like', "%{$search}%");
+                    ->orWhere('excerpt', 'like', "%{$search}%");
             })
-            ->latest()
-            ->get();
+        ->latest()
+        ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(PostCreateDTO $dto): Post

@@ -9,7 +9,8 @@ import type { Category, CategoryFormData } from '@/features/categories';
 import { AxiosError } from 'axios';
 
 export default function CategoriesPage() {
-  const { data: categories = [], isLoading, isError } = useCategories();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useCategories(page);
   const { createCategory, updateCategory, deleteCategory } = useCategoryMutations();
 
   const [showModal, setShowModal] = useState(false);
@@ -34,11 +35,11 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleSubmit = (data: CategoryFormData) => {
+  const handleSubmit = (formData: CategoryFormData) => {
     setServerError(null);
     if (editingCategory) {
       updateCategory.mutate(
-        { id: editingCategory.id, data },
+        { id: editingCategory.id, data: formData },
         {
           onSuccess: () => setShowModal(false),
           onError: (err) => {
@@ -48,7 +49,7 @@ export default function CategoriesPage() {
         }
       );
     } else {
-      createCategory.mutate(data, {
+      createCategory.mutate(formData, {
         onSuccess: () => setShowModal(false),
         onError: (err) => {
           const axiosErr = err as AxiosError<{ message: string }>;
@@ -69,13 +70,52 @@ export default function CategoriesPage() {
 
       <div className="card shadow-sm">
         <div className="card-body">
-          <CategoryDataTable
-            categories={categories}
-            isLoading={isLoading}
-            isError={isError}
-            onEdit={openEdit}
-            onDelete={handleDelete}
-          />
+          {isLoading && (
+            <div className="text-center py-5">
+              <div className="spinner-border" />
+            </div>
+          )}
+          {isError && <div className="alert alert-danger m-4">Failed to load categories.</div>}
+
+          {!isLoading && !isError && data?.data && (
+            <CategoryDataTable
+              categories={data.data}
+              isLoading={false}
+              isError={false}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          )}
+
+          {data?.meta && (
+            <div className="d-flex justify-content-center mt-4">
+              <nav>
+                <ul className="pagination">
+                  <li className={`page-item ${page <= 1 ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    >
+                      Previous
+                    </button>
+                  </li>
+                  <li className="page-item active">
+                    <span className="page-link">
+                      Page {data.meta.current_page} of {data.meta.last_page}
+                    </span>
+                  </li>
+                  <li className={`page-item ${page >= (data.meta.last_page ?? 1) ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          )}
         </div>
       </div>
 

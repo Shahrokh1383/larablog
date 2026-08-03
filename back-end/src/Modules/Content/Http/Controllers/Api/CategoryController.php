@@ -11,6 +11,7 @@ use Modules\Content\DTOs\CategoryCreateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -22,9 +23,11 @@ class CategoryController extends Controller
         $this->authorizeResource(Category::class, 'category');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $categories = $this->categoryService->getAll();
+        $perPage = $request->query('per_page', 15);
+        $page = $request->query('page', 1);
+        $categories = $this->categoryService->getAll($perPage, $page);
         return CategoryResource::collection($categories);
     }
 

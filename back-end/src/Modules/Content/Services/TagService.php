@@ -13,9 +13,9 @@ class TagService
         private GenerateSlugAction $generateSlugAction
     ) {}
 
-    public function getAll(): Collection
+    public function getAll(int $perPage = 15, int $page = 1): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        return Tag::orderBy('name')->get();
+        return Tag::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(TagCreateDTO $dto): Tag

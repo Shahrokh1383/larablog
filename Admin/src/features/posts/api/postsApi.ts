@@ -1,26 +1,27 @@
 import httpClient from '@/shared/api/httpClient';
 import type { Post, PostFormData } from '../types/post';
+import type { PaginatedResponse, ApiResponse } from '@/shared/types/api';
 
 export const postsApi = {
-  getAll: async (search?: string): Promise<Post[]> => {
-    const response = await httpClient.get('/admin/posts', {
-      params: search ? { search } : {},
+  getAll: async (page = 1, search = ''): Promise<PaginatedResponse<Post>> => {
+    const response = await httpClient.get<PaginatedResponse<Post>>('/admin/posts', {
+      params: { page, search },
     });
-    return response.data.data;
+    return response.data;
   },
 
   getById: async (id: string): Promise<Post> => {
-    const response = await httpClient.get(`/admin/posts/${id}`);
+    const response = await httpClient.get<ApiResponse<Post>>(`/admin/posts/${id}`);
     return response.data.data;
   },
 
   create: async (data: PostFormData): Promise<Post> => {
-    const response = await httpClient.post('/admin/posts', data);
+    const response = await httpClient.post<ApiResponse<Post>>('/admin/posts', data);
     return response.data.data;
   },
 
   update: async (id: string, data: Partial<PostFormData>): Promise<Post> => {
-    const response = await httpClient.put(`/admin/posts/${id}`, data);
+    const response = await httpClient.put<ApiResponse<Post>>(`/admin/posts/${id}`, data);
     return response.data.data;
   },
 
@@ -31,7 +32,7 @@ export const postsApi = {
   uploadImage: async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('image', file);
-    const response = await httpClient.post('/admin/posts/upload-image', formData, {
+    const response = await httpClient.post<{ url: string }>('/admin/posts/upload-image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data.url;

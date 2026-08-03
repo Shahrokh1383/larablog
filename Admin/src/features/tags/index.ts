@@ -7,4 +7,6 @@ export type { Tag, TagFormData } from './types/tag';
 export const tagKeys = {
   all: ['tags'] as const,
   lists: () => [...tagKeys.all, 'list'] as const,
+  list: (filters: { page?: number }) =>
+    [...tagKeys.lists(), filters] as const,
 };

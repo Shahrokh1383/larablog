@@ -28,8 +28,10 @@ class PostController extends Controller
 
     public function index(Request $request)
     {
+        $perPage = $request->query('per_page', 15);
+        $page = $request->query('page', 1);
         $search = $request->query('search');
-        $posts = $this->postService->getAll($search, $request->user());
+        $posts = $this->postService->getAll($search, $request->user(), $perPage, $page);
         return PostResource::collection($posts);
     }
 

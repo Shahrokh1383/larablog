@@ -11,6 +11,7 @@ use Modules\Content\DTOs\TagCreateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
@@ -22,9 +23,11 @@ class TagController extends Controller
         $this->authorizeResource(Tag::class, 'tag');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $tags = $this->tagService->getAll();
+        $perPage = $request->query('per_page', 15);
+        $page = $request->query('page', 1);
+        $tags = $this->tagService->getAll($perPage, $page);
         return TagResource::collection($tags);
     }
 

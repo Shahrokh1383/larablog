@@ -1,19 +1,22 @@
 import httpClient from '@/shared/api/httpClient';
 import type { Category, CategoryFormData } from '../types/category';
+import type { PaginatedResponse, ApiResponse } from '@/shared/types/api';
 
 export const categoriesApi = {
-  getAll: async (): Promise<Category[]> => {
-    const response = await httpClient.get('/admin/categories');
-    return response.data.data;
+  getAll: async (page = 1): Promise<PaginatedResponse<Category>> => {
+    const response = await httpClient.get<PaginatedResponse<Category>>('/admin/categories', {
+      params: { page },
+    });
+    return response.data;
   },
 
   create: async (data: CategoryFormData): Promise<Category> => {
-    const response = await httpClient.post('/admin/categories', data);
+    const response = await httpClient.post<ApiResponse<Category>>('/admin/categories', data);
     return response.data.data;
   },
 
   update: async (id: string, data: CategoryFormData): Promise<Category> => {
-    const response = await httpClient.put(`/admin/categories/${id}`, data);
+    const response = await httpClient.put<ApiResponse<Category>>(`/admin/categories/${id}`, data);
     return response.data.data;
   },
 

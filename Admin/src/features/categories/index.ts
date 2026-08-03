@@ -7,4 +7,6 @@ export type { Category, CategoryFormData } from './types/category';
 export const categoryKeys = {
   all: ['categories'] as const,
   lists: () => [...categoryKeys.all, 'list'] as const,
+  list: (filters: { page?: number }) =>
+    [...categoryKeys.lists(), filters] as const,
 };
