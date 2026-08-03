@@ -71,9 +71,9 @@ class PostPublicService
             ->byCategory($category->id);
 
         match ($sort) {
-            'oldest'       => $query->oldest('published_at'),
+            'oldest'       => $query->oldest('updated_at'),
             'most_popular' => $query->popular(),
-            default        => $query->latest('published_at'),
+            default        => $query->latest('updated_at'),
         };
 
         $posts = $query->paginate($perPage);

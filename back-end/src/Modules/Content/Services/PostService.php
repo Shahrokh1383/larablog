@@ -96,8 +96,6 @@ class PostService
             $data['is_published'] = $dto->isPublished;
             if ($dto->isPublished && $post->published_at === null) {
                 $data['published_at'] = $dto->publishedAt ?? now();
-            } elseif (!$dto->isPublished) {
-                $data['published_at'] = null;
             }
         }
 

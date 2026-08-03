@@ -62,10 +62,14 @@
     "User\\src\\features\\auth",
     "back-end\\src\\Modules\\Identity",
     "back-end\\database\\factories",
-    "back-end\\database",
-    "Admin\\src\\app"
+    "Admin\\src\\app",
+    "Admin\\src\\features\\categories",
+    "Admin\\src\\features\\tags",
+    "Admin\\src\\features\\users",
+    "back-end\\database\\seeders",
+    "User\\app"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-03T13:51:40.803Z",
+  "lastModified": "2026-08-03T15:10:34.700Z",
   "version": 1
 }

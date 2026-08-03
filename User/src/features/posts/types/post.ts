@@ -26,7 +26,9 @@ export interface Post {
   excerpt: string;
   featured_image: string;
   reading_time: number;
-  published_at: string;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
   category: Category;
   tags: Tag[];
   author: Author;

@@ -14,7 +14,7 @@ export default function CategoryPostCard({ post }: CategoryPostCardProps) {
         </div>
         <div className="post-card-body">
           <div className="post-card-meta">
-            <span className="post-card-date">{new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            <span className="post-card-date">{new Date(post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             <span className="post-card-read-time">{post.reading_time} min read</span>
           </div>
           <h3 className="post-card-title"><Link href={`/post/${post.slug}`}>{post.title}</Link></h3>

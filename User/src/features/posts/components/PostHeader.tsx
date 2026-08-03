@@ -6,7 +6,7 @@ interface PostHeaderProps {
 }
 
 export default function PostHeader({ post }: PostHeaderProps) {
-  const formattedDate = new Date(post.published_at).toLocaleDateString('en-US', {
+  const formattedDate = new Date(post.created_at).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
