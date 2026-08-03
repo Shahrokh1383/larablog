@@ -8,19 +8,45 @@ use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
+    private const ADMIN_COUNT = 5;
+    private const EDITOR_COUNT = 30;
+    private const AUTHOR_COUNT = 100;
+    private const USER_COUNT = 1000;
+
     public function run(): void
     {
-        $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+        // Ensure roles exist (RoleSeeder must run first)
+        $adminRole = Role::findByName('admin', 'web');
+        $editorRole = Role::findByName('editor', 'web');
+        $authorRole = Role::findByName('author', 'web');
+        $userRole = Role::findByName('user', 'web');
 
-        User::factory()->count(200)->create()
-            ->each(fn (User $user) => $user->assignRole($userRole));
+        // Create admin users
+        User::factory()->count(self::ADMIN_COUNT)->create()->each(
+            fn (User $u) => $u->assignRole($adminRole)
+        );
 
-        // Permanent admin account
+        // Create editor users
+        User::factory()->count(self::EDITOR_COUNT)->create()->each(
+            fn (User $u) => $u->assignRole($editorRole)
+        );
+
+        // Create author users
+        User::factory()->count(self::AUTHOR_COUNT)->create()->each(
+            fn (User $u) => $u->assignRole($authorRole)
+        );
+
+        // Create regular users
+        User::factory()->count(self::USER_COUNT)->create()->each(
+            fn (User $u) => $u->assignRole($userRole)
+        );
+
+        // Permanent admin account for convenience
         $admin = User::factory()->create([
-            'name'  => 'Admin',
-            'email' => 'admin@larablog.test',
+            'name'     => 'Admin',
+            'email'    => 'admin@larablog.test',
             'password' => bcrypt('password'),
         ]);
-        $admin->assignRole('admin');
+        $admin->assignRole($adminRole);
     }
 }

@@ -26,6 +26,7 @@ export default function CategorySlugPage() {
 
   if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
   if (isError || !data) return <div className="container py-5 text-center">Error loading category.</div>;
+  const postsData = data.posts as any;
 
   return (
     <>
@@ -56,14 +57,14 @@ export default function CategorySlugPage() {
               </div>
 
               <div className="row g-4" id="postsGrid">
-                {data.posts.data.map((post) => (
+                {postsData.data.map((post: any) => (
                   <CategoryPostCard key={post.id} post={post} />
                 ))}
               </div>
 
               <Pagination 
-                currentPage={data.posts.meta.current_page} 
-                lastPage={data.posts.meta.last_page} 
+                currentPage={postsData.current_page} 
+                lastPage={postsData.last_page} 
                 onPageChange={setPage} 
               />
             </div>
