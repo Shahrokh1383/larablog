@@ -4,8 +4,12 @@ import type { Tag, TagFormData } from '@/features/tags';
 import { AxiosError } from 'axios';
 
 export default function TagsPage() {
-  const { data: tags = [], isLoading, isError } = useTags();
+  const [page, setPage] = useState(1);
+  const { data: paginatedResponse, isLoading, isError } = useTags({ page });
   const { createTag, updateTag, deleteTag } = useTagMutations();
+
+  const tags = paginatedResponse?.data ?? [];
+  const meta = paginatedResponse?.meta;
 
   const [showModal, setShowModal] = useState(false);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
@@ -71,6 +75,36 @@ export default function TagsPage() {
             onEdit={openEdit}
             onDelete={handleDelete}
           />
+
+          {meta && (
+            <div className="d-flex justify-content-center mt-4">
+              <nav>
+                <ul className="pagination">
+                  <li className={`page-item ${page <= 1 ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    >
+                      Previous
+                    </button>
+                  </li>
+                  <li className="page-item active">
+                    <span className="page-link">
+                      Page {meta.current_page} of {meta.last_page}
+                    </span>
+                  </li>
+                  <li className={`page-item ${page >= (meta.last_page ?? 1) ? 'disabled' : ''}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => setPage((p) => p + 1)}
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          )}
         </div>
       </div>
 

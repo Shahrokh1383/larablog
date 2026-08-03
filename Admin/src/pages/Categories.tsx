@@ -10,8 +10,11 @@ import { AxiosError } from 'axios';
 
 export default function CategoriesPage() {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError } = useCategories(page);
+  const { data: paginatedResponse, isLoading, isError } = useCategories({ page });
   const { createCategory, updateCategory, deleteCategory } = useCategoryMutations();
+
+  const categories = paginatedResponse?.data ?? [];
+  const meta = paginatedResponse?.meta;
 
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -70,24 +73,15 @@ export default function CategoriesPage() {
 
       <div className="card shadow-sm">
         <div className="card-body">
-          {isLoading && (
-            <div className="text-center py-5">
-              <div className="spinner-border" />
-            </div>
-          )}
-          {isError && <div className="alert alert-danger m-4">Failed to load categories.</div>}
+          <CategoryDataTable
+            categories={categories}
+            isLoading={isLoading}
+            isError={isError}
+            onEdit={openEdit}
+            onDelete={handleDelete}
+          />
 
-          {!isLoading && !isError && data?.data && (
-            <CategoryDataTable
-              categories={data.data}
-              isLoading={false}
-              isError={false}
-              onEdit={openEdit}
-              onDelete={handleDelete}
-            />
-          )}
-
-          {data?.meta && (
+          {meta && (
             <div className="d-flex justify-content-center mt-4">
               <nav>
                 <ul className="pagination">
@@ -101,10 +95,10 @@ export default function CategoriesPage() {
                   </li>
                   <li className="page-item active">
                     <span className="page-link">
-                      Page {data.meta.current_page} of {data.meta.last_page}
+                      Page {meta.current_page} of {meta.last_page}
                     </span>
                   </li>
-                  <li className={`page-item ${page >= (data.meta.last_page ?? 1) ? 'disabled' : ''}`}>
+                  <li className={`page-item ${page >= (meta.last_page ?? 1) ? 'disabled' : ''}`}>
                     <button
                       className="page-link"
                       onClick={() => setPage((p) => p + 1)}
