@@ -19,8 +19,13 @@ export default function PostEditorPage() {
     enabled: isEditing,
   });
 
-  const { data: categories = [] } = useCategories();
-  const { data: tags = [] } = useTags();
+  // Fetch all categories and tags for the form dropdowns (large perPage)
+  const { data: categoriesPaginated } = useCategories({ perPage: 1000 });
+  const categories = categoriesPaginated?.data ?? [];
+
+  const { data: tagsPaginated } = useTags({ perPage: 1000 });
+  const tags = tagsPaginated?.data ?? [];
+
   const { createPost, updatePost } = usePostMutations();
   const [serverError, setServerError] = useState<string | null>(null);
 

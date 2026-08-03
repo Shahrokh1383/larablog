@@ -3,9 +3,12 @@ import type { Tag, TagFormData } from '../types/tag';
 import type { PaginatedResponse, ApiResponse } from '@/shared/types/api';
 
 export const tagsApi = {
-  getAll: async (page = 1): Promise<PaginatedResponse<Tag>> => {
+  getAll: async (params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<Tag>> => {
     const response = await httpClient.get<PaginatedResponse<Tag>>('/admin/tags', {
-      params: { page },
+      params: {
+        page: params?.page ?? 1,
+        per_page: params?.perPage ?? 15,
+      },
     });
     return response.data;
   },

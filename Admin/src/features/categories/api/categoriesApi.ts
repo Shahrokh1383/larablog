@@ -3,9 +3,12 @@ import type { Category, CategoryFormData } from '../types/category';
 import type { PaginatedResponse, ApiResponse } from '@/shared/types/api';
 
 export const categoriesApi = {
-  getAll: async (page = 1): Promise<PaginatedResponse<Category>> => {
+  getAll: async (params?: { page?: number; perPage?: number }): Promise<PaginatedResponse<Category>> => {
     const response = await httpClient.get<PaginatedResponse<Category>>('/admin/categories', {
-      params: { page },
+      params: {
+        page: params?.page ?? 1,
+        per_page: params?.perPage ?? 15,
+      },
     });
     return response.data;
   },
