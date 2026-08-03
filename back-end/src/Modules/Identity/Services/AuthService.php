@@ -51,8 +51,15 @@ class AuthService
 
     public function logout(User $user): void
     {
-        /** @var PersonalAccessToken|null $token */
         $token = $user->currentAccessToken();
-        $token?->delete();
+
+        // For token-based auth (e.g. admin panel), delete the token
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+            return;
+        }
+
+        // For cookie-based SPA auth, log the user out of the session
+        Auth::guard('web')->logout();
     }
 }

@@ -10,13 +10,17 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ensure the 'user' role exists (RoleSeeder already ran, but safe)
-        $role = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+        $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
 
-        // Create 200 users and assign the 'user' role
-        User::factory()
-            ->count(200)
-            ->create()
-            ->each(fn (User $user) => $user->assignRole($role));
+        User::factory()->count(200)->create()
+            ->each(fn (User $user) => $user->assignRole($userRole));
+
+        // Permanent admin account
+        $admin = User::factory()->create([
+            'name'  => 'Admin',
+            'email' => 'admin@larablog.test',
+            'password' => bcrypt('password'),
+        ]);
+        $admin->assignRole('admin');
     }
 }

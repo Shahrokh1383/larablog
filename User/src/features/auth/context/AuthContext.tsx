@@ -21,7 +21,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
-  // Fetch current user if we have a valid session (requires backend /api/user endpoint)
   const {
     data: user,
     isLoading,
@@ -31,14 +30,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     queryFn: authApi.getUser,
     retry: false,
     staleTime: 5 * 60 * 1000,
-    enabled: true, // Always attempt on mount; if unauthenticated, backend returns 401
+    enabled: true,
   });
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
       queryClient.setQueryData(['auth', 'user'], data.user);
-      // token is stored in Sanctum cookie automatically
     },
   });
 
@@ -59,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (credentials: LoginCredentials) => {
+      await authApi.getCsrfCookie();
       const { user } = await loginMutation.mutateAsync(credentials);
       return user;
     },
@@ -67,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = useCallback(
     async (credentials: RegisterCredentials) => {
+      await authApi.getCsrfCookie();
       const { user } = await registerMutation.mutateAsync(credentials);
       return user;
     },
@@ -74,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
+    await authApi.getCsrfCookie();
     await logoutMutation.mutateAsync();
   }, [logoutMutation]);
 

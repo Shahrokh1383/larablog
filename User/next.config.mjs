@@ -4,9 +4,12 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        // Proxy all API requests to the Laravel backend
         source: '/api/:path*',
         destination: 'http://localhost:8000/api/:path*',
+      },
+      {
+        source: '/sanctum/:path*',
+        destination: 'http://localhost:8000/sanctum/:path*',
       },
     ];
   },

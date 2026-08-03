@@ -2,20 +2,21 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  const token = request.cookies.get('auth_token')?.value;
+  // Check for the Sanctum session cookie, NOT the admin auth_token
+  const sessionCookie = request.cookies.get('laravel_session')?.value;
   const { pathname } = request.nextUrl;
 
   // Define public routes
   const publicRoutes = ['/', '/tags', '/category', '/api/categories', '/api/tags'];
   const isPublic = publicRoutes.some(route => pathname.startsWith(route) || pathname === route);
 
-  // If trying to access dashboard without token, redirect to login
-  if (pathname.startsWith('/dashboard') && !token) {
+  // If trying to access dashboard without session, redirect to login
+  if (pathname.startsWith('/dashboard') && !sessionCookie) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // If authenticated and trying to access login/register, redirect to dashboard
-  if (token && (pathname.startsWith('/login') || pathname.startsWith('/register'))) {
+  // If already authenticated and trying to access login/register, redirect to dashboard
+  if (sessionCookie && (pathname.startsWith('/login') || pathname.startsWith('/register'))) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

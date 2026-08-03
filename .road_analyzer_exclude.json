@@ -38,7 +38,6 @@
     "Admin\\eslint.config.js",
     "Admin\\public",
     "back-end\\routes",
-    "back-end\\src\\Modules\\Identity",
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\users",
@@ -58,13 +57,18 @@
     "back-end\\tests\\Feature\\Identity",
     "back-end\\tests\\TestCase.php",
     "User\\public",
-    "User\\src\\features\\auth",
-    "User\\app\\(auth)",
     "back-end\\src\\Shared",
     "back-end\\tests",
-    "back-end\\database"
+    "back-end\\database\\factories",
+    "back-end\\database\\seeders",
+    "back-end\\src\\Modules\\Content",
+    "back-end\\database",
+    "User\\src\\features\\categories",
+    "User\\src\\features\\tags",
+    "User\\src\\styles",
+    "User\\app\\(public)"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-03T10:23:17.749Z",
+  "lastModified": "2026-08-03T11:36:45.615Z",
   "version": 1
 }

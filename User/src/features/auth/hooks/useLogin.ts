@@ -15,7 +15,7 @@ export function useLogin() {
   return useMutation<any, AxiosError<LaravelValidationError>, { email: string; password: string; remember?: boolean }>({
     mutationFn: (credentials) => login(credentials),
     onSuccess: () => {
-      router.push('/dashboard');
+      router.push('/'); 
     },
   });
 }

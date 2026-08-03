@@ -1,4 +1,5 @@
 import httpClient from '@/shared/api/httpClient';
+import { sanctumClient } from '@/shared/api/httpClient';
 import { endpoints } from '@/shared/api/endpoints';
 import type {
   LoginCredentials,
@@ -10,6 +11,12 @@ import type {
 } from '../types/auth';
 
 export const authApi = {
+  /** Fetch CSRF cookie – required before any POST request to prevent 419 errors. */
+  getCsrfCookie: async () => {
+    // Use the sanctumClient so the request goes to /sanctum/csrf-cookie directly
+    await sanctumClient.get('/sanctum/csrf-cookie');
+  },
+
   login: async (credentials: LoginCredentials) => {
     const { data } = await httpClient.post<AuthResponse>(endpoints.auth.login, credentials);
     return data;
@@ -22,17 +29,7 @@ export const authApi = {
     await httpClient.post(endpoints.auth.logout);
   },
   getUser: async () => {
-    // This endpoint doesn't exist yet; you need to add a /api/user route.
-    // Until then, we fetch from a dummy or rely on the user stored in cache.
     const { data } = await httpClient.get<User>(endpoints.auth.user);
-    return data;
-  },
-  getUserWithToken: async (token: string) => {
-    const { data } = await httpClient.get<User>('/user', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
     return data;
   },
   forgotPassword: async (payload: ForgotPasswordData) => {
@@ -49,7 +46,6 @@ export const authApi = {
     );
     return data;
   },
-
   verifyEmail: async (id: string, hash: string, params: Record<string, string | null>) => {
     const { data } = await httpClient.get<{ message: string }>(
       endpoints.auth.emailVerify(id, hash),
@@ -57,5 +53,4 @@ export const authApi = {
     );
     return data;
   },
-  // OAuth redirect is a simple window.location redirect; no fetch needed.
 };
