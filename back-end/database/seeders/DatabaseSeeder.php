@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Identity\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -11,7 +10,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
+            UserSeeder::class,
+            ContentSeeder::class,
         ]);
-
     }
 }

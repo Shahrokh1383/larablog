@@ -37,7 +37,6 @@
     "Admin\\package-lock.json",
     "Admin\\eslint.config.js",
     "Admin\\public",
-    "back-end\\database\\seeders",
     "back-end\\routes",
     "back-end\\src\\Modules\\Identity",
     "Admin\\src\\features\\auth",
@@ -61,11 +60,10 @@
     "User\\public",
     "User\\src\\features\\auth",
     "User\\app\\(auth)",
-    "back-end\\database",
     "back-end\\src\\Shared",
     "back-end\\tests"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-02T22:16:47.915Z",
+  "lastModified": "2026-08-03T09:35:47.570Z",
   "version": 1
 }
