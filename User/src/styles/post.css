@@ -171,6 +171,16 @@
     font-size: 0.9em;
 }
 
+/* Ensure raw images in post body are responsive and styled */
+.post-body img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    margin: var(--spacing-xl) 0;
+    display: block;
+    box-shadow: var(--shadow-sm);
+}
+
 .post-inline-image {
     margin: var(--spacing-xl) 0;
 }

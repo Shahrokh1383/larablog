@@ -45,10 +45,12 @@ class CategoryPublicController extends Controller
             'category' => new CategoryPublicResource($category),
             'posts' => [
                 'data' => PostPublicResource::collection($posts->items()),
-                'current_page' => $posts->currentPage(),
-                'last_page' => $posts->lastPage(),
-                'per_page' => $posts->perPage(),
-                'total' => $posts->total(),
+                'meta' => [
+                    'current_page' => $posts->currentPage(),
+                    'last_page'    => $posts->lastPage(),
+                    'per_page'     => $posts->perPage(),
+                    'total'        => $posts->total(),
+                ],
             ],
         ]);
     }
