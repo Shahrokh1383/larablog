@@ -82,14 +82,25 @@ class PostPublicService
         return $posts;
     }
 
-    private function mapAuthorsToPosts($posts): void
+    /**
+     * Map author data to posts.
+     *
+     * @param LengthAwarePaginator|Collection|array $posts
+     * @return void
+     */
+    private function mapAuthorsToPosts(LengthAwarePaginator|Collection|array $posts): void
     {
-        $authorIds = $posts->pluck('user_id')->unique()->toArray();
+        // Use items() for Paginator (interface compatible), wrap the rest in a collection
+        $postsCollection = $posts instanceof LengthAwarePaginator 
+            ? collect($posts->items()) 
+            : collect($posts);
+
+        $authorIds = $postsCollection->pluck('user_id')->unique()->toArray();
         if (empty($authorIds)) return;
 
         $authors = $this->authorService->getByUserIds($authorIds);
 
-        $posts->each(function (Post $post) use ($authors) {
+        $postsCollection->each(function (Post $post) use ($authors) {
             $post->author = isset($authors[$post->user_id])
                 ? $authors[$post->user_id]->toArray()
                 : null;
