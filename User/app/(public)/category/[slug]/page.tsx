@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import CategoryHero from '@/features/categories/components/CategoryHero';
 import CategoryPostCard from '@/features/categories/components/CategoryPostCard';
+import Pagination from '@/shared/components/Pagination';
 import { useCategoryPosts } from '@/features/categories/hooks/useCategoryPosts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
 import CategorySidebar from '@/features/categories/components/CategorySidebar';
+import '@/styles/category.css';
 
-export default function CategoryPage() {
+export default function CategorySlugPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
@@ -18,11 +19,9 @@ export default function CategoryPage() {
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const [page, setPage] = useState(1);
 
-  // Fetch sidebar data
   const { data: categories } = useCategories();
   const { data: popularTags } = usePopularTags();
 
-  // Fetch main content
   const { data, isLoading, isError } = useCategoryPosts(slug, sort, page);
 
   if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
@@ -57,31 +56,16 @@ export default function CategoryPage() {
               </div>
 
               <div className="row g-4" id="postsGrid">
-                {data.posts.data.map((post: any) => (
+                {data.posts.data.map((post) => (
                   <CategoryPostCard key={post.id} post={post} />
                 ))}
               </div>
 
-              {/* Pagination UI */}
-              <nav className="pagination-wrapper mt-5" aria-label="Page navigation">
-                <ul className="pagination justify-content-center">
-                  <li className={`page-item ${!data.posts.prev_page_url ? 'disabled' : ''}`}>
-                    <button className="page-link" onClick={() => setPage(page - 1)} disabled={!data.posts.prev_page_url}>
-                      <i className="fa-sharp fa-solid fa-chevron-left"></i>
-                    </button>
-                  </li>
-                  {Array.from({ length: data.posts.last_page }, (_, i) => i + 1).map(p => (
-                    <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
-                      <button className="page-link" onClick={() => setPage(p)}>{p}</button>
-                    </li>
-                  ))}
-                  <li className={`page-item ${!data.posts.next_page_url ? 'disabled' : ''}`}>
-                    <button className="page-link" onClick={() => setPage(page + 1)} disabled={!data.posts.next_page_url}>
-                      <i className="fa-sharp fa-solid fa-chevron-right"></i>
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+              <Pagination 
+                currentPage={data.posts.meta.current_page} 
+                lastPage={data.posts.meta.last_page} 
+                onPageChange={setPage} 
+              />
             </div>
 
             <CategorySidebar categories={categories || []} popularTags={popularTags || []} />

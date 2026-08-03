@@ -567,6 +567,148 @@ img {
     transform: translateY(0);
 }
 
+/* ==================== USER DROPDOWN (HEADER) ==================== */
+.user-dropdown {
+  position: relative;
+}
+
+.btn-user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.25rem 0.75rem;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-full);
+  color: var(--clr-text);
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn-user:hover {
+  background: var(--clr-primary-light);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--clr-border);
+  transition: border-color var(--transition-fast);
+}
+
+.btn-user:hover .user-avatar {
+  border-color: var(--clr-primary);
+}
+
+.user-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  font-size: var(--fs-xs);
+  transition: transform var(--transition-fast);
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.user-dropdown .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--clr-bg-elevated);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-xs) 0;
+  z-index: var(--z-overlay);
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  color: var(--clr-text);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background: var(--clr-primary-light);
+  color: var(--clr-primary);
+}
+
+/* Mobile specific user info */
+.mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.mobile-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid var(--clr-primary);
+}
+
+.mobile-user-name {
+  font-weight: 600;
+  color: var(--clr-text);
+  font-size: var(--fs-lg);
+}
+
+.btn-logout {
+  background: transparent;
+  color: var(--clr-error);
+  font-weight: 600;
+  border: none;
+  width: 100%;
+  text-align: center;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-sm);
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Responsive tweaks */
+@media (max-width: 991.98px) {
+  .btn-user .user-name {
+    display: none;
+  }
+  .user-dropdown .dropdown-menu {
+    right: -10px;
+  }
+}
+
 /* Staggered animation */
 .mobile-menu-overlay.active .mobile-nav-item:nth-child(1) { transition-delay: 50ms; }
 .mobile-menu-overlay.active .mobile-nav-item:nth-child(2) { transition-delay: 100ms; }
@@ -1124,6 +1266,38 @@ img {
     background: transparent;
     border-color: var(--clr-border-light);
     pointer-events: none;
+}
+
+/* Ellipsis styling */
+.pagination .page-item.ellipsis .page-link {
+    border: none;
+    background: transparent;
+    color: var(--clr-text-muted);
+    cursor: default;
+}
+
+/* Responsive: Tablet */
+@media (max-width: 991.98px) {
+    .pagination .page-link {
+        width: 38px;
+        height: 38px;
+        font-size: var(--fs-sm);
+    }
+    .pagination-wrapper .pagination {
+        gap: 4px;
+    }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 575.98px) {
+    .pagination .page-link {
+        width: 34px;
+        height: 34px;
+        font-size: var(--fs-xs);
+    }
+    .pagination-wrapper .pagination {
+        gap: 3px;
+    }
 }
 
 /* ==================== BACK TO TOP ==================== */

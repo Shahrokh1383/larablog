@@ -3,15 +3,19 @@
 import TagsHero from '@/features/tags/components/TagsHero';
 import TagCard from '@/features/tags/components/TagCard';
 import TagsSidebar from '@/features/tags/components/TagsSidebar';
+import Pagination from '@/shared/components/Pagination';
 import { useTags } from '@/features/tags/hooks/useTags';
 import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import '@/styles/tags.css'; // Imported page-specific styles
+import { useCategories } from '@/features/categories/hooks/useCategories';
+import '@/styles/tags.css';
 
 export default function TagsPage() {
-  const { search, setSearch, tags, isLoading, isError } = useTags();
+  const { search, setSearch, page, setPage, tags, totalPages, isLoading, isError } = useTags();
   const { data: popularTags } = usePopularTags();
+  const { data: categories } = useCategories(); // Fetch real categories
 
   const safePopularTags = Array.isArray(popularTags) ? popularTags : [];
+  const safeCategories = Array.isArray(categories) ? categories : [];
 
   return (
     <>
@@ -37,15 +41,19 @@ export default function TagsPage() {
                   <p className="text-muted">Try a different search term.</p>
                 </div>
               ) : (
-                <div className="row g-4" id="tagsGrid">
-                  {tags.map((tag) => (
-                    <TagCard key={tag.id} tag={tag} />
-                  ))}
-                </div>
+                <>
+                  <div className="row g-4" id="tagsGrid">
+                    {tags.map((tag) => (
+                      <TagCard key={tag.id} tag={tag} />
+                    ))}
+                  </div>
+                  <Pagination currentPage={page} lastPage={totalPages} onPageChange={setPage} />
+                </>
               )}
             </div>
 
-            <TagsSidebar popularTags={safePopularTags} />
+            {/* Pass real categories here */}
+            <TagsSidebar popularTags={safePopularTags} categories={safeCategories} />
           </div>
         </div>
       </section>

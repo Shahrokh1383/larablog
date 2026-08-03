@@ -30,12 +30,26 @@ class CategoryPublicController extends Controller
 
     public function posts(string $slug, ShowCategoryPostsRequest $request): JsonResponse
     {
+        // 1. Fetch the category details for the Hero
+        $category = $this->categoryPublicService->getPublicCategoryBySlug($slug);
+
+        // 2. Fetch the paginated posts
         $posts = $this->postPublicService->getPostsByCategory(
             categorySlug: $slug,
             sort: $request->validated('sort', 'newest'),
             perPage: $request->validated('per_page', 10)
         );
 
-        return PostPublicResource::collection($posts)->response();
+        // 3. Return a structured response matching the frontend contract
+        return response()->json([
+            'category' => new CategoryPublicResource($category),
+            'posts' => [
+                'data' => PostPublicResource::collection($posts->items()),
+                'current_page' => $posts->currentPage(),
+                'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
+                'total' => $posts->total(),
+            ],
+        ]);
     }
 }

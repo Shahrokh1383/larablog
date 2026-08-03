@@ -173,6 +173,97 @@
     padding: 0.75rem 1rem;
 }
 
+/* ==================== CATEGORY GRID CARDS ==================== */
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl) var(--spacing-md);
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-xl);
+    text-decoration: none;
+    transition: all var(--transition-base);
+    text-align: center;
+    height: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--clr-primary);
+    background: var(--clr-primary-light);
+}
+
+.category-card-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+    font-size: var(--fs-2xl);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.category-card:hover .category-card-icon {
+    background: var(--clr-primary);
+    color: #fff;
+    box-shadow: var(--shadow-glow);
+}
+
+.category-card-name {
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--clr-text);
+    margin: 0;
+}
+
+.category-card-count {
+    font-size: var(--fs-xs);
+    color: var(--clr-text-muted);
+}
+
+/* ==================== HERO SEARCH WRAPPER (Shared with Tags) ==================== */
+.tag-search-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.tag-search-wrapper .search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--clr-text-muted);
+    font-size: 1.2rem;
+}
+
+.tag-search-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    font-size: var(--fs-base);
+    background: var(--clr-card-bg);
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-full);
+    color: var(--clr-text);
+    transition: all var(--transition-base);
+}
+
+.tag-search-input:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 5px var(--clr-primary-light);
+}
+
+.tag-search-input::placeholder {
+    color: var(--clr-text-muted);
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 991.98px) {
     .category-hero-title {

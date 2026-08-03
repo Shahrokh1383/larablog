@@ -18,4 +18,15 @@ class CategoryPublicService
             ->with(['posts' => fn($q) => $q->published()->latest('published_at')->take(4)])
             ->paginate($perPage);
     }
+
+    //Fetches a single category by slug with counts
+    public function getPublicCategoryBySlug(string $slug): Category
+    {
+        return Category::where('slug', $slug)
+            ->withCount([
+                'posts as posts_count' => fn($q) => $q->published(),
+                'posts as authors_count' => fn($q) => $q->published()->select(DB::raw('count(distinct user_id)'))
+            ])
+            ->firstOrFail();
+    }
 }

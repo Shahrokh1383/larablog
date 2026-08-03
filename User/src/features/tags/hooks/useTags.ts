@@ -6,25 +6,28 @@ import { useDebounce } from '@/shared/hooks/useDebounce';
 export const tagKeys = {
   all: ['tags'] as const,
   lists: () => [...tagKeys.all, 'list'] as const,
-  list: (search: string) => [...tagKeys.lists(), search] as const,
+  list: (search: string, page: number) => [...tagKeys.lists(), search, page] as const,
   popular: () => [...tagKeys.all, 'popular'] as const,
 };
 
 export function useTags() {
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search, 300);
 
   const query = useQuery({
-    queryKey: tagKeys.list(debouncedSearch),
-    // Changed per_page to 50 to comply with backend FormRequest validation (max:50)
-    queryFn: () => tagsApi.getAll({ search: debouncedSearch, per_page: 50 }),
+    queryKey: tagKeys.list(debouncedSearch, page),
+    queryFn: () => tagsApi.getAll({ search: debouncedSearch, page, per_page: 12 }),
     placeholderData: (previousData) => previousData,
   });
 
   return {
     search,
     setSearch,
+    page,
+    setPage,
     tags: query.data?.data || [],
+    totalPages: query.data?.meta?.last_page || 1,
     isLoading: query.isLoading,
     isError: query.isError,
   };

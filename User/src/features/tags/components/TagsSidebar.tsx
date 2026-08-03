@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import type { Tag } from '../types/tag';
+import type { Category } from '@/features/categories/types/category';
 
 interface TagsSidebarProps {
   popularTags: Tag[];
+  categories: Category[];
 }
 
-export default function TagsSidebar({ popularTags }: TagsSidebarProps) {
+export default function TagsSidebar({ popularTags, categories }: TagsSidebarProps) {
+  // Limit to 7 items for the sidebar
+  const visibleCategories = categories.slice(0, 7);
+
   return (
     <aside className="col-lg-4">
       <div className="sidebar">
@@ -28,11 +33,17 @@ export default function TagsSidebar({ popularTags }: TagsSidebarProps) {
         <div className="sidebar-card">
           <h4 className="sidebar-title">Categories</h4>
           <ul className="categories-sidebar-list">
-            <li><a href="#"><i className="fa-sharp fa-solid fa-code"></i> Development <span>45</span></a></li>
-            <li><a href="#"><i className="fa-sharp fa-solid fa-palette"></i> Design <span>32</span></a></li>
-            <li><a href="#"><i className="fa-sharp fa-solid fa-chart-line"></i> Business <span>28</span></a></li>
-            <li><a href="#"><i className="fa-sharp fa-solid fa-shield-halved"></i> Security <span>19</span></a></li>
+            {visibleCategories.map((cat) => (
+              <li key={cat.id}>
+                <Link href={`/category/${cat.slug}`}>
+                  <i className="fa-sharp fa-solid fa-folder"></i> {cat.name} <span>{cat.posts_count}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
+          <Link href="/category" className="btn btn-outline-primary btn-sm w-100 mt-3">
+            View All Categories
+          </Link>
         </div>
 
         <div className="sidebar-card newsletter-sidebar">

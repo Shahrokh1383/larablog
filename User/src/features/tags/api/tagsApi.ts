@@ -4,7 +4,8 @@ import type { PaginatedResponse } from '@/shared/types/api';
 import type { Tag } from '../types/tag';
 
 export const tagsApi = {
-  getAll: async (params?: { search?: string; per_page?: number }): Promise<PaginatedResponse<Tag>> => {
+  // Added 'page' to the params type definition
+  getAll: async (params?: { search?: string; per_page?: number; page?: number }): Promise<PaginatedResponse<Tag>> => {
     const response = await httpClient.get(endpoints.content.tags, { params });
     return response.data; // Returns { data: Tag[], meta: {...} }
   },
