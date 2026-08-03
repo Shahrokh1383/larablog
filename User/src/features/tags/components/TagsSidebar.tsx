@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import type { Tag } from '../types/tag';
 
 interface TagsSidebarProps {
-  popularTags: any[];
+  popularTags: Tag[];
 }
 
 export default function TagsSidebar({ popularTags }: TagsSidebarProps) {
@@ -16,7 +17,6 @@ export default function TagsSidebar({ popularTags }: TagsSidebarProps) {
                 key={tag.id} 
                 href={`/tags?search=${tag.slug}`} 
                 className="popular-tag-badge"
-                // Slightly varying font sizes based on popularity (simulated for prototype match)
                 style={{ fontSize: `${0.9 + (index % 4) * 0.15}rem` }}
               >
                 {tag.name}

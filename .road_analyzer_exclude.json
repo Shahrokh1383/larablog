@@ -61,9 +61,10 @@
     "User\\src\\features\\auth",
     "User\\app\\(auth)",
     "back-end\\src\\Shared",
-    "back-end\\tests"
+    "back-end\\tests",
+    "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-03T09:35:47.570Z",
+  "lastModified": "2026-08-03T10:23:17.749Z",
   "version": 1
 }
