@@ -9,4 +9,5 @@ require base_path('src/Modules/Content/Routes/api.php');
 
 require base_path('src/Modules/Administration/Routes/admin.php');
 
-// Future modules will be loaded similarly.
+// Profile Module Routes
+require base_path('src/Modules/Profile/Routes/api.php');

@@ -17,6 +17,8 @@ class ProfileServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/Routes/api.php');
+        // Routes are strictly loaded via the main routes/api.php file 
+        // to ensure they correctly inherit the /api prefix and middleware group.
+        // This prevents route duplication and prefix mismatches.
     }
 }
