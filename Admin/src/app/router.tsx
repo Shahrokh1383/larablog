@@ -9,6 +9,7 @@ import PostsPage from '@/pages/Posts';
 import PostEditorPage from '@/pages/PostEditor';
 import CategoriesPage from '@/pages/Categories';
 import TagsPage from '@/pages/Tags';
+import ProfilePage from '@/pages/Profile';
 
 export default function AppRouter() {
   return (
@@ -28,6 +29,7 @@ export default function AppRouter() {
         <Route path="/posts/editor/:id" element={<PostEditorPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/tags" element={<TagsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         
         <Route
           path="/users"

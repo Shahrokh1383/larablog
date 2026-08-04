@@ -11,6 +11,10 @@ export default function AdminLayout() {
     navigate('/login');
   };
 
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: 'fa-tachometer-alt' },
     { to: '/posts', label: 'Posts', icon: 'fa-newspaper' },
@@ -48,17 +52,29 @@ export default function AdminLayout() {
 
         <div className="mt-auto border-top pt-3">
           <div className="d-flex align-items-center mb-3">
-            <div className="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: 40, height: 40 }}>
+            <div 
+              className="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" 
+              style={{ width: 40, height: 40, cursor: 'pointer' }}
+              onClick={handleProfileClick}
+              title="View Profile"
+            >
               {user?.name.charAt(0).toUpperCase()}
             </div>
-            <div className="d-flex flex-column">
+            <div className="d-flex flex-column flex-grow-1">
               <div className="text-white small fw-bold">{user?.name}</div>
-              <div className="d-flex gap-1 mt-1">
+              <div className="d-flex gap-1 mt-1 flex-wrap">
                 {user?.roles.map((role) => (
                   <span key={role} className="badge bg-info text-dark text-capitalize">{role}</span>
                 ))}
               </div>
             </div>
+            <button 
+              onClick={handleProfileClick}
+              className="btn btn-sm btn-outline-light ms-2"
+              title="Profile Settings"
+            >
+              <i className="fas fa-cog"></i>
+            </button>
           </div>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm w-100">
             <i className="fas fa-sign-out-alt me-2"></i>Logout
