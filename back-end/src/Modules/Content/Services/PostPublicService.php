@@ -4,6 +4,7 @@ namespace Modules\Content\Services;
 
 use Modules\Content\Models\Post;
 use Modules\Content\Models\Category;
+use Modules\Content\Models\Tag;
 use Modules\Identity\Services\Contracts\AuthorServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -69,6 +70,29 @@ class PostPublicService
         $query = Post::with(['category', 'tags'])
             ->published()
             ->byCategory($category->id);
+
+        match ($sort) {
+            'oldest'       => $query->oldest('updated_at'),
+            'most_popular' => $query->popular(),
+            default        => $query->latest('updated_at'),
+        };
+
+        $posts = $query->paginate($perPage);
+        $this->mapAuthorsToPosts($posts);
+
+        return $posts;
+    }
+
+    /**
+     * Fetch paginated posts by Tag slug.
+     */
+    public function getPostsByTag(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    {
+        $tag = Tag::where('slug', $tagSlug)->firstOrFail();
+
+        $query = Post::with(['category', 'tags'])
+            ->published()
+            ->whereHas('tags', fn($q) => $q->where('tags.id', $tag->id));
 
         match ($sort) {
             'oldest'       => $query->oldest('updated_at'),

@@ -15,5 +15,6 @@ export const endpoints = {
     categoryPosts: (slug: string) => `/categories/${slug}/posts`,
     tags: '/tags',
     popularTags: '/tags/popular',
+    tagPosts: (slug: string) => `/tags/${slug}/posts`,
   },
 };

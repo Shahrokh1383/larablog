@@ -19,4 +19,5 @@ Route::prefix('categories')->group(function () {
 Route::prefix('tags')->group(function () {
     Route::get('/', [TagPublicController::class, 'index']);
     Route::get('/popular', [TagPublicController::class, 'popular']);
+    Route::get('{slug}/posts', [TagPublicController::class, 'posts']);
 });

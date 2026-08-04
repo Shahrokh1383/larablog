@@ -56,20 +56,19 @@
     "User\\public",
     "back-end\\src\\Shared",
     "back-end\\tests",
-    "User\\src\\features\\tags",
     "User\\src\\styles",
     "User\\app\\(auth)",
     "User\\src\\features\\auth",
     "back-end\\src\\Modules\\Identity",
     "back-end\\database\\factories",
     "Admin\\src\\app",
-    "Admin\\src\\features\\categories",
-    "Admin\\src\\features\\tags",
     "Admin\\src\\features\\users",
     "back-end\\database\\seeders",
-    "User\\app"
+    "User\\app",
+    "User\\src\\features\\posts",
+    "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-03T15:10:34.700Z",
+  "lastModified": "2026-08-04T15:31:23.778Z",
   "version": 1
 }

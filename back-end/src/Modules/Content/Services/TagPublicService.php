@@ -23,4 +23,14 @@ class TagPublicService
             ->take($limit)
             ->get();
     }
+
+    /**
+     * Fetches a single tag by slug with counts for the Hero section.
+     */
+    public function getPublicTagBySlug(string $slug): Tag
+    {
+        return Tag::where('slug', $slug)
+            ->withCount(['posts as posts_count' => fn($q) => $q->published()])
+            ->firstOrFail();
+    }
 }
