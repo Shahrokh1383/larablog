@@ -3,7 +3,7 @@
    Styles for the Tags Page
    ============================================================ */
 
-/* ==================== TAGS HERO ==================== */
+/* ==================== TAGS HERO (List Page) ==================== */
 .tags-hero {
     position: relative;
     background: linear-gradient(135deg, var(--clr-bg-elevated), var(--clr-bg-alt));
@@ -13,14 +13,8 @@
     border-bottom: 1px solid var(--clr-border-light);
 }
 
-.tags-hero .hero-bg-shapes {
-    z-index: 0;
-}
-
-.tags-hero-content {
-    position: relative;
-    z-index: 1;
-}
+.tags-hero .hero-bg-shapes { z-index: 0; }
+.tags-hero-content { position: relative; z-index: 1; }
 
 .tags-hero-icon {
     display: inline-flex;
@@ -52,7 +46,6 @@
     line-height: 1.7;
 }
 
-/* Tag Search/Filter */
 .tag-search-wrapper {
     position: relative;
     max-width: 500px;
@@ -85,16 +78,69 @@
     box-shadow: 0 0 0 5px var(--clr-primary-light);
 }
 
-.tag-search-input::placeholder {
+.tag-search-input::placeholder { color: var(--clr-text-muted); }
+
+/* ==================== TAG HERO (Specific Tag Page) ==================== */
+.tag-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--clr-bg-elevated), var(--clr-bg-alt));
+    padding: var(--spacing-3xl) 0;
+    text-align: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--clr-border-light);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.tag-hero .hero-bg-shapes { z-index: 0; }
+.tag-hero-content { position: relative; z-index: 1; }
+
+.tag-hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    border-radius: var(--radius-xl);
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(255, 45, 32, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+.tag-hero-title {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-md);
+    color: var(--clr-text);
+}
+
+.tag-hero-desc {
+    font-size: var(--fs-lg);
+    color: var(--clr-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--spacing-lg);
+    line-height: 1.7;
+}
+
+.tag-hero-meta {
+    display: flex;
+    gap: var(--spacing-xl);
+    justify-content: center;
+    font-size: var(--fs-sm);
     color: var(--clr-text-muted);
+    flex-wrap: wrap;
+}
+
+.tag-hero-meta i {
+    margin-right: 6px;
+    color: var(--clr-primary);
 }
 
 /* ==================== TAGS GRID ==================== */
-.tags-grid-section {
-    background: var(--clr-bg);
-}
+.tags-grid-section { background: var(--clr-bg); }
 
-/* Tag Card */
 .tag-card {
     display: flex;
     flex-direction: column;
@@ -148,6 +194,96 @@
     color: var(--clr-text-muted);
 }
 
+/* ==================== TAG POST CARD (Horizontal List) ==================== */
+.tag-post-card {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-base);
+}
+
+.tag-post-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--clr-border);
+}
+
+.tag-post-img {
+    flex-shrink: 0;
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .tag-post-img {
+        display: block;
+    }
+    .tag-post-img img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+    }
+}
+
+.tag-post-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.tag-post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.tag-post-category {
+    background: var(--clr-surface);
+    color: var(--clr-text);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    border: 1px solid var(--clr-border-light);
+}
+
+.tag-post-read-time {
+    color: var(--clr-text-muted);
+    font-size: var(--fs-xs);
+}
+
+.tag-post-title {
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.tag-post-title a {
+    color: var(--clr-text);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.tag-post-title a:hover {
+    color: var(--clr-primary);
+}
+
+.tag-post-excerpt {
+    font-size: var(--fs-sm);
+    color: var(--clr-text-secondary);
+    margin: 0;
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .tag-post-excerpt {
+        display: block;
+    }
+}
+
 /* ==================== POPULAR TAGS CLOUD ==================== */
 .popular-tags-cloud {
     display: flex;
@@ -174,7 +310,29 @@
     transform: scale(1.05);
 }
 
-/* ==================== SIDEBAR (same as category) ==================== */
+/* ==================== SORT DROPDOWN (Unified with Category) ==================== */
+.sort-dropdown .sort-select {
+    background-color: var(--clr-card-bg);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    border-radius: var(--radius-full);
+    padding: 0.5rem 1rem;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11.5l-5-5 1.5-1.5L8 8.5l3.5-3.5 1.5 1.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+.sort-select:focus {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 4px var(--clr-primary-light);
+}
+
+/* ==================== SIDEBAR (Shared) ==================== */
 .categories-sidebar-list {
     list-style: none;
     padding: 0;
@@ -218,7 +376,6 @@
     color: var(--clr-primary);
 }
 
-/* Newsletter Sidebar */
 .newsletter-sidebar-form .form-control {
     background: var(--clr-bg);
     border: 1px solid var(--clr-border);
@@ -228,32 +385,20 @@
 
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 991.98px) {
-    .tags-hero-title {
-        font-size: var(--fs-3xl);
-    }
+    .tags-hero-title, .tag-hero-title { font-size: var(--fs-3xl); }
+    .sort-dropdown { margin-top: var(--spacing-sm); }
 }
 
 @media (max-width: 767.98px) {
-    .tags-hero {
-        padding: var(--spacing-2xl) 0;
-    }
-    .tags-hero-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 2rem;
-    }
-    .tag-card-icon {
-        width: 48px;
-        height: 48px;
-        font-size: var(--fs-xl);
-    }
-    .tag-card {
-        padding: var(--spacing-lg) var(--spacing-md);
-    }
+    .tags-hero, .tag-hero { padding: var(--spacing-2xl) 0; }
+    .tags-hero-icon, .tag-hero-icon { width: 60px; height: 60px; font-size: 2rem; }
+    .tag-card-icon { width: 48px; height: 48px; font-size: var(--fs-xl); }
+    .tag-card { padding: var(--spacing-lg) var(--spacing-md); }
 }
 
 @media (max-width: 575.98px) {
-    .tag-search-input {
-        padding: 0.75rem 1rem 0.75rem 2.5rem;
+    .tag-hero-meta {
+        flex-direction: column;
+        gap: var(--spacing-xs);
     }
 }

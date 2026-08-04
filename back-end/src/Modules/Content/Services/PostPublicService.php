@@ -83,16 +83,13 @@ class PostPublicService
         return $posts;
     }
 
-    /**
-     * Fetch paginated posts by Tag slug.
-     */
     public function getPostsByTag(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
         $tag = Tag::where('slug', $tagSlug)->firstOrFail();
 
         $query = Post::with(['category', 'tags'])
             ->published()
-            ->whereHas('tags', fn($q) => $q->where('tags.id', $tag->id));
+            ->whereHas('tags', fn($q) => $q->whereKey($tag->id));
 
         match ($sort) {
             'oldest'       => $query->oldest('updated_at'),

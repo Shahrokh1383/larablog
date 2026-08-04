@@ -7,14 +7,24 @@ interface TagHeroProps {
 
 export default function TagHero({ tag }: TagHeroProps) {
   return (
-    <div className="tag-hero text-center py-5 mb-5 border-bottom">
-      <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3 fs-6">
-        <i className="fa-solid fa-tag me-1"></i> Tag
-      </span>
-      <h1 className="display-5 fw-bold text-dark mb-2">{tag.name}</h1>
-      <p className="text-muted mb-0">
-        {tag.posts_count ?? 0} Posts tagged with this topic
-      </p>
-    </div>
+    <section className="tag-hero">
+      <div className="hero-bg-shapes">
+        <div className="shape shape-1"></div>
+        <div className="shape shape-2"></div>
+        <div className="shape shape-3"></div>
+      </div>
+      <div className="container">
+        <div className="tag-hero-content">
+          <span className="tag-hero-icon"><i className="fa-solid fa-hashtag"></i></span>
+          <h1 className="tag-hero-title">{tag.name}</h1>
+          <p className="tag-hero-desc">
+            Explore the latest articles and tutorials tagged with {tag.name}.
+          </p>
+          <div className="tag-hero-meta">
+            <span><i className="fa-sharp fa-solid fa-file-lines"></i> {tag.posts_count ?? 0} Articles</span>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

@@ -56,7 +56,6 @@
     "User\\public",
     "back-end\\src\\Shared",
     "back-end\\tests",
-    "User\\src\\styles",
     "User\\app\\(auth)",
     "User\\src\\features\\auth",
     "back-end\\src\\Modules\\Identity",
@@ -68,6 +67,6 @@
     "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-04T15:51:56.549Z",
+  "lastModified": "2026-08-04T16:13:39.056Z",
   "version": 1
 }
