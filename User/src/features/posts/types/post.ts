@@ -1,9 +1,17 @@
+export interface SocialLinks {
+  twitter?: string;
+  github?: string;
+  linkedin?: string;
+  instagram?: string;
+  dribbble?: string;
+}
 export interface Author {
   id: string;
   name: string;
   username?: string;
   avatar?: string;
   bio?: string;
+  social_links?: SocialLinks;
 }
 
 export interface Category {

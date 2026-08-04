@@ -65,10 +65,11 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
         return $profiles->mapWithKeys(function (Profile $profile) {
             return [
                 $profile->user_id => [
-                'name'     => $profile->user->name,
+                    'name'     => $profile->user->name,
                     'username' => $profile->user->username,
                     'avatar'   => $profile->avatar,
                     'bio'      => $profile->bio,
+                    'social_links' => $profile->social_links ?? [],
                 ]
             ];
         })->all();
