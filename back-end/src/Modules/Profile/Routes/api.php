@@ -11,4 +11,8 @@ Route::get('profiles/{username}', [PublicProfileController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [ProfileController::class, 'show']);
     Route::put('profile', [ProfileController::class, 'update']);
+    
+    // Avatar Management
+    Route::post('profile/upload-avatar', [ProfileController::class, 'uploadAvatar']);
+    Route::delete('profile/delete-avatar', [ProfileController::class, 'deleteAvatar']);
 });
