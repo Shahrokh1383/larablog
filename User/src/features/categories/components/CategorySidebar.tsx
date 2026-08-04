@@ -39,7 +39,7 @@ export default function CategorySidebar({ categories, popularTags, showCategorie
           <h4 className="sidebar-title">Popular Tags</h4>
           <div className="tag-cloud">
             {popularTags.map((tag) => (
-              <Link key={tag.id} href={`/tags?search=${tag.slug}`} className="tag-badge">{tag.name}</Link>
+              <Link key={tag.id} href={`/tags/${tag.slug}`} className="tag-badge">{tag.name}</Link>
             ))}
           </div>
         </div>

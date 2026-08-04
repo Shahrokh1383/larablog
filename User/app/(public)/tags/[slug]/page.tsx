@@ -45,7 +45,7 @@ export default function TagPage({ params }: { params: { slug: string } }) {
           {data.posts.meta.last_page > 1 && (
             <Pagination 
               currentPage={data.posts.meta.current_page}
-              totalPages={data.posts.meta.last_page}
+              lastPage={data.posts.meta.last_page}
               onPageChange={(newPage) => setPage(newPage)}
             />
           )}

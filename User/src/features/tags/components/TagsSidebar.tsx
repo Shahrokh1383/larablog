@@ -20,7 +20,7 @@ export default function TagsSidebar({ popularTags, categories }: TagsSidebarProp
             {popularTags.map((tag, index) => (
               <Link 
                 key={tag.id} 
-                href={`/tags?search=${tag.slug}`} 
+                href={`/tags/${tag.slug}`}
                 className="popular-tag-badge"
                 style={{ fontSize: `${0.9 + (index % 4) * 0.15}rem` }}
               >

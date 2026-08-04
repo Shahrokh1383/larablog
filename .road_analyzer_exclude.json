@@ -64,11 +64,10 @@
     "Admin\\src\\app",
     "Admin\\src\\features\\users",
     "back-end\\database\\seeders",
-    "User\\app",
     "User\\src\\features\\posts",
     "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-04T15:31:23.778Z",
+  "lastModified": "2026-08-04T15:51:56.549Z",
   "version": 1
 }
