@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
         // Permanent admin account for convenience
         $admin = User::factory()->create([
             'name'     => 'Admin',
-            'email'    => 'admin@larablog.test',
+            'email'    => 'admin@gmail.com',
             'password' => bcrypt('password'),
         ]);
         $admin->assignRole($adminRole);

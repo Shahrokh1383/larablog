@@ -51,4 +51,25 @@ class ProfileService implements ProfileServiceInterface
             return $profile->fresh();
         });
     }
+
+    public function getPublicProfilesMap(array $userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        // Eager load the shared User model to avoid N+1 queries
+        $profiles = Profile::with('user')->whereIn('user_id', $userIds)->get();
+
+        return $profiles->mapWithKeys(function (Profile $profile) {
+            return [
+                $profile->user_id => [
+                'name'     => $profile->user->name,
+                    'username' => $profile->user->username,
+                    'avatar'   => $profile->avatar,
+                    'bio'      => $profile->bio,
+                ]
+            ];
+        })->all();
+    }
 }

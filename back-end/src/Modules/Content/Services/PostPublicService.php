@@ -5,14 +5,14 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Post;
 use Modules\Content\Models\Category;
 use Modules\Content\Models\Tag;
-use Modules\Identity\Services\Contracts\AuthorServiceInterface;
+use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class PostPublicService
 {
     public function __construct(
-        private AuthorServiceInterface $authorService,
+        private FetchesPublicProfiles $profileService,
     ) {}
 
     public function getHomeData(int $perPage = 10): LengthAwarePaginator
@@ -119,15 +119,12 @@ class PostPublicService
             ? collect($posts->items()) 
             : collect($posts);
 
-        $authorIds = $postsCollection->pluck('user_id')->unique()->toArray();
+        $authorIds = $postsCollection->pluck('user_id')->unique()->filter()->values()->toArray();
         if (empty($authorIds)) return;
 
-        $authors = $this->authorService->getByUserIds($authorIds);
-
-        $postsCollection->each(function (Post $post) use ($authors) {
-            $post->author = isset($authors[$post->user_id])
-                ? $authors[$post->user_id]->toArray()
-                : null;
+        $profilesMap = $this->profileService->getPublicProfilesMap($authorIds);
+        $postsCollection->each(function (Post $post) use ($profilesMap) {
+            $post->author = $profilesMap[$post->user_id] ?? null;
         });
     }
 }
