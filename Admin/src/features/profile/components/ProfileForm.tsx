@@ -9,14 +9,12 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ initialData, isSubmitting, onSubmit }: ProfileFormProps) {
-  // UI State (Form state is allowed in components)
   const [name, setName] = useState(initialData.name);
   const [bio, setBio] = useState(initialData.bio || '');
   const [expertise, setExpertise] = useState(initialData.expertise || '');
   const [years, setYears] = useState(initialData.years_of_experience?.toString() || '');
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(initialData.social_links || {});
 
-  // Sync internal state if initialData changes (e.g., after a successful mutation refetch)
   useEffect(() => {
     setName(initialData.name);
     setBio(initialData.bio || '');
@@ -37,61 +35,65 @@ export function ProfileForm({ initialData, isSubmitting, onSubmit }: ProfileForm
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Full Name</label>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <label className="form-label">Full Name</label>
         <input
           type="text"
+          className="form-control"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Bio</label>
+      <div className="mb-3">
+        <label className="form-label">Bio</label>
         <textarea
+          className="form-control"
+          rows={4}
           value={bio}
           onChange={(e) => setBio(e.target.value)}
-          rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          placeholder="Tell us about yourself..."
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Expertise</label>
+      <div className="row mb-3">
+        <div className="col-md-6">
+          <label className="form-label">Expertise</label>
           <input
             type="text"
+            className="form-control"
             value={expertise}
             onChange={(e) => setExpertise(e.target.value)}
             placeholder="e.g., Senior UI/UX Designer"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Years of Experience</label>
+        <div className="col-md-6">
+          <label className="form-label">Years of Experience</label>
           <input
             type="number"
+            className="form-control"
             value={years}
             onChange={(e) => setYears(e.target.value)}
             min="0"
             max="80"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
           />
         </div>
       </div>
 
       <SocialLinksInput links={socialLinks} onChange={setSocialLinks} />
 
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Saving...' : 'Save Profile'}
+      <div className="d-flex justify-content-end mt-4">
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" />
+              Saving...
+            </>
+          ) : (
+            'Save Profile'
+          )}
         </button>
       </div>
     </form>

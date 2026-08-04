@@ -15,22 +15,22 @@ export function SocialLinksInput({ links, onChange }: SocialLinksInputProps) {
   };
 
   return (
-    <div className="space-y-4 border-t pt-4 mt-4">
-      <h3 className="text-lg font-medium text-gray-900">Social Media</h3>
-      {SOCIAL_PLATFORMS.map((platform) => (
-        <div key={platform}>
-          <label className="block text-sm font-medium text-gray-700 capitalize">
-            {platform}
-          </label>
-          <input
-            type="url"
-            value={links[platform] || ''}
-            onChange={(e) => handleChange(platform, e.target.value)}
-            placeholder={`https://${platform}.com/username`}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-          />
-        </div>
-      ))}
+    <div className="border-top pt-4 mt-4">
+      <h5 className="mb-3">Social Media Links</h5>
+      <div className="row">
+        {SOCIAL_PLATFORMS.map((platform) => (
+          <div className="col-md-6 mb-3" key={platform}>
+            <label className="form-label text-capitalize">{platform}</label>
+            <input
+              type="url"
+              className="form-control"
+              value={links[platform] || ''}
+              onChange={(e) => handleChange(platform, e.target.value)}
+              placeholder={`https://${platform}.com/username`}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
