@@ -34,6 +34,8 @@ export default function CategoryDataTable({
           <tr>
             <th>Name</th>
             <th>Slug</th>
+            <th>Posts</th>
+            <th>Created</th>
             <th className="text-end">Actions</th>
           </tr>
         </thead>
@@ -42,6 +44,10 @@ export default function CategoryDataTable({
             <tr key={cat.id}>
               <td className="fw-semibold">{cat.name}</td>
               <td><code>{cat.slug}</code></td>
+              <td>
+                <span className="badge bg-info text-dark">{cat.posts_count ?? 0}</span>
+              </td>
+              <td>{new Date(cat.created_at).toLocaleDateString()}</td>
               <td className="text-end">
                 <button
                   className="btn btn-sm btn-outline-secondary me-1"

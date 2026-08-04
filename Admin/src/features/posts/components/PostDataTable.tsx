@@ -44,6 +44,7 @@ export default function PostDataTable({
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
+            <th>Views</th>
             <th>Status</th>
             <th>Created</th>
             <th className="text-end">Actions</th>
@@ -55,6 +56,10 @@ export default function PostDataTable({
               <td className="fw-semibold">{post.title}</td>
               <td>{post.user?.name}</td>
               <td>{post.category?.name ?? '—'}</td>
+              <td>
+                <i className="fas fa-eye text-muted me-1"></i>
+                {post.views?.toLocaleString() ?? 0}
+              </td>
               <td>
                 {post.is_published ? (
                   <span className="badge bg-success">Published</span>

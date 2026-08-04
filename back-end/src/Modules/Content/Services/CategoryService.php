@@ -5,6 +5,7 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Category;
 use Modules\Content\Actions\GenerateSlugAction;
 use Modules\Content\DTOs\CategoryCreateDTO;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CategoryService
 {
@@ -12,9 +13,11 @@ class CategoryService
         private GenerateSlugAction $generateSlugAction
     ) {}
 
-    public function getAll(int $perPage = 15, int $page = 1): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        return Category::orderBy('name')->paginate  ($perPage, ['*'], 'page', $page);
+        return Category::withCount('posts')
+            ->orderBy('name')
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(CategoryCreateDTO $dto): Category

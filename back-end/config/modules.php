@@ -4,5 +4,6 @@ return [
     'enabled' => [
         \Modules\Content\ContentServiceProvider::class,
         \Modules\Identity\IdentityServiceProvider::class,
+        \Modules\Administration\AdministrationServiceProvider::class,
     ],
 ];

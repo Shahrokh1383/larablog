@@ -4,8 +4,6 @@ namespace Modules\Content\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Content\Http\Resources\CategoryResource;
-use Modules\Content\Http\Resources\TagResource;
 
 class PostResource extends JsonResource
 {
@@ -21,6 +19,7 @@ class PostResource extends JsonResource
             'is_published'   => $this->is_published,
             'published_at'   => $this->published_at,
             'reading_time'   => $this->reading_time,
+            'views'          => (int) $this->views,
             'user'           => [
                 'id'   => $this->user->id,
                 'name' => $this->user->name,

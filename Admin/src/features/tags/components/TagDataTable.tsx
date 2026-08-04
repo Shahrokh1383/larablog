@@ -28,6 +28,8 @@ export default function TagDataTable({ tags, isLoading, isError, onEdit, onDelet
           <tr>
             <th>Name</th>
             <th>Slug</th>
+            <th>Posts</th>
+            <th>Created</th>
             <th className="text-end">Actions</th>
           </tr>
         </thead>
@@ -36,6 +38,10 @@ export default function TagDataTable({ tags, isLoading, isError, onEdit, onDelet
             <tr key={tag.id}>
               <td><span className="badge bg-secondary">{tag.name}</span></td>
               <td><code>{tag.slug}</code></td>
+              <td>
+                <span className="badge bg-info text-dark">{tag.posts_count ?? 0}</span>
+              </td>
+              <td>{new Date(tag.created_at).toLocaleDateString()}</td>
               <td className="text-end">
                 <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => onEdit(tag)}>
                   <i className="fas fa-pen"></i>

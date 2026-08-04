@@ -5,7 +5,7 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Tag;
 use Modules\Content\Actions\GenerateSlugAction;
 use Modules\Content\DTOs\TagCreateDTO;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class TagService
 {
@@ -13,9 +13,11 @@ class TagService
         private GenerateSlugAction $generateSlugAction
     ) {}
 
-    public function getAll(int $perPage = 15, int $page = 1): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        return Tag::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+        return Tag::withCount('posts')
+            ->orderBy('name')
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(TagCreateDTO $dto): Tag

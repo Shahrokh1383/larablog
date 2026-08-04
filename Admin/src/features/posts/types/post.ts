@@ -7,12 +7,14 @@ export interface PostCategory {
   id: string;
   name: string;
   slug: string;
+  posts_count?: number;
 }
 
 export interface PostTag {
   id: string;
   name: string;
   slug: string;
+  posts_count?: number;
 }
 
 export interface Post {
@@ -25,6 +27,7 @@ export interface Post {
   is_published: boolean;
   published_at: string | null;
   reading_time: number | null;
+  views: number;
   user: PostUser;
   category: PostCategory | null;
   tags: PostTag[];
