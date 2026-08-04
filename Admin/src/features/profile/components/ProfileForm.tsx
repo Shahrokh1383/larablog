@@ -9,14 +9,14 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ initialData, isSubmitting, onSubmit }: ProfileFormProps) {
-  const [name, setName] = useState(initialData.name);
+  const [name, setName] = useState(initialData.name || '');
   const [bio, setBio] = useState(initialData.bio || '');
   const [expertise, setExpertise] = useState(initialData.expertise || '');
   const [years, setYears] = useState(initialData.years_of_experience?.toString() || '');
   const [socialLinks, setSocialLinks] = useState<SocialLinks>(initialData.social_links || {});
 
   useEffect(() => {
-    setName(initialData.name);
+    setName(initialData.name || '');
     setBio(initialData.bio || '');
     setExpertise(initialData.expertise || '');
     setYears(initialData.years_of_experience?.toString() || '');
