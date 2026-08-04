@@ -38,6 +38,9 @@ class PostPublicService
             return null;
         }
 
+        // Increment post views atomically
+        $post->increment('views');
+
         $this->mapAuthorsToPosts([$post]);
 
         return $post;

@@ -32,6 +32,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
         </div>
         <div className="post-meta-details">
           <span><i className="fa-sharp fa-solid fa-clock"></i> {post.reading_time} min read</span>
+          <span><i className="fa-sharp fa-solid fa-eye"></i> {post.views} Views</span>
           <span><i className="fa-sharp fa-solid fa-comment"></i> 3 Comments</span>
         </div>
       </div>

@@ -17,6 +17,7 @@ class PostPublicResource extends JsonResource
             'excerpt'        => $this->excerpt,
             'featured_image' => $this->featured_image,
             'reading_time'   => $this->reading_time,
+            'views'          => $this->views,
             'published_at'   => $this->published_at,
             'category'       => new CategoryResource($this->whenLoaded('category')),
             'tags'           => TagResource::collection($this->whenLoaded('tags')),

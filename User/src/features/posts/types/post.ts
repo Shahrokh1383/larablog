@@ -26,6 +26,7 @@ export interface Post {
   excerpt: string;
   featured_image: string;
   reading_time: number;
+  views: number;
   published_at: string | null;
   created_at: string;
   updated_at: string;

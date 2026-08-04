@@ -3,32 +3,6 @@
 
 
 
-## Phase 3: Public Read APIs & Next.js Public Site
-**Goal:** Expose public APIs for the Next.js frontend to render SSR/SSG pages.
-
-### Backend (Cross-Module Synchronous Reads)
-1. **Content Module:** 
-   - Add public endpoints to `Routes/api.php`.
-   - `PostService` gets `getHomeData()`, `getBySlug()`, `getRelatedPosts()`.
-   - **Cross-Module Communication:** To get Author data (owned by `Identity`), `Content\Services\PostService` must inject `Identity\Services\Contracts\AuthorServiceInterface` and work with `AuthorDTO`. **Never import `Identity\Models\User` in `Content`.**
-2. **Identity Module:**
-   - Add public endpoints: `/api/authors`, `/api/authors/{username}`.
-   - `AuthorService` implements `AuthorServiceInterface` and returns `AuthorDTO`. The `AuthorController` wraps it into `AuthorResource`.
-
-### Frontend - Public Next.js
-1. **Features:** Create `features/posts/`, `features/authors/`, `features/categories/`, `features/tags/`.
-2. **Hooks (React Query):**
-   - `useHomeData()`, `usePost(slug)`, `useAuthor(username)`, `useCategories(filters)`.
-3. **Components:** Pure presentational
-4. **Pages (App Router - Thin Orchestrators):**
-   - `app/(public)/page.tsx` (Home)
-   - `app/(public)/post/[slug]/page.tsx`. *Note: `generateMetadata` must be exported from a Server Component; the page may delegate to a Client Component for interactive parts.*
-   - `app/(public)/category/[slug]/page.tsx`
-   - `app/(public)/author/[username]/page.tsx`
-5. **SEO:** Implement `shared/lib/seo.ts` and JSON-LD for posts.
-
----
-
 ## Phase 4: Engagement Module & Realtime (Comments & Reverb)
 **Goal:** Implement the `Engagement` Bounded Context with realtime comments and notifications.
 
