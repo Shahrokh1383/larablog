@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Identity\Http\Controllers\Api\AuthController;
 use Modules\Identity\Http\Controllers\Api\OAuthController;
-use Modules\Identity\Http\Controllers\Api\AuthorController;
 use Modules\Identity\Http\Controllers\Api\PasswordResetController;
 
 // Public authentication
@@ -18,10 +17,6 @@ Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
 // OAuth
 Route::get('oauth/{provider}/redirect', [OAuthController::class, 'redirect']);
 Route::get('oauth/{provider}/callback', [OAuthController::class, 'callback']);
-
-// Public author profiles
-Route::get('authors', [AuthorController::class, 'index']);
-Route::get('authors/{username}', [AuthorController::class, 'show']);
 
 Route::post('forgot-password', [PasswordResetController::class, 'forgot']);
 Route::post('reset-password', [PasswordResetController::class, 'reset']);

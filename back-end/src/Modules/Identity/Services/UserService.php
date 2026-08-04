@@ -29,4 +29,9 @@ class UserService
         $user->update(['password' => $password]);
         return $user;
     }
+
+    public function updateName(string $userId, string $name): void
+    {
+        User::where('id', $userId)->update(['name' => $name]);
+    }
 }
