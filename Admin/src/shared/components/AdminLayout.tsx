@@ -52,14 +52,26 @@ export default function AdminLayout() {
 
         <div className="mt-auto border-top pt-3">
           <div className="d-flex align-items-center mb-3">
-            <div 
-              className="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" 
-              style={{ width: 40, height: 40, cursor: 'pointer' }}
-              onClick={handleProfileClick}
-              title="View Profile"
-            >
-              {user?.name.charAt(0).toUpperCase()}
-            </div>
+            {/* Conditionally render Avatar Image or Text Initial */}
+            {user?.avatar ? (
+              <img 
+                src={user.avatar} 
+                alt={user.name}
+                className="rounded-circle me-2" 
+                style={{ width: 40, height: 40, objectFit: 'cover', cursor: 'pointer' }}
+                onClick={handleProfileClick}
+                title="View Profile"
+              />
+            ) : (
+              <div 
+                className="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2" 
+                style={{ width: 40, height: 40, cursor: 'pointer' }}
+                onClick={handleProfileClick}
+                title="View Profile"
+              >
+                {user?.name.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="d-flex flex-column flex-grow-1">
               <div className="text-white small fw-bold">{user?.name}</div>
               <div className="d-flex gap-1 mt-1 flex-wrap">

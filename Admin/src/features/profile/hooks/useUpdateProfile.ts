@@ -9,8 +9,11 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (payload: UpdateProfilePayload) => profileApi.update(payload),
     onSuccess: (updatedProfile) => {
-      // Invalidate and update cache immediately
+      // 1. Update the profile cache immediately
       queryClient.setQueryData(profileKeys.detail(), updatedProfile);
+      
+      // 2. Synchronize the global Auth state so the AdminLayout updates instantly
+      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
     },
     onError: (error: any) => {
       // Handle backend validation errors (Article VIII compliance)
