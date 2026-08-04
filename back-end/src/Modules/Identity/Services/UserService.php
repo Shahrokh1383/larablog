@@ -3,9 +3,10 @@
 namespace Modules\Identity\Services;
 
 use Modules\Identity\Models\User;
+use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class UserService
+class UserService implements UpdatesUserBasicInfo
 {
     public function getAllUsers(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {

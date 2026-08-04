@@ -38,7 +38,6 @@
     "Admin\\public",
     "back-end\\routes",
     "Admin\\src\\features\\auth",
-    "Admin\\src\\shared",
     "back-end\\config\\cache.php",
     "back-end\\config\\cors.php",
     "back-end\\config\\database.php",
@@ -59,15 +58,17 @@
     "back-end\\database\\factories",
     "Admin\\src\\app",
     "Admin\\src\\features\\users",
-    "Admin\\src\\features\\tags",
-    "Admin\\src\\features\\posts",
-    "Admin\\src\\features\\categories",
     "back-end\\src\\Modules\\Administration",
-    "back-end\\src\\Modules\\Profile",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\src\\Shared"
+    "back-end\\src\\Shared",
+    "Admin\\src\\features\\dashboard",
+    "Admin\\src\\features\\tags",
+    "User\\src\\shared",
+    "User\\src\\providers",
+    "User\\src\\styles",
+    "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-04T18:12:14.333Z",
+  "lastModified": "2026-08-04T18:42:42.466Z",
   "version": 1
 }

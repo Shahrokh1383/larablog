@@ -7,9 +7,10 @@ use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
 use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Models\Profile;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
+use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Shared\Models\User;
 
-class ProfileService implements ProfileServiceInterface
+class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 {
     public function __construct(
         private UpdatesUserBasicInfo $identityService

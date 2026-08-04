@@ -3,8 +3,8 @@
 namespace Modules\Identity;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Identity\Services\Contracts\AuthorServiceInterface;
-use Modules\Identity\Services\AuthorService;
+use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
+use Modules\Identity\Services\UserService;
 use Illuminate\Support\Facades\Gate;
 use Modules\Identity\Models\User;
 use Modules\Identity\Policies\UserPolicy;
@@ -13,7 +13,7 @@ class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(AuthorServiceInterface::class, AuthorService::class);
+        $this->app->bind(UpdatesUserBasicInfo::class, UserService::class);
     }
 
     public function boot(): void
