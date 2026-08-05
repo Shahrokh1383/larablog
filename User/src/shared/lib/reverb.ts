@@ -1,7 +1,7 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import { env } from './env';
-import httpClient from '@/shared/api/httpClient'; 
+import { sanctumClient } from '@/shared/api/httpClient'; 
 
 declare global {
   interface Window {
@@ -21,14 +21,14 @@ if (typeof window !== 'undefined') {
     key: env.reverbAppKey,
     wsHost: env.reverbHost || 'localhost',
     wsPort: port,
-    wsPath: '/app',
+    wsPath: '/app', 
     forceTLS: false,
     enabledTransports: ['ws', 'wss'],
     disableStats: true,
     authorizer: (channel) => {
       return {
         authorize: (socketId, callback) => {
-          httpClient.post('/broadcasting/auth', {
+          sanctumClient.post('/broadcasting/auth', {
             socket_id: socketId,
             channel_name: channel.name,
           })

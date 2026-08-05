@@ -11,6 +11,10 @@ const nextConfig = {
         source: '/sanctum/:path*',
         destination: 'http://localhost:8000/sanctum/:path*',
       },
+      {
+        source: '/broadcasting/:path*',
+        destination: 'http://localhost:8000/broadcasting/:path*',
+      },
     ];
   },
 };
