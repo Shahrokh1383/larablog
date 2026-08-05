@@ -4,9 +4,12 @@ namespace Modules\Content\Services\Contracts;
 
 interface ContentStatsContract
 {
-    /**
-     * Get aggregated content statistics for admin dashboard.
-     * Returns raw arrays to avoid coupling between modules.
-     */
     public function getDashboardStats(): array;
+    
+    /**
+     * Get total posts count and total views grouped by user_id.
+     * 
+     * @return array<int, array{posts_count: int, total_views: int}>
+     */
+    public function getAuthorStats(): array;
 }

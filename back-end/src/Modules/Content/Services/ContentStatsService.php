@@ -27,4 +27,14 @@ class ContentStatsService implements ContentStatsContract
                 ->toArray(),
         ];
     }
+
+    public function getAuthorStats(): array
+    {
+        return Post::selectRaw('user_id, COUNT(*) as posts_count, SUM(views) as total_views')
+            ->whereNotNull('user_id')
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id')
+            ->toArray();
+    }
 }

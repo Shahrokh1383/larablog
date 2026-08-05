@@ -8,6 +8,7 @@ use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Models\Profile;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Shared\Models\User;
 
 class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
@@ -73,5 +74,19 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
                 ]
             ];
         })->all();
+    }
+
+    public function getAllPublicProfiles(?string $search = null, int $perPage = 12): LengthAwarePaginator
+    {
+        return Profile::with('user')
+            ->whereNotNull('bio')
+            ->when($search, function ($query) use ($search) {
+                $query->where('expertise', 'like', "%{$search}%")
+                      ->orWhereHas('user', function ($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('username', 'like', "%{$search}%");
+                      });
+            })
+            ->paginate($perPage);
     }
 }

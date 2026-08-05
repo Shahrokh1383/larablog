@@ -65,12 +65,10 @@
     "Admin\\src\\features\\tags",
     "User\\src\\shared",
     "User\\src\\providers",
-    "User\\src\\styles",
     "back-end\\database",
-    "User\\src\\features\\categories",
     "User\\src\\features\\tags"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-04T20:10:55.970Z",
+  "lastModified": "2026-08-05T14:50:03.745Z",
   "version": 1
 }
