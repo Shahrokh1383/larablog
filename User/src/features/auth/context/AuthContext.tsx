@@ -20,18 +20,22 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
+  const isClient = typeof window !== 'undefined';
 
   const {
     data: user,
-    isLoading,
+    isLoading: isQueryLoading,
     isError,
   } = useQuery({
     queryKey: ['auth', 'user'],
     queryFn: authApi.getUser,
     retry: false,
     staleTime: 5 * 60 * 1000,
-    enabled: true,
+    enabled: isClient,
   });
+
+  // FIX: Force isLoading to true during SSR and initial client render to prevent hydration mismatch
+  const isLoading = !isClient || isQueryLoading;
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,

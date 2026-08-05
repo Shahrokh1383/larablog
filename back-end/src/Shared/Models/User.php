@@ -5,11 +5,12 @@ namespace Shared\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Shared\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Database\Factories\Modules\Identity\UserFactory;
 
 class User extends Authenticatable
 {
-    use HasUuid, HasFactory;
+    use HasUuid, HasFactory, Notifiable;
 
     protected static function newFactory(): UserFactory
     {

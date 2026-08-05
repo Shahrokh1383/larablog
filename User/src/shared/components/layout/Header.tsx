@@ -102,9 +102,9 @@ export default function Header() {
                          <p className="text-muted text-center small mb-0">No new notifications.</p>
                       ) : (
                         notifications.map((notif, idx) => (
-                          <a key={idx} href={`/post/${notif.post_id}`}  className="dropdown-item small p-2 border-bottom" onClick={() => setIsNotifOpen(false)}>
+                          <Link key={idx} href={`/post/${notif.post_id}`} className="dropdown-item small p-2 border-bottom" onClick={() => setIsNotifOpen(false)}>
                             {notif.message}
-                          </a>
+                          </Link>
                         ))
                       )}
                     </div>

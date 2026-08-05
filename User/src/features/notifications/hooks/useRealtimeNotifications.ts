@@ -17,7 +17,7 @@ export function useRealtimeNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!echo || !isAuthenticated || !user) return;
 
     const channel = echo.private(`users.${user.id}`);
 
@@ -27,7 +27,9 @@ export function useRealtimeNotifications() {
     });
 
     return () => {
-      echo.leaveChannel(`users.${user.id}`);
+      if (echo) {
+        echo.leaveChannel(`users.${user.id}`);
+      }
     };
   }, [isAuthenticated, user]);
 

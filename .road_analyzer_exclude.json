@@ -19,12 +19,8 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "User\\tsconfig.json",
     "User\\README.md",
     "User\\package-lock.json",
-    "User\\next.config.mjs",
-    "User\\next-env.d.ts",
-    "User\\jsconfig.json",
     "User\\eslint.config.mjs",
     "roadmap.txt",
     "Admin\\vite.config.ts",
@@ -66,9 +62,10 @@
     "back-end\\src\\Modules\\Profile",
     "User\\src\\features\\tags",
     "User\\src\\features\\authors",
-    "User\\package.json"
+    "back-end\\database",
+    "User\\src\\styles"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-05T18:58:05.335Z",
+  "lastModified": "2026-08-05T21:17:37.466Z",
   "version": 1
 }
