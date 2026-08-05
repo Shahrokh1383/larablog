@@ -3,12 +3,15 @@
 namespace Modules\Engagement\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\Services\CommentService;
 
-class CommentController
+class CommentController extends Controller
 {
-    public function __construct(private CommentService $commentService) {}
+    public function __construct(
+        private CommentService $commentService
+    ) {}
 
     public function unreadCount(): JsonResponse
     {
@@ -25,6 +28,7 @@ class CommentController
     public function destroy(Comment $comment): JsonResponse
     {
         $this->commentService->delete($comment);
-        return response()->noContent();
+        
+        return response()->json(null, 204);
     }
 }

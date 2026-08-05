@@ -6,6 +6,7 @@ use Modules\Content\Models\Post;
 use Modules\Content\Models\Category;
 use Modules\Content\Models\Tag;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
+use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -13,7 +14,7 @@ class PostPublicService
 {
     public function __construct(
         private FetchesPublicProfiles $profileService,
-        private \Modules\Engagement\Services\Contracts\CommentServiceInterface $commentService,
+        private CommentServiceInterface $commentService,
     ) {}
 
     public function getHomeData(int $perPage = 10): LengthAwarePaginator
@@ -24,6 +25,7 @@ class PostPublicService
             ->paginate($perPage);
 
         $this->mapAuthorsToPosts($posts);
+        $this->mapCommentsToPosts($posts);
 
         return $posts;
     }
@@ -39,10 +41,10 @@ class PostPublicService
             return null;
         }
 
-        // Increment post views atomically
         $post->increment('views');
 
         $this->mapAuthorsToPosts([$post]);
+        $this->mapCommentsToPosts([$post]);
 
         return $post;
     }
@@ -63,6 +65,7 @@ class PostPublicService
             ->get();
 
         $this->mapAuthorsToPosts($related);
+        $this->mapCommentsToPosts($related);
 
         return $related->all();
     }
@@ -83,6 +86,7 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
+        $this->mapCommentsToPosts($posts);
 
         return $posts;
     }
@@ -103,46 +107,9 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
+        $this->mapCommentsToPosts($posts);
 
         return $posts;
-    }
-
-    /**
-     * Map author data to posts.
-     *
-     * @param LengthAwarePaginator|Collection|array $posts
-     * @return void
-     */
-    private function mapAuthorsToPosts(LengthAwarePaginator|Collection|array $posts): void
-    {
-        // Use items() for Paginator (interface compatible), wrap the rest in a collection
-        $postsCollection = $posts instanceof LengthAwarePaginator 
-            ? collect($posts->items()) 
-            : collect($posts);
-
-        $authorIds = $postsCollection->pluck('user_id')->unique()->filter()->values()->toArray();
-        if (empty($authorIds)) return;
-
-        $profilesMap = $this->profileService->getPublicProfilesMap($authorIds);
-        $postsCollection->each(function (Post $post) use ($profilesMap) {
-            $post->author = $profilesMap[$post->user_id] ?? null;
-        });
-    }
-
-    private function mapCommentsToPosts(\Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection|array $posts): void
-    {
-        $postsCollection = $posts instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator 
-            ? collect($posts->items()) 
-            : collect($posts);
-
-        $postIds = $postsCollection->pluck('id')->toArray();
-        if (empty($postIds)) return;
-
-        $counts = $this->commentService->getCommentCountsForPosts($postIds);
-    
-        $postsCollection->each(function ($post) use ($counts) {
-            $post->comments_count = $counts[$post->id] ?? 0;
-        });
     }
 
     public function getPostsByAuthor(string $username, ?string $sort = 'newest', int $perPage = 6): LengthAwarePaginator
@@ -161,7 +128,39 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
+        $this->mapCommentsToPosts($posts);
 
         return $posts;
+    }
+
+    private function mapAuthorsToPosts(LengthAwarePaginator|Collection|array $posts): void
+    {
+        $postsCollection = $posts instanceof LengthAwarePaginator 
+            ? collect($posts->items()) 
+            : collect($posts);
+
+        $authorIds = $postsCollection->pluck('user_id')->unique()->filter()->values()->toArray();
+        if (empty($authorIds)) return;
+
+        $profilesMap = $this->profileService->getPublicProfilesMap($authorIds);
+        $postsCollection->each(function (Post $post) use ($profilesMap) {
+            $post->author = $profilesMap[$post->user_id] ?? null;
+        });
+    }
+
+    private function mapCommentsToPosts(LengthAwarePaginator|Collection|array $posts): void
+    {
+        $postsCollection = $posts instanceof LengthAwarePaginator 
+            ? collect($posts->items()) 
+            : collect($posts);
+
+        $postIds = $postsCollection->pluck('id')->toArray();
+        if (empty($postIds)) return;
+
+        $counts = $this->commentService->getCommentCountsForPosts($postIds);
+    
+        $postsCollection->each(function (Post $post) use ($counts) {
+            $post->comments_count = $counts[$post->id] ?? 0;
+        });
     }
 }
