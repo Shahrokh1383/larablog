@@ -66,9 +66,9 @@
     "User\\src\\shared",
     "User\\src\\providers",
     "back-end\\database",
-    "User\\src\\features\\tags"
+    "User\\src\\features\\categories"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-05T14:50:03.745Z",
+  "lastModified": "2026-08-05T15:58:36.426Z",
   "version": 1
 }

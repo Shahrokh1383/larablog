@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Content\Services\Contracts\ContentStatsContract;
+use Modules\Content\Services\PostPublicService;
+use Modules\Content\Http\Resources\PostPublicResource;
 use Modules\Profile\Http\Resources\AuthorResource;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
@@ -25,7 +27,6 @@ class PublicProfileController extends Controller
 
         $stats = $contentStatsService->getAuthorStats();
 
-        // Use 'through()' to transform the paginated items cleanly
         $profiles->through(function ($profile) use ($stats) {
             $userId = $profile->user_id;
             $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
@@ -36,7 +37,7 @@ class PublicProfileController extends Controller
         return AuthorResource::collection($profiles)->response();
     }
 
-    public function show(string $username): JsonResponse
+    public function show(string $username, ContentStatsContract $contentStatsService): JsonResponse
     {
         $profile = $this->profileService->getPublicProfileByUsername($username);
         
@@ -44,6 +45,23 @@ class PublicProfileController extends Controller
             abort(404, 'Profile not found');
         }
 
+        // Append stats for the hero section
+        $stats = $contentStatsService->getAuthorStats();
+        $userId = $profile->user_id;
+        $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
+        $profile->total_views = $stats[$userId]['total_views'] ?? 0;
+
         return (new ProfileResource($profile))->response();
+    }
+
+    public function posts(string $username, Request $request, PostPublicService $postPublicService): JsonResponse
+    {
+        $posts = $postPublicService->getPostsByAuthor(
+            username: $username,
+            sort: $request->input('sort', 'newest'),
+            perPage: $request->integer('per_page', 6)
+        );
+
+        return PostPublicResource::collection($posts)->response();
     }
 }

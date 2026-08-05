@@ -19,6 +19,8 @@ class ProfileResource extends JsonResource
             'expertise'           => $this->expertise,
             'years_of_experience' => $this->years_of_experience,
             'social_links'        => $this->social_links ?? [],
+            'posts_count'         => $this->posts_count ?? 0,
+            'total_views'         => $this->total_views ?? 0,
             'created_at'          => $this->created_at,
             'updated_at'          => $this->updated_at,
         ];

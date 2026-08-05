@@ -127,4 +127,24 @@ class PostPublicService
             $post->author = $profilesMap[$post->user_id] ?? null;
         });
     }
+
+    public function getPostsByAuthor(string $username, ?string $sort = 'newest', int $perPage = 6): LengthAwarePaginator
+    {
+        $user = \Shared\Models\User::where('username', $username)->firstOrFail();
+
+        $query = Post::with(['category', 'tags'])
+            ->published()
+            ->where('user_id', $user->id);
+
+        match ($sort) {
+            'oldest'       => $query->oldest('updated_at'),
+            'most_popular' => $query->popular(),
+            default        => $query->latest('updated_at'),
+        };
+
+        $posts = $query->paginate($perPage);
+        $this->mapAuthorsToPosts($posts);
+
+        return $posts;
+    }
 }

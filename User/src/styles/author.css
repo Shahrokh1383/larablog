@@ -1,0 +1,234 @@
+/* ============================================================
+   LARABLOG - author.css
+   Styles for the Single Author Profile Page
+   ============================================================ */
+
+/* ==================== AUTHOR PROFILE HERO ==================== */
+.author-profile-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--clr-bg-elevated), var(--clr-bg-alt));
+    padding: var(--spacing-3xl) 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--clr-border-light);
+}
+
+.author-profile-hero .hero-bg-shapes {
+    z-index: 0;
+}
+
+.author-profile-content {
+    position: relative;
+    z-index: 1;
+}
+
+.back-to-authors {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--clr-text-secondary);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    margin-bottom: var(--spacing-xl);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.back-to-authors:hover {
+    color: var(--clr-primary);
+}
+
+.author-profile-card {
+    display: flex;
+    gap: var(--spacing-2xl);
+    align-items: center;
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.author-profile-avatar img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--clr-primary-light);
+}
+
+.author-profile-info {
+    flex: 1;
+}
+
+.author-profile-name {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-xs);
+    color: var(--clr-text);
+}
+
+.author-profile-role {
+    display: inline-block;
+    background: var(--clr-primary-light);
+    color: var(--clr-primary);
+    padding: var(--spacing-xs) var(--spacing-lg);
+    border-radius: var(--radius-full);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+}
+
+.author-profile-bio {
+    font-size: var(--fs-base);
+    color: var(--clr-text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-xl);
+    max-width: 600px;
+}
+
+.author-profile-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-stat-number {
+    font-size: var(--fs-2xl);
+    font-weight: 800;
+    color: var(--clr-primary);
+}
+
+.profile-stat-label {
+    font-size: var(--fs-xs);
+    color: var(--clr-text-muted);
+    margin-top: 4px;
+}
+
+.author-profile-social {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.author-profile-social a {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--clr-surface);
+    color: var(--clr-text-secondary);
+    border-radius: 50%;
+    font-size: var(--fs-lg);
+    transition: all var(--transition-fast);
+}
+
+.author-profile-social a:hover {
+    background: var(--clr-primary);
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+/* ==================== AUTHOR ARTICLES ==================== */
+.author-articles {
+    background: var(--clr-bg);
+}
+
+/* ==================== SIDEBAR ==================== */
+.author-sidebar-card {
+    text-align: center;
+}
+
+.author-sidebar-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: var(--spacing-md);
+    border: 3px solid var(--clr-primary-light);
+}
+
+.author-sidebar-name {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--spacing-xs);
+}
+
+.author-sidebar-bio {
+    font-size: var(--fs-sm);
+    color: var(--clr-text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.popular-tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.popular-tag-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    background: var(--clr-surface);
+    color: var(--clr-text);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.popular-tag-badge:hover {
+    background: var(--clr-primary);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.newsletter-sidebar-form .form-control {
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 991.98px) {
+    .author-profile-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .author-profile-avatar img {
+        width: 140px;
+        height: 140px;
+    }
+    .author-profile-bio {
+        max-width: 100%;
+    }
+    .author-profile-stats {
+        justify-content: center;
+    }
+    .author-profile-social {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .author-profile-name {
+        font-size: var(--fs-3xl);
+    }
+    .author-profile-card {
+        padding: var(--spacing-xl);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .author-profile-name {
+        font-size: var(--fs-2xl);
+    }
+    .author-profile-stats {
+        gap: var(--spacing-md);
+    }
+}

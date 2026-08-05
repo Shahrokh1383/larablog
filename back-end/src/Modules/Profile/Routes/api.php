@@ -6,6 +6,8 @@ use Modules\Profile\Http\Controllers\Api\PublicProfileController;
 
 // Public Routes
 Route::get('authors', [PublicProfileController::class, 'index']);
+Route::get('authors/{username}', [PublicProfileController::class, 'show']);
+Route::get('authors/{username}/posts', [PublicProfileController::class, 'posts']);
 Route::get('profiles/{username}', [PublicProfileController::class, 'show']);
 
 // Authenticated Routes
