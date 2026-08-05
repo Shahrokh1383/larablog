@@ -3,6 +3,7 @@
 namespace Modules\Engagement\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCommentRequest extends FormRequest
 {
@@ -13,22 +14,23 @@ class StoreCommentRequest extends FormRequest
 
     public function rules(): array
     {
-        $isAuthenticated = $this->user() !== null;
-
-        $rules = [
+        return [
             'post_id'   => ['required', 'uuid', 'exists:content_posts,id'],
             'parent_id' => ['nullable', 'uuid', 'exists:engagement_comments,id'],
             'body'      => ['required', 'string', 'max:2000'],
+            
+            'name'      => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf(fn() => !$this->user()),
+            ],
+            'email'     => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::requiredIf(fn() => !$this->user()),
+            ],
         ];
-
-        if ($isAuthenticated) {
-            $rules['name']  = ['prohibited'];
-            $rules['email'] = ['prohibited'];
-        } else {
-            $rules['name']  = ['required', 'string', 'max:255'];
-            $rules['email'] = ['required', 'email', 'max:255'];
-        }
-
-        return $rules;
     }
 }
