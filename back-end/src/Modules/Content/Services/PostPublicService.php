@@ -13,6 +13,7 @@ class PostPublicService
 {
     public function __construct(
         private FetchesPublicProfiles $profileService,
+        private \Modules\Engagement\Services\Contracts\CommentServiceInterface $commentService,
     ) {}
 
     public function getHomeData(int $perPage = 10): LengthAwarePaginator
@@ -125,6 +126,22 @@ class PostPublicService
         $profilesMap = $this->profileService->getPublicProfilesMap($authorIds);
         $postsCollection->each(function (Post $post) use ($profilesMap) {
             $post->author = $profilesMap[$post->user_id] ?? null;
+        });
+    }
+
+    private function mapCommentsToPosts(\Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection|array $posts): void
+    {
+        $postsCollection = $posts instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator 
+            ? collect($posts->items()) 
+            : collect($posts);
+
+        $postIds = $postsCollection->pluck('id')->toArray();
+        if (empty($postIds)) return;
+
+        $counts = $this->commentService->getCommentCountsForPosts($postIds);
+    
+        $postsCollection->each(function ($post) use ($counts) {
+            $post->comments_count = $counts[$post->id] ?? 0;
         });
     }
 

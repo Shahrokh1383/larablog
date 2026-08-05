@@ -20,6 +20,7 @@ class PostResource extends JsonResource
             'published_at'   => $this->published_at,
             'reading_time'   => $this->reading_time,
             'views'          => (int) $this->views,
+            'comments_count' => $this->comments_count ?? 0,
             'user'           => [
                 'id'   => $this->user->id,
                 'name' => $this->user->name,

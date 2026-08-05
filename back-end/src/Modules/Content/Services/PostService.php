@@ -18,6 +18,7 @@ class PostService
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
         private AssignTagsToPostAction $assignTagsToPostAction,
+        private \Modules\Engagement\Services\Contracts\CommentServiceInterface $commentService,
     ) {}
 
     public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1): LengthAwarePaginator

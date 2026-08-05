@@ -11,12 +11,16 @@ class User extends Authenticatable
 {
     use HasUuid, HasFactory;
 
-    /**
-     * Use the Identity module factory (produces Modules\Identity\Models\User)
-     * which extends this Shared user. This keeps boundaries clean.
-     */
     protected static function newFactory(): UserFactory
     {
         return UserFactory::new();
+    }
+
+    /**
+     * Define the custom broadcast channel name for notifications.
+     */
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'users.' . $this->id;
     }
 }

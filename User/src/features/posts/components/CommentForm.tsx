@@ -59,10 +59,6 @@ export default function CommentForm({ replyTo, onClearReply }: CommentFormProps)
             <div className="invalid-feedback">Please enter a valid email address.</div>
           </div>
           <div className="col-12">
-            <label htmlFor="commentWebsite" className="form-label">Website</label>
-            <input type="url" className="form-control" id="commentWebsite" placeholder="https://example.com" />
-          </div>
-          <div className="col-12">
             <label htmlFor="commentText" className="form-label">Comment *</label>
             <textarea 
               className="form-control" 

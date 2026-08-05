@@ -6,5 +6,6 @@ return [
         \Modules\Identity\IdentityServiceProvider::class,
         \Modules\Administration\AdministrationServiceProvider::class,
         \Modules\Profile\ProfileServiceProvider::class,
+        \Modules\Engagement\EngagementServiceProvider::class,
     ],
 ];

@@ -12,12 +12,14 @@ use Modules\Content\Policies\CategoryPolicy;
 use Modules\Content\Policies\TagPolicy;
 use Modules\Content\Services\ContentStatsService;
 use Modules\Content\Services\Contracts\ContentStatsContract;
+use Modules\Content\Services\PostInfoService;
 
 class ContentServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->app->bind(ContentStatsContract::class, ContentStatsService::class);
+        $this->app->bind(\Modules\Content\Services\Contracts\PostInfoContract::class, PostInfoService::class);
     }
 
     public function boot(): void
