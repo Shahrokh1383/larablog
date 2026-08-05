@@ -25,8 +25,8 @@ class PublicProfileController extends Controller
 
         $stats = $contentStatsService->getAuthorStats();
 
-        // Merge stats into the paginated collection
-        $profiles->getCollection()->transform(function ($profile) use ($stats) {
+        // Use 'through()' to transform the paginated items cleanly
+        $profiles->through(function ($profile) use ($stats) {
             $userId = $profile->user_id;
             $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
             $profile->total_views = $stats[$userId]['total_views'] ?? 0;
