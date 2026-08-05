@@ -13,9 +13,19 @@ class CommentService implements CommentServiceInterface
     public function create(CommentCreateDTO $dto): Comment
     {
         return DB::transaction(function () use ($dto) {
+            $parentId = $dto->parentId;
+
+            // Ensure replies are always 1-level deep by attaching replies-to-replies to the root comment.
+            if ($parentId) {
+                $parentComment = Comment::find($parentId);
+                if ($parentComment && $parentComment->parent_id) {
+                    $parentId = $parentComment->parent_id;
+                }
+            }
+
             $comment = Comment::create([
                 'post_id'     => $dto->postId,
-                'parent_id'   => $dto->parentId,
+                'parent_id'   => $parentId,
                 'user_id'     => $dto->userId,
                 'name'        => $dto->name,
                 'email'       => $dto->email,

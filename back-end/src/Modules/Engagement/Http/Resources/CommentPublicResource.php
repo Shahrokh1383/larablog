@@ -20,7 +20,7 @@ class CommentPublicResource extends JsonResource
             ] : [
                 'name' => $this->name,
             ],
-            'replies'    => CommentPublicResource::collection($this->whenLoaded('replies_tree')),
+            'replies'    => CommentPublicResource::collection($this->whenLoaded('replies')),
             'created_at' => $this->created_at,
         ];
     }

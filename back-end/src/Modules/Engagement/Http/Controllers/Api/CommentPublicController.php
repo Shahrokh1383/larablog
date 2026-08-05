@@ -3,7 +3,6 @@
 namespace Modules\Engagement\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Modules\Engagement\Http\Requests\StoreCommentRequest;
 use Modules\Engagement\Http\Requests\IndexCommentRequest;
 use Modules\Engagement\Http\Resources\CommentPublicResource;
@@ -46,7 +45,7 @@ class CommentPublicController
             userId: $user?->id,
             name: $user ? $user->name : $request->validated('name'),
             email: $user ? $user->email : $request->validated('email'),
-            isApproved: $user !== null, // Auto-approve for authenticated users
+            isApproved: true,
         );
 
         $comment = $this->commentService->create($dto);
