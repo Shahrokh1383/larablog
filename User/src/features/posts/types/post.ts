@@ -41,4 +41,5 @@ export interface Post {
   category: Category;
   tags: Tag[];
   author: Author;
+  comments_count?: number;
 }

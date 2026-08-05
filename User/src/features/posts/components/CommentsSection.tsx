@@ -1,37 +1,68 @@
 'use client';
 
 import { useState } from 'react';
+import { useComments } from '@/features/comments/hooks/useComments';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 
-const staticComments = [
-  { author: 'Jane Cooper', date: 'March 6, 2024 at 10:24 am', text: 'Excellent article! The layer separation really makes sense. I\'ve been struggling with fat controllers, and this approach will definitely help me structure my next project.' },
-  { author: 'Robert Fox', date: 'March 7, 2024 at 3:15 pm', text: 'One question: how do you handle Eloquent relationships inside the domain layer? I\'d love to see a follow-up on that.' },
-  { author: 'Leslie Alexander', date: 'March 8, 2024 at 9:02 am', text: 'Thanks for this guide! I implemented the domain layer in my app and testing has become so much easier. The repository pattern is a game changer.' },
-];
+interface CommentsSectionProps {
+  postId: string;
+}
 
-export default function CommentsSection() {
-  const [replyTo, setReplyTo] = useState<string | null>(null);
+export default function CommentsSection({ postId }: CommentsSectionProps) {
+  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
 
-  const handleReply = (author: string) => {
-    setReplyTo(author);
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useComments(postId);
+
+  // Flatten the infinite query pages into a single array of comments
+  const comments = data?.pages.flatMap(page => page.data) ?? [];
+  const totalComments = data?.pages[0]?.meta.total ?? 0;
+
+  const handleReply = (id: string, name: string) => {
+    setReplyTo({ id, name });
     document.getElementById('commentFormWrapper')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   return (
     <section className="comments-section" id="comments">
       <div className="section-header">
-        <h2 className="comments-title">Comments <span className="text-gradient">(3)</span></h2>
+        <h2 className="comments-title">Comments <span className="text-gradient">({totalComments})</span></h2>
         <p className="comments-desc">Join the discussion and share your thoughts.</p>
       </div>
 
-      <ul className="comments-list" id="commentsList">
-        {staticComments.map((c, idx) => (
-          <CommentItem key={idx} author={c.author} date={c.date} text={c.text} onReply={handleReply} />
-        ))}
-      </ul>
+      {isLoading ? (
+        <div className="text-center py-4"><div className="spinner-border text-primary"></div></div>
+      ) : isError ? (
+        <p className="text-danger text-center">Failed to load comments.</p>
+      ) : (
+        <>
+          <ul className="comments-list" id="commentsList">
+            {comments.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} onReply={handleReply} />
+            ))}
+            {comments.length === 0 && <p className="text-muted text-center py-4">No comments yet. Be the first to comment!</p>}
+          </ul>
 
-      <CommentForm replyTo={replyTo} onClearReply={() => setReplyTo(null)} />
+          {hasNextPage && (
+            <div className="text-center mt-4">
+              <button 
+                className="btn btn-outline-primary btn-lg" 
+                onClick={() => fetchNextPage()} 
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Loading...
+                  </>
+                ) : 'Load More Comments'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      <CommentForm postId={postId} replyTo={replyTo} onClearReply={() => setReplyTo(null)} />
     </section>
   );
 }

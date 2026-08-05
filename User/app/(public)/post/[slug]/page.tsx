@@ -44,7 +44,7 @@ export default function PostPage() {
               <AuthorBioCard author={post.author} />
             </article>
 
-            <CommentsSection />
+            <CommentsSection postId={post.id} />
           </div>
 
           <PostSidebar 

@@ -18,10 +18,21 @@ class CommentPublicController
         private CommentService $commentService,
     ) {}
 
-    public function index(IndexCommentRequest $request, string $post): AnonymousResourceCollection
+    public function index(IndexCommentRequest $request, string $post): JsonResponse
     {
-        $comments = $this->publicService->getCommentsForPost($post);
-        return CommentPublicResource::collection($comments);
+        $cursor = $request->query('cursor');
+    
+        $paginator = $this->publicService->getCommentsForPost($post, $cursor);
+        $total = $this->publicService->getTotalCommentsCount($post);
+
+        return response()->json([
+            'data' => CommentPublicResource::collection($paginator->items()),
+            'meta' => [
+                'total' => $total,
+                'next_cursor' => $paginator->nextCursor()?->encode(),
+                'has_more' => $paginator->hasMorePages(),
+            ]
+        ]);
     }
 
     public function store(StoreCommentRequest $request): JsonResponse

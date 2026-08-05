@@ -21,7 +21,6 @@
     "back-end\\artisan",
     "User\\tsconfig.json",
     "User\\README.md",
-    "User\\package.json",
     "User\\package-lock.json",
     "User\\next.config.mjs",
     "User\\next-env.d.ts",
@@ -62,12 +61,14 @@
     "back-end\\src\\Shared",
     "Admin\\src\\features\\dashboard",
     "Admin\\src\\features\\tags",
-    "User\\src\\shared",
     "User\\src\\providers",
     "User\\src\\features\\categories",
-    "back-end\\src\\Modules\\Profile"
+    "back-end\\src\\Modules\\Profile",
+    "User\\src\\features\\tags",
+    "User\\src\\features\\authors",
+    "User\\package.json"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-05T16:37:29.635Z",
+  "lastModified": "2026-08-05T18:58:05.335Z",
   "version": 1
 }

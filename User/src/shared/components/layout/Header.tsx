@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { useLogout } from '@/features/auth/hooks/useLogout';
 import { useTheme } from '@/providers/ThemeProvider';
+import { useRealtimeNotifications } from '@/features/notifications/hooks/useRealtimeNotifications';
 
 // Safe base64-encoded SVG user icon (no external file)
 const DEFAULT_AVATAR = 'data:image/svg+xml;base64,' + btoa(`
@@ -25,6 +26,8 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { notifications, unreadCount, clearUnread } = useRealtimeNotifications();
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -82,6 +85,34 @@ export default function Header() {
                 <i className="fa-sharp fa-solid fa-magnifying-glass"></i>
               </button>
 
+              {isAuthenticated && (
+                <div className='position-relative'>
+                  <button className="btn-icon" aria-label="Notifications" onClick={() => { setIsNotifOpen(!isNotifOpen); clearUnread(); }}>
+                    <i className="fa-sharp fa-solid fa-bell"></i>
+                    {unreadCount > 0 && (
+                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+                  {isNotifOpen && (
+                    <div className="dropdown-menu show p-3" style={{width: '300px', right: 0, left: 'auto', maxHeight: '400px', overflowY: 'auto'}}>
+                      <h6 className="dropdown-header">Notifications</h6>
+                      {notifications.length === 0 ? (
+                         <p className="text-muted text-center small mb-0">No new notifications.</p>
+                      ) : (
+                        notifications.map((notif, idx) => (
+                          <a key={idx} href={`/post/${notif.post_id}`}  className="dropdown-item small p-2 border-bottom" onClick={() => setIsNotifOpen(false)}>
+                            {notif.message}
+                          </a>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+
+              }
               <button className="btn-icon theme-toggle" aria-label="Toggle theme" onClick={toggleTheme}>
                 <i className={`fa-sharp fa-solid ${theme === 'light' ? 'fa-moon' : 'fa-sun'}`}></i>
               </button>
