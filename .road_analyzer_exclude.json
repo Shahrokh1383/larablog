@@ -55,7 +55,6 @@
     "back-end\\tests",
     "User\\app\\(auth)",
     "User\\src\\features\\auth",
-    "back-end\\database\\factories",
     "Admin\\src\\app",
     "Admin\\src\\features\\users",
     "back-end\\src\\Modules\\Administration",
@@ -65,10 +64,10 @@
     "Admin\\src\\features\\tags",
     "User\\src\\shared",
     "User\\src\\providers",
-    "back-end\\database",
-    "User\\src\\features\\categories"
+    "User\\src\\features\\categories",
+    "back-end\\src\\Modules\\Profile"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-05T15:58:36.426Z",
+  "lastModified": "2026-08-05T16:37:29.635Z",
   "version": 1
 }
