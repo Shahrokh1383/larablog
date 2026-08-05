@@ -12,7 +12,7 @@ export default function PostTags({ tags }: PostTagsProps) {
     <div className="post-tags">
       <span><i className="fa-sharp fa-solid fa-tags"></i> Tags:</span>
       {tags.map((tag) => (
-        <Link key={tag.id} href={`/tag/${tag.slug}`} className="tag-link">
+        <Link key={tag.id} href={`/tags/${tag.slug}`} className="tag-link">
           {tag.name}
         </Link>
       ))}
