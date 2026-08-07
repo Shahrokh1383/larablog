@@ -370,6 +370,83 @@ img {
     color: var(--clr-primary);
 }
 
+/* ==================== NOTIFICATION DROPDOWN ==================== */
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--clr-primary);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--clr-bg);
+}
+
+.notification-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 320px;
+    background: var(--clr-bg-elevated);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-overlay);
+    overflow: hidden;
+    animation: fadeInUp 0.2s ease-out;
+}
+
+.notification-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--clr-text);
+    border-bottom: 1px solid var(--clr-border-light);
+    margin: 0;
+    background: var(--clr-surface);
+}
+
+.notification-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-empty {
+    padding: var(--spacing-xl) var(--spacing-md);
+    text-align: center;
+    color: var(--clr-text-muted);
+    font-size: var(--fs-sm);
+    margin: 0;
+}
+
+.notification-item {
+    display: block;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--clr-border-light);
+    transition: background var(--transition-fast);
+    text-decoration: none;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background: var(--clr-primary-light);
+}
+
+.notification-message {
+    font-size: var(--fs-sm);
+    color: var(--clr-text-secondary);
+    line-height: 1.6;
+    display: block;
+}
 /* Desktop Nav Links */
 .nav-links {
     display: flex;
@@ -943,7 +1020,6 @@ img {
     line-height: 1.8;
     flex: 1;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->text('body');
             
             $table->boolean('is_approved')->default(false);
-            $table->timestamp('read_at')->nullable();
             $table->timestamps();
             
             $table->index('post_id');

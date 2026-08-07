@@ -63,9 +63,25 @@
     "User\\src\\features\\tags",
     "User\\src\\features\\authors",
     "back-end\\database",
-    "User\\src\\styles"
+    "User\\proxy.ts",
+    "User\\package.json",
+    "User\\next.config.mjs",
+    "User\\next-env.d.ts",
+    "User\\jsconfig.json",
+    "User\\tsconfig.json",
+    "User\\app",
+    "User\\src\\styles\\auth.css",
+    "User\\src\\styles\\author.css",
+    "User\\src\\styles\\authors.css",
+    "User\\src\\styles\\category.css",
+    "User\\src\\styles\\tags.css",
+    "User\\src\\styles\\post.css",
+    "back-end\\src\\Modules\\Content",
+    "back-end\\config\\sanctum.php",
+    "back-end\\config\\reverb.php",
+    "back-end\\config\\broadcasting.php"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-05T21:17:37.466Z",
+  "lastModified": "2026-08-07T16:30:36.301Z",
   "version": 1
 }

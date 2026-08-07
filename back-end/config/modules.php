@@ -7,5 +7,6 @@ return [
         \Modules\Administration\AdministrationServiceProvider::class,
         \Modules\Profile\ProfileServiceProvider::class,
         \Modules\Engagement\EngagementServiceProvider::class,
+        \Modules\Notification\NotificationServiceProvider::class,
     ],
 ];
