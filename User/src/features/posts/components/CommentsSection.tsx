@@ -1,20 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { useComments } from '@/features/comments/hooks/useComments';
+import type { UseInfiniteQueryResult, InfiniteData } from '@tanstack/react-query';
+import type { CommentsResponse } from '@/features/comments/api/commentsApi';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 
 interface CommentsSectionProps {
   postId: string;
+  // Fix: Use InfiniteData<CommentsResponse> for React Query v5 infinite queries
+  commentsQuery: UseInfiniteQueryResult<InfiniteData<CommentsResponse>, Error>;
+  onLoadMoreReplies: (commentId: string) => void;
+  fetchingReplyId?: string | null;
 }
 
-export default function CommentsSection({ postId }: CommentsSectionProps) {
+export default function CommentsSection({ postId, commentsQuery, onLoadMoreReplies, fetchingReplyId }: CommentsSectionProps) {
   const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
 
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useComments(postId);
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = commentsQuery;
 
-  // Flatten the infinite query pages into a single array of comments
+  // data is now correctly typed as InfiniteData<CommentsResponse> | undefined
   const comments = data?.pages.flatMap(page => page.data) ?? [];
   const totalComments = data?.pages[0]?.meta.total ?? 0;
 
@@ -38,7 +43,13 @@ export default function CommentsSection({ postId }: CommentsSectionProps) {
         <>
           <ul className="comments-list" id="commentsList">
             {comments.map((comment) => (
-              <CommentItem key={comment.id} comment={comment} onReply={handleReply} />
+              <CommentItem 
+                key={comment.id} 
+                comment={comment} 
+                onReply={handleReply} 
+                onLoadMoreReplies={onLoadMoreReplies}
+                fetchingReplyId={fetchingReplyId}
+              />
             ))}
             {comments.length === 0 && <p className="text-muted text-center py-4">No comments yet. Be the first to comment!</p>}
           </ul>

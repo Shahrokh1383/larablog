@@ -4,6 +4,8 @@ import { useParams } from 'next/navigation';
 import { usePost } from '@/features/posts/hooks/usePost';
 import { useRelatedPosts } from '@/features/posts/hooks/useRelatedPosts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
+import { useComments } from '@/features/comments/hooks/useComments';
+import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies';
 import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
 import PostHeader from '@/features/posts/components/PostHeader';
 import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
@@ -21,6 +23,10 @@ export default function PostPage() {
   const { data: post, isLoading, isError } = usePost(slug);
   const { data: relatedPosts } = useRelatedPosts(slug);
   const { data: categories } = useCategories();
+
+  // Hooks live in the Page, not in components (Constitution Article V)
+  const commentsQuery = useComments(post?.id || '');
+  const loadMoreReplies = useLoadMoreReplies(post?.id || '');
 
   if (isLoading) {
     return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
@@ -44,7 +50,12 @@ export default function PostPage() {
               <AuthorBioCard author={post.author} />
             </article>
 
-            <CommentsSection postId={post.id} />
+            <CommentsSection 
+              postId={post.id} 
+              commentsQuery={commentsQuery} 
+              onLoadMoreReplies={loadMoreReplies.mutate}
+              fetchingReplyId={loadMoreReplies.isPending ? loadMoreReplies.variables : null}
+            />
           </div>
 
           <PostSidebar 

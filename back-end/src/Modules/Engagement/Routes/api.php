@@ -9,4 +9,5 @@ Route::prefix('posts/{post}/comments')->group(function () {
 
 Route::prefix('comments')->group(function () {
     Route::post('/', [CommentPublicController::class, 'store']);
+    Route::get('/{comment}/replies', [CommentPublicController::class, 'replies']);
 });

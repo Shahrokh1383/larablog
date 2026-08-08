@@ -21,6 +21,8 @@ class CommentPublicResource extends JsonResource
                 'name' => $this->name,
             ],
             'replies'    => CommentPublicResource::collection($this->whenLoaded('replies')),
+            'replies_count' => $this->when(isset($this->replies_count), $this->replies_count, 0),
+            'replies_has_more' => $this->when(isset($this->replies_count), fn() => $this->replies_count > 2, false),
             'created_at' => $this->created_at,
         ];
     }

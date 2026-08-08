@@ -65,17 +65,10 @@
     "User\\next-env.d.ts",
     "User\\jsconfig.json",
     "User\\tsconfig.json",
-    "User\\src\\styles\\auth.css",
-    "User\\src\\styles\\author.css",
-    "User\\src\\styles\\authors.css",
-    "User\\src\\styles\\category.css",
-    "User\\src\\styles\\tags.css",
-    "User\\src\\styles\\post.css",
     "back-end\\config\\sanctum.php",
     "User\\app",
     "back-end\\database\\factories",
     "back-end\\database\\seeders",
-    "User\\src\\styles",
     "back-end\\config",
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\profile",
@@ -83,9 +76,11 @@
     "back-end\\src\\Modules\\Content",
     "back-end\\database",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\src\\Modules\\Notification"
+    "back-end\\src\\Modules\\Notification",
+    "User\\src\\features\\notifications",
+    "User\\src\\shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T03:37:19.167Z",
+  "lastModified": "2026-08-08T04:17:24.532Z",
   "version": 1
 }

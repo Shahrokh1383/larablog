@@ -34,6 +34,19 @@ class CommentPublicController
         ]);
     }
 
+    public function replies(IndexCommentRequest $request, string $comment): JsonResponse
+    {
+        $skip = (int) $request->query('skip', 2);
+        $take = (int) $request->query('take', 10);
+
+        $result = $this->publicService->getRepliesForComment($comment, $skip, $take);
+
+        return response()->json([
+            'data' => CommentPublicResource::collection($result['data']),
+            'meta' => $result['meta']
+        ]);
+    }
+
     public function store(StoreCommentRequest $request): JsonResponse
     {
         $user = $request->user();

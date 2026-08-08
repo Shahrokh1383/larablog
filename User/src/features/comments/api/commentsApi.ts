@@ -11,10 +11,24 @@ export interface CommentsResponse {
   };
 }
 
+export interface RepliesResponse {
+  data: Comment[];
+  meta: {
+    has_more: boolean;
+  };
+}
+
 export const commentsApi = {
   getByPostId: async (postId: string, cursor: string | null = null): Promise<CommentsResponse> => {
     const response = await httpClient.get<CommentsResponse>(`/posts/${postId}/comments`, {
       params: { cursor },
+    });
+    return response.data;
+  },
+
+  getReplies: async (commentId: string, skip: number): Promise<RepliesResponse> => {
+    const response = await httpClient.get<RepliesResponse>(`/comments/${commentId}/replies`, {
+      params: { skip, take: 10 },
     });
     return response.data;
   },

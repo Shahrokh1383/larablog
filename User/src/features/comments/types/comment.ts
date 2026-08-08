@@ -11,6 +11,8 @@ export interface Comment {
   body: string;
   author: CommentAuthor;
   replies?: Comment[];
+  replies_count?: number;
+  replies_has_more?: boolean;
   created_at: string;
 }
 
