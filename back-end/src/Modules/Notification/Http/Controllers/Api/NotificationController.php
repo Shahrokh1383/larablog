@@ -4,6 +4,7 @@ namespace Modules\Notification\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Notification\Http\Resources\NotificationResource;
 use Modules\Notification\Services\NotificationService;
 
 class NotificationController
@@ -17,7 +18,7 @@ class NotificationController
         $notifications = $this->notificationService->getUnreadNotifications($request->user());
         
         return response()->json([
-            'data' => $notifications
+            'data' => NotificationResource::collection($notifications)
         ]);
     }
 

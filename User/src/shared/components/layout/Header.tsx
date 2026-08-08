@@ -9,13 +9,12 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import NotificationDropdown from '@/features/notifications/components/NotificationDropdown';
 
-// Safe base64-encoded SVG user icon (no external file)
-const DEFAULT_AVATAR = 'data:image/svg+xml;base64,' + btoa(`
+const DEFAULT_AVATAR = `data:image/svg+xml;utf8,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
   <circle cx="50" cy="50" r="50" fill="#E2E8F0"/>
   <circle cx="50" cy="40" r="20" fill="#94A3B8"/>
   <ellipse cx="50" cy="85" rx="30" ry="25" fill="#94A3B8"/>
-</svg>`);
+</svg>`)}`;
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

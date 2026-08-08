@@ -13,14 +13,12 @@ export function useNotifications() {
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
-  // 1. Fetch initial unread notifications from DB
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: notificationKeys.unread(),
     queryFn: notificationsApi.getUnread,
     enabled: isAuthenticated && !!user,
   });
 
-  // 2. Mutation to mark as read
   const markAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAsRead,
     onSuccess: () => {
@@ -28,15 +26,15 @@ export function useNotifications() {
     },
   });
 
-  // 3. Realtime subscription: merge new events into React Query cache
   useEffect(() => {
-    if (!echo || !isAuthenticated || !user || !user.id) return;
+    if (!echo || !isAuthenticated || !user?.id) return;
 
     const userId = String(user.id);
     const channelName = `users.${userId}`;
     const channel = echo.private(channelName);
 
-    channel.notification((notification: NotificationItem) => {
+    // Listen specifically for the '.notification' event broadcasted by UserNotificationBroadcast
+    channel.listen('.notification', (notification: NotificationItem) => {
       queryClient.setQueryData<NotificationItem[]>(notificationKeys.unread(), (old = []) => [
         notification,
         ...old,
@@ -48,7 +46,7 @@ export function useNotifications() {
         echo.leaveChannel(channelName);
       }
     };
-  }, [isAuthenticated, user, queryClient]);
+  }, [isAuthenticated, user?.id, queryClient]);
 
   return {
     notifications,

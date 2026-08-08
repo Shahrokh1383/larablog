@@ -1,7 +1,7 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-import { env } from './env';
-import { sanctumClient } from '@/shared/api/httpClient'; 
+import { sanctumClient } from '@/shared/api/httpClient';
+import { env } from '@/shared/lib/env';
 
 declare global {
   interface Window {
@@ -14,24 +14,23 @@ let echo: Echo<any> | null = null;
 if (typeof window !== 'undefined') {
   window.Pusher = Pusher;
 
-  const port = parseInt(env.reverbPort, 10) || 8080;
-
   echo = new Echo({
     broadcaster: 'reverb',
     key: env.reverbAppKey,
-    wsHost: env.reverbHost || 'localhost',
-    wsPort: port,
-    wsPath: '/app', 
+    wsHost: env.reverbHost,
+    wsPort: parseInt(env.reverbPort, 10),
+    wssPort: parseInt(env.reverbPort, 10), // Prevents fallback to 443
     forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: ['ws'], // Strictly local WS
     disableStats: true,
     authorizer: (channel) => {
       return {
         authorize: (socketId, callback) => {
-          sanctumClient.post('/broadcasting/auth', {
-            socket_id: socketId,
-            channel_name: channel.name,
-          })
+          sanctumClient
+            .post('/broadcasting/auth', {
+              socket_id: socketId,
+              channel_name: channel.name,
+            })
             .then((response) => callback(null, response.data))
             .catch((error) => callback(error, null));
         },

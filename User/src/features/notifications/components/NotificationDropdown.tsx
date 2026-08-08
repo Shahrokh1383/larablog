@@ -20,8 +20,12 @@ export default function NotificationDropdown({
   const handleToggle = () => {
     const newIsOpen = !isOpen;
     setIsOpen(newIsOpen);
+    
+    // Mark as read only when opening, and delay it so user can see them
     if (newIsOpen && unreadCount > 0) {
-      onMarkAsRead();
+      setTimeout(() => {
+        onMarkAsRead();
+      }, 1500);
     }
   };
 
@@ -43,11 +47,11 @@ export default function NotificationDropdown({
               notifications.map((notif) => (
                 <Link
                   key={notif.id}
-                  href={`/post/${notif.data.post_id}`} 
+                  href={`/post/${notif.post_id}`} 
                   className="notification-item"
                   onClick={() => setIsOpen(false)}
                 >
-                  <span className="notification-message">{notif.data.message}</span>
+                  <span className="notification-message">{notif.message}</span>
                 </Link>
               ))
             )}

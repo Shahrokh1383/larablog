@@ -12,5 +12,9 @@ require base_path('src/Modules/Administration/Routes/admin.php');
 // Profile Module Routes
 require base_path('src/Modules/Profile/Routes/api.php');
 
+// Comment Module Routes
 require base_path('src/Modules/Engagement/Routes/api.php');
 require base_path('src/Modules/Engagement/Routes/admin.php');
+
+// Notification Module Routes
+require base_path('src/Modules/Notification/Routes/api.php');
