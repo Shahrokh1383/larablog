@@ -56,7 +56,6 @@
     "Admin\\src\\features\\tags",
     "User\\src\\providers",
     "User\\src\\features\\categories",
-    "back-end\\src\\Modules\\Profile",
     "User\\src\\features\\tags",
     "User\\src\\features\\authors",
     "User\\proxy.ts",
@@ -73,7 +72,6 @@
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\profile",
     "Admin\\src\\features\\posts",
-    "back-end\\src\\Modules\\Content",
     "back-end\\database",
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Notification",
@@ -81,6 +79,6 @@
     "User\\src\\shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T14:57:58.222Z",
+  "lastModified": "2026-08-08T16:47:05.922Z",
   "version": 1
 }
