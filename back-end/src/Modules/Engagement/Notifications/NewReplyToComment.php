@@ -10,7 +10,10 @@ class NewReplyToComment extends Notification
 {
     use Queueable;
 
-    public function __construct(public Comment $reply) {}
+    public function __construct(
+        public Comment $reply,
+        public string $postSlug
+    ) {}
 
     public function via($notifiable): array
     {
@@ -25,6 +28,7 @@ class NewReplyToComment extends Notification
             'type'       => 'new_reply',
             'message'    => "{$authorName} replied to your comment.",
             'post_id'    => $this->reply->post_id,
+            'post_slug'  => $this->postSlug,
             'comment_id' => $this->reply->parent_id,
             'reply_id'   => $this->reply->id,
         ];

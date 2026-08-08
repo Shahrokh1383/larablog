@@ -5,6 +5,7 @@ export interface NotificationItem {
   type: string;
   message: string;
   post_id: string | null;
+  post_slug?: string | null;
   comment_id?: string | null;
   reply_id?: string | null;
   read_at: string | null;

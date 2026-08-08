@@ -32,7 +32,6 @@
     "Admin\\eslint.config.js",
     "Admin\\public",
     "back-end\\routes",
-    "Admin\\src\\features\\auth",
     "back-end\\config\\cache.php",
     "back-end\\config\\cors.php",
     "back-end\\config\\database.php",
@@ -52,7 +51,6 @@
     "Admin\\src\\app",
     "Admin\\src\\features\\users",
     "back-end\\src\\Modules\\Administration",
-    "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Shared",
     "Admin\\src\\features\\dashboard",
     "Admin\\src\\features\\tags",
@@ -77,9 +75,16 @@
     "User\\app",
     "back-end\\database\\factories",
     "back-end\\database\\seeders",
-    "User\\src\\styles"
+    "User\\src\\styles",
+    "back-end\\config",
+    "back-end\\src\\Modules\\Notification",
+    "Admin\\src\\features\\categories",
+    "Admin\\src\\features\\profile",
+    "Admin\\src\\features\\posts",
+    "back-end\\src\\Modules\\Engagement",
+    "back-end\\src\\Modules\\Content"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T01:52:38.768Z",
+  "lastModified": "2026-08-08T03:19:25.910Z",
   "version": 1
 }

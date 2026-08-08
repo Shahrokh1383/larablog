@@ -10,7 +10,11 @@ class NewCommentOnPost extends Notification
 {
     use Queueable;
 
-    public function __construct(public Comment $comment, public string $postTitle) {}
+    public function __construct(
+        public Comment $comment, 
+        public string $postTitle,
+        public string $postSlug
+    ) {}
 
     public function via($notifiable): array
     {
@@ -23,6 +27,7 @@ class NewCommentOnPost extends Notification
             'type'       => 'new_comment',
             'message'    => "New comment on your post: {$this->postTitle}",
             'post_id'    => $this->comment->post_id,
+            'post_slug'  => $this->postSlug,
             'comment_id' => $this->comment->id,
         ];
     }

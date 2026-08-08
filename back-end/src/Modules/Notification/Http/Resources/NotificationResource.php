@@ -13,6 +13,7 @@ class NotificationResource extends JsonResource
             'type'       => $this->data['type'] ?? null,
             'message'    => $this->data['message'] ?? null,
             'post_id'    => $this->data['post_id'] ?? null,
+            'post_slug'  => $this->data['post_slug'] ?? null,
             'comment_id' => $this->data['comment_id'] ?? null,
             'reply_id'   => $this->data['reply_id'] ?? null,
             'read_at'    => $this->read_at?->toIso8601String(),

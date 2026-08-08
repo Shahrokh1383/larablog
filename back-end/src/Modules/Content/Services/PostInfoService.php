@@ -15,6 +15,7 @@ class PostInfoService implements PostInfoContract
         return (object) [
             'authorId' => $post->user_id,
             'title'    => $post->title,
+            'slug'     => $post->slug,
         ];
     }
 }
