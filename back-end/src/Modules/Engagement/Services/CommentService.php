@@ -113,4 +113,14 @@ class CommentService implements CommentServiceInterface
             ->limit($limit)
             ->get();
     }
+
+    public function getWeeklyCommentCountForUser(string $userId): int
+    {
+        $startOfWeek = Carbon::now()->startOfWeek();
+
+        return Comment::where('user_id', $userId)
+            ->where('created_at', '>=', $startOfWeek)
+            ->approved()
+            ->count();
+    }
 }

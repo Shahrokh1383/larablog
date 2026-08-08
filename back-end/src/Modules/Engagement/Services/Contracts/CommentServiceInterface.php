@@ -19,4 +19,9 @@ interface CommentServiceInterface
      * @return Collection<int, object{user_id: string, comments_count: int}>
      */
     public function getWeeklyTopCommenters(int $limit = 10): Collection;
+
+    /**
+     * Get the total number of comments made by a user this week.
+     */
+    public function getWeeklyCommentCountForUser(string $userId): int;
 }

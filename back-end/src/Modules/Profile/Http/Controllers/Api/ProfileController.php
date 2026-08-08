@@ -66,4 +66,19 @@ class ProfileController extends Controller
         $this->deleteAvatarAction->execute($request->input('url'));
         return response()->json(['message' => 'Avatar deleted successfully']);
     }
+
+    public function destroy(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        
+        // Optional: Delete avatar file if exists
+        $profile = $this->profileService->getByUserId($userId);
+        if ($profile && $profile->avatar) {
+            $this->deleteAvatarAction->execute($profile->avatar);
+        }
+
+        $this->profileService->deleteAccount($userId);
+
+        return response()->json(null, 204);
+    }
 }
