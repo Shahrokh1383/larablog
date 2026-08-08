@@ -6,7 +6,7 @@ import { notificationsApi, NotificationItem } from '../api/notificationsApi';
 
 export const notificationKeys = {
   all: ['notifications'] as const,
-  recent: () => [...notificationKeys.all, 'recent'] as const,
+  unread: () => [...notificationKeys.all, 'unread'] as const,
 };
 
 export function useNotifications() {
@@ -14,17 +14,26 @@ export function useNotifications() {
   const queryClient = useQueryClient();
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: notificationKeys.recent(),
-    queryFn: notificationsApi.getRecent,
+    queryKey: notificationKeys.unread(),
+    queryFn: notificationsApi.getUnread,
     enabled: isAuthenticated && !!user,
   });
 
-  const markAsReadMutation = useMutation({
-    mutationFn: notificationsApi.markAsRead,
-    onSuccess: () => {
-      queryClient.setQueryData<NotificationItem[]>(notificationKeys.recent(), (old = []) => 
-        old.map(notif => notif.read_at ? notif : { ...notif, read_at: new Date().toISOString() })
+  const markSingleAsReadMutation = useMutation({
+    mutationFn: notificationsApi.markSingleAsRead,
+    onSuccess: (_, id) => {
+      // Evict the specific notification from the cache instantly
+      queryClient.setQueryData<NotificationItem[]>(notificationKeys.unread(), (old = []) => 
+        old.filter(notif => notif.id !== id)
       );
+    },
+  });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: notificationsApi.markAllAsRead,
+    onSuccess: () => {
+      // Clear the entire cache array instantly
+      queryClient.setQueryData<NotificationItem[]>(notificationKeys.unread(), []);
     },
   });
 
@@ -36,10 +45,9 @@ export function useNotifications() {
     const channel = echo.private(channelName);
 
     channel.listen('.notification', (notification: NotificationItem) => {
-      queryClient.setQueryData<NotificationItem[]>(notificationKeys.recent(), (old = []) => {
-        // Prevent duplicate inserts if the event fires twice
+      queryClient.setQueryData<NotificationItem[]>(notificationKeys.unread(), (old = []) => {
         if (old.some(n => n.id === notification.id)) return old;
-        return [notification, ...old].slice(0, 10); // Keep max 10 items
+        return [notification, ...old].slice(0, 10);
       });
     });
 
@@ -50,13 +58,14 @@ export function useNotifications() {
     };
   }, [isAuthenticated, user?.id, queryClient]);
 
-  // Dynamically calculate unread count based on read_at property
-  const unreadCount = notifications.filter(n => !n.read_at).length;
+  // Since we only fetch unread, the count is simply the array length
+  const unreadCount = notifications.length;
 
   return {
     notifications,
     unreadCount,
-    markAsRead: markAsReadMutation.mutate,
+    markSingleAsRead: markSingleAsReadMutation.mutate,
+    markAllAsRead: markAllAsReadMutation.mutate,
     isLoading,
   };
 }

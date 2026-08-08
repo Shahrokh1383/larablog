@@ -13,9 +13,12 @@ export interface NotificationItem {
 }
 
 export const notificationsApi = {
-  getRecent: () =>
+  getUnread: () =>
     httpClient.get<{ data: NotificationItem[] }>('/notifications').then((res) => res.data.data),
   
-  markAsRead: () =>
+  markSingleAsRead: (id: string) =>
+    httpClient.post(`/notifications/${id}/read`).then((res) => res.data),
+
+  markAllAsRead: () =>
     httpClient.post('/notifications/mark-as-read').then((res) => res.data),
 };

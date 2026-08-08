@@ -77,14 +77,15 @@
     "back-end\\database\\seeders",
     "User\\src\\styles",
     "back-end\\config",
-    "back-end\\src\\Modules\\Notification",
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\profile",
     "Admin\\src\\features\\posts",
-    "back-end\\src\\Modules\\Engagement",
-    "back-end\\src\\Modules\\Content"
+    "back-end\\src\\Modules\\Content",
+    "back-end\\database",
+    "back-end\\src\\Modules\\Identity",
+    "back-end\\src\\Modules\\Notification"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T03:19:25.910Z",
+  "lastModified": "2026-08-08T03:37:19.167Z",
   "version": 1
 }

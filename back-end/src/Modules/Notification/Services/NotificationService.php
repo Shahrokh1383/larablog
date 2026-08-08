@@ -8,12 +8,24 @@ use Illuminate\Support\Collection;
 class NotificationService
 {
     /**
-     * Fetch recent notifications (both read and unread) for the UI dropdown.
-     * This ensures the UI never appears completely empty.
+     * Fetch strictly unread notifications for the "Unread Inbox" UI pattern.
      */
-    public function getRecentNotifications(User $user): Collection
+    public function getUnreadNotifications(User $user): Collection
     {
-        return $user->notifications()->latest()->take(10)->get();
+        return $user->unreadNotifications()->latest()->take(10)->get();
+    }
+
+    /**
+     * Mark a single notification as read.
+     */
+    public function markAsRead(User $user, string $notificationId): void
+    {
+        // Find the notification specifically belonging to this user
+        $notification = $user->unreadNotifications()->find($notificationId);
+        
+        if ($notification) {
+            $notification->markAsRead();
+        }
     }
 
     /**

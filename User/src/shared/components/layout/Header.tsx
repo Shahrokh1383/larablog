@@ -28,7 +28,7 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   // New React Query based notifications hook
-  const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { notifications, unreadCount, markSingleAsRead, markAllAsRead } = useNotifications();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
@@ -90,7 +90,8 @@ export default function Header() {
                 <NotificationDropdown 
                   notifications={notifications} 
                   unreadCount={unreadCount} 
-                  onMarkAsRead={markAsRead} 
+                  onMarkSingleAsRead={markSingleAsRead}
+                  onMarkAllAsRead={markAllAsRead}
                 />
               )}
 

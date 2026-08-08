@@ -15,18 +15,24 @@ class NotificationController
 
     public function index(Request $request): JsonResponse
     {
-        // Now fetching recent notifications instead of strictly unread
-        $notifications = $this->notificationService->getRecentNotifications($request->user());
+        $notifications = $this->notificationService->getUnreadNotifications($request->user());
         
         return response()->json([
             'data' => NotificationResource::collection($notifications)
         ]);
     }
 
-    public function markAsRead(Request $request): JsonResponse
+    public function markSingleAsRead(Request $request, string $id): JsonResponse
+    {
+        $this->notificationService->markAsRead($request->user(), $id);
+        
+        return response()->json(['message' => 'Notification marked as read.']);
+    }
+
+    public function markAllAsRead(Request $request): JsonResponse
     {
         $this->notificationService->markAllAsRead($request->user());
         
-        return response()->json(['message' => 'Notifications marked as read.']);
+        return response()->json(['message' => 'All notifications marked as read.']);
     }
 }

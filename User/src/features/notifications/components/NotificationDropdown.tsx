@@ -7,13 +7,15 @@ import { NotificationItem } from '../api/notificationsApi';
 interface NotificationDropdownProps {
   notifications: NotificationItem[];
   unreadCount: number;
-  onMarkAsRead: () => void;
+  onMarkSingleAsRead: (id: string) => void;
+  onMarkAllAsRead: () => void;
 }
 
 export default function NotificationDropdown({
   notifications,
   unreadCount,
-  onMarkAsRead,
+  onMarkSingleAsRead,
+  onMarkAllAsRead,
 }: NotificationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -43,7 +45,7 @@ export default function NotificationDropdown({
               {unreadCount > 0 && (
                 <button 
                   className="btn btn-sm btn-link text-decoration-none p-0 text-primary" 
-                  onClick={onMarkAsRead}
+                  onClick={onMarkAllAsRead}
                 >
                   Mark all as read
                 </button>
@@ -51,15 +53,17 @@ export default function NotificationDropdown({
             </div>
             <div className="notification-list">
               {notifications.length === 0 ? (
-                <p className="notification-empty text-center py-4 text-muted">No notifications yet.</p>
+                <p className="notification-empty text-center py-4 text-muted">No new notifications.</p>
               ) : (
                 notifications.map((notif) => (
                   <Link
                     key={notif.id}
-                    // Fallback to ID if slug is missing (for legacy DB records)
                     href={notif.post_slug ? `/post/${notif.post_slug}` : (notif.post_id ? `/post/${notif.post_id}` : '#')} 
-                    className={`notification-item d-block px-3 py-2 ${!notif.read_at ? 'unread bg-light' : ''}`}
-                    onClick={handleClose}
+                    className="notification-item d-block px-3 py-2 unread bg-light"
+                    onClick={() => {
+                      onMarkSingleAsRead(notif.id);
+                      handleClose();
+                    }}
                   >
                     <span className="notification-message fw-medium">{notif.message}</span>
                     <small className="notification-time text-muted d-block mt-1">
