@@ -15,7 +15,8 @@ class NotificationController
 
     public function index(Request $request): JsonResponse
     {
-        $notifications = $this->notificationService->getUnreadNotifications($request->user());
+        // Now fetching recent notifications instead of strictly unread
+        $notifications = $this->notificationService->getRecentNotifications($request->user());
         
         return response()->json([
             'data' => NotificationResource::collection($notifications)

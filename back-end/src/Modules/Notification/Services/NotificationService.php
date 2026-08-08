@@ -3,15 +3,17 @@
 namespace Modules\Notification\Services;
 
 use Shared\Models\User;
+use Illuminate\Support\Collection;
 
 class NotificationService
 {
     /**
-     * Fetch unread notifications for the user.
+     * Fetch recent notifications (both read and unread) for the UI dropdown.
+     * This ensures the UI never appears completely empty.
      */
-    public function getUnreadNotifications(User $user)
+    public function getRecentNotifications(User $user): Collection
     {
-        return $user->unreadNotifications()->get();
+        return $user->notifications()->latest()->take(10)->get();
     }
 
     /**

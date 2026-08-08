@@ -6,7 +6,7 @@ import { notificationsApi, NotificationItem } from '../api/notificationsApi';
 
 export const notificationKeys = {
   all: ['notifications'] as const,
-  unread: () => [...notificationKeys.all, 'unread'] as const,
+  recent: () => [...notificationKeys.all, 'recent'] as const,
 };
 
 export function useNotifications() {
@@ -14,15 +14,17 @@ export function useNotifications() {
   const queryClient = useQueryClient();
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: notificationKeys.unread(),
-    queryFn: notificationsApi.getUnread,
+    queryKey: notificationKeys.recent(),
+    queryFn: notificationsApi.getRecent,
     enabled: isAuthenticated && !!user,
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAsRead,
     onSuccess: () => {
-      queryClient.setQueryData(notificationKeys.unread(), []);
+      queryClient.setQueryData<NotificationItem[]>(notificationKeys.recent(), (old = []) => 
+        old.map(notif => notif.read_at ? notif : { ...notif, read_at: new Date().toISOString() })
+      );
     },
   });
 
@@ -33,12 +35,12 @@ export function useNotifications() {
     const channelName = `users.${userId}`;
     const channel = echo.private(channelName);
 
-    // Listen specifically for the '.notification' event broadcasted by UserNotificationBroadcast
     channel.listen('.notification', (notification: NotificationItem) => {
-      queryClient.setQueryData<NotificationItem[]>(notificationKeys.unread(), (old = []) => [
-        notification,
-        ...old,
-      ]);
+      queryClient.setQueryData<NotificationItem[]>(notificationKeys.recent(), (old = []) => {
+        // Prevent duplicate inserts if the event fires twice
+        if (old.some(n => n.id === notification.id)) return old;
+        return [notification, ...old].slice(0, 10); // Keep max 10 items
+      });
     });
 
     return () => {
@@ -48,9 +50,12 @@ export function useNotifications() {
     };
   }, [isAuthenticated, user?.id, queryClient]);
 
+  // Dynamically calculate unread count based on read_at property
+  const unreadCount = notifications.filter(n => !n.read_at).length;
+
   return {
     notifications,
-    unreadCount: notifications.length,
+    unreadCount,
     markAsRead: markAsReadMutation.mutate,
     isLoading,
   };

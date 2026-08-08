@@ -4,15 +4,15 @@ export interface NotificationItem {
   id: string;
   type: string;
   message: string;
-  post_id: string;
-  comment_id?: string;
-  reply_id?: string;
+  post_id: string | null;
+  comment_id?: string | null;
+  reply_id?: string | null;
   read_at: string | null;
   created_at: string;
 }
 
 export const notificationsApi = {
-  getUnread: () =>
+  getRecent: () =>
     httpClient.get<{ data: NotificationItem[] }>('/notifications').then((res) => res.data.data),
   
   markAsRead: () =>
