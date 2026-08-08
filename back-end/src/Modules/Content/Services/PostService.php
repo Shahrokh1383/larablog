@@ -13,13 +13,12 @@ use Modules\Content\Services\Contracts\PostAdminServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class PostService
+class PostService implements PostAdminServiceInterface
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
         private AssignTagsToPostAction $assignTagsToPostAction,
-        private \Modules\Engagement\Services\Contracts\CommentServiceInterface $commentService,
     ) {}
 
     public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1): LengthAwarePaginator

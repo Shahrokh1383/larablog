@@ -64,7 +64,7 @@ class CommentService implements CommentServiceInterface
             ->toArray();
     }
 
-    public function getCommentsForPostAdmin(int $postId, int $perPage = 20): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function getCommentsForPostAdmin(string $postId, int $perPage = 20): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         return Comment::with('user')
             ->where('post_id', $postId)

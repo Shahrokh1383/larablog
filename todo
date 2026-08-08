@@ -40,7 +40,7 @@
 ## Phase 5: ReaderExperience Module & User Dashboard
 **Goal:** Implement the `ReaderExperience` Bounded Context (Saved Posts, Reading Tracking).
 
-### Backend (`src/Modules/ReaderExperience/`)
+### Backend (`src/Modules/UserExperience/`)
 1. **Database:** `reader_create_saved_posts_table` (user_id, post_id, saved_at), `reader_create_post_reads_table` (user_id, post_id, read_at).
 2. **Implementation:**
    - **Models:** `SavedPost`, `PostRead`.

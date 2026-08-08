@@ -4,12 +4,14 @@ namespace Modules\Engagement\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\Services\CommentService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommentController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private CommentService $commentService
     ) {}
@@ -31,7 +33,6 @@ class CommentController extends Controller
     {
         $this->authorize('manage', $comment);
         $this->commentService->delete($comment);
-        
         return response()->json(null, 204);
     }
 }
