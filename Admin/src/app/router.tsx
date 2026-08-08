@@ -10,6 +10,7 @@ import PostEditorPage from '@/pages/PostEditor';
 import CategoriesPage from '@/pages/Categories';
 import TagsPage from '@/pages/Tags';
 import ProfilePage from '@/pages/Profile';
+import PostCommentsPage from '@/pages/PostComments';
 
 export default function AppRouter() {
   return (
@@ -30,6 +31,7 @@ export default function AppRouter() {
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/tags" element={<TagsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/posts/:postId/comments" element={<PostCommentsPage />} />
         
         <Route
           path="/users"

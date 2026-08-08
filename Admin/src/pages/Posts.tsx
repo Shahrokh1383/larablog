@@ -23,6 +23,9 @@ export default function PostsPage() {
     }
   };
 
+  const handleComments = (post: Post) => {
+    navigate(`/posts/${post.id}/comments`);
+  }
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -62,6 +65,7 @@ export default function PostsPage() {
               isError={false}
               onEdit={(post) => navigate(`/posts/editor/${post.id}`)}
               onDelete={handleDelete}
+              onComments={handleComments}
             />
           )}
 

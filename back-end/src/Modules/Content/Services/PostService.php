@@ -9,6 +9,7 @@ use Modules\Content\Actions\AssignTagsToPostAction;
 use Modules\Content\DTOs\PostCreateDTO;
 use Modules\Content\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
+use Modules\Content\Services\Contracts\PostAdminServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -118,5 +119,10 @@ class PostService
     public function delete(Post $post): void
     {
         $post->delete();
+    }
+
+    public function find(string $id): ?Post
+    {
+        return Post::find($id);
     }
 }

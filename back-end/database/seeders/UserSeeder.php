@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
         // Permanent admin account for convenience
         $admin = User::factory()->create([
             'name'     => 'Admin',
-            'email'    => 'admin@gmail.com',
+            'email'    => 'admin@example.com',
             'password' => bcrypt('password'),
         ]);
         $admin->assignRole($adminRole);

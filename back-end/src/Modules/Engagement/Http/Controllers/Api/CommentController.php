@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\Services\CommentService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommentController extends Controller
 {
@@ -21,12 +22,14 @@ class CommentController extends Controller
 
     public function approve(Comment $comment): JsonResponse
     {
+        $this->authorize('manage', $comment);
         $this->commentService->approve($comment);
         return response()->json(['message' => 'Comment approved']);
     }
 
     public function destroy(Comment $comment): JsonResponse
     {
+        $this->authorize('manage', $comment);
         $this->commentService->delete($comment);
         
         return response()->json(null, 204);

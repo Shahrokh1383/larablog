@@ -6,6 +6,7 @@ interface PostDataTableProps {
   isError: boolean;
   onEdit: (post: Post) => void;
   onDelete: (post: Post) => void;
+  onComments?: (post: Post) => void;
 }
 
 export default function PostDataTable({
@@ -14,6 +15,7 @@ export default function PostDataTable({
   isError,
   onEdit,
   onDelete,
+  onComments,
 }: PostDataTableProps) {
   if (isLoading) {
     return (
@@ -69,6 +71,15 @@ export default function PostDataTable({
               </td>
               <td>{new Date(post.created_at).toLocaleDateString()}</td>
               <td className="text-end">
+                {onComments && (
+                  <button
+                    className="btn btn-sm btn-outline-info me-1"
+                    onClick={() => onComments(post)}
+                    title="Comments"
+                  >
+                    <i className="fas fa-comments"></i>
+                  </button>
+                )}
                 <button
                   className="btn btn-sm btn-outline-secondary me-1"
                   onClick={() => onEdit(post)}

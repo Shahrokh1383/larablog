@@ -63,4 +63,12 @@ class CommentService implements CommentServiceInterface
             ->pluck('aggregate', 'post_id')
             ->toArray();
     }
+
+    public function getCommentsForPostAdmin(int $postId, int $perPage = 20): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return Comment::with('user')
+            ->where('post_id', $postId)
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+    }
 }

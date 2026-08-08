@@ -13,6 +13,8 @@ use Modules\Content\Policies\TagPolicy;
 use Modules\Content\Services\ContentStatsService;
 use Modules\Content\Services\Contracts\ContentStatsContract;
 use Modules\Content\Services\PostInfoService;
+use Modules\Content\Services\Contracts\PostAdminServiceInterface;
+use Modules\Content\Services\PostService;
 
 class ContentServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,7 @@ class ContentServiceProvider extends ServiceProvider
     {
         $this->app->bind(ContentStatsContract::class, ContentStatsService::class);
         $this->app->bind(\Modules\Content\Services\Contracts\PostInfoContract::class, PostInfoService::class);
+        $this->app->bind(PostAdminServiceInterface::class, PostService::class);
     }
 
     public function boot(): void

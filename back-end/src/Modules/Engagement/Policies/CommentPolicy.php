@@ -21,4 +21,9 @@ class CommentPolicy
     {
         return $user->id === $comment->user_id || $user->hasRole('admin');
     }
+
+    public function manage(User $user, Comment $comment): bool
+    {
+        return $user->hasRole('admin');
+    }
 }
