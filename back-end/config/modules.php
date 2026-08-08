@@ -8,5 +8,6 @@ return [
         \Modules\Profile\ProfileServiceProvider::class,
         \Modules\Engagement\EngagementServiceProvider::class,
         \Modules\Notification\NotificationServiceProvider::class,
+        \Modules\ReaderExperience\ReaderExperienceServiceProvider::class,
     ],
 ];

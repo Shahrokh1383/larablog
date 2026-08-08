@@ -12,4 +12,5 @@ interface ProfileServiceInterface
     public function updateProfile(string $userId, UpdateProfileDTO $dto): Profile;
     public function getPublicProfileByUsername(string $username): ?Profile;
     public function getAllPublicProfiles(?string $search = null, int $perPage = 12): LengthAwarePaginator;
+    public function deleteAccount(string $userId): void;
 }

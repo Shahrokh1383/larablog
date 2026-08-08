@@ -72,13 +72,12 @@
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\profile",
     "Admin\\src\\features\\posts",
-    "back-end\\database",
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Notification",
     "User\\src\\features\\notifications",
     "User\\src\\shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T16:47:05.922Z",
+  "lastModified": "2026-08-08T17:03:14.890Z",
   "version": 1
 }

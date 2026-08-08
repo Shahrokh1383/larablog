@@ -24,7 +24,6 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 
     public function getPublicProfileByUsername(string $username): ?Profile
     {
-        // Pragmatic DDD: Querying Shared\Models\User directly is legal and avoids over-engineering.
         $user = User::where('username', $username)->first();
         if (!$user) {
             return null;
@@ -36,10 +35,8 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function updateProfile(string $userId, UpdateProfileDTO $dto): Profile
     {
         return DB::transaction(function () use ($userId, $dto) {
-            // 1. Delegate name update to Identity module
             $this->identityService->updateName($userId, $dto->name);
 
-            // 2. Update Profile data
             $profile = Profile::firstOrCreate(['user_id' => $userId]);
             
             $profile->update([
@@ -60,7 +57,6 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
             return [];
         }
 
-        // Eager load the shared User model to avoid N+1 queries
         $profiles = Profile::with('user')->whereIn('user_id', $userIds)->get();
 
         return $profiles->mapWithKeys(function (Profile $profile) {
@@ -88,5 +84,18 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
                       });
             })
             ->paginate($perPage);
+    }
+
+    public function deleteAccount(string $userId): void
+    {
+        DB::transaction(function () use ($userId) {
+            // 1. Delete Profile
+            Profile::where('user_id', $userId)->delete();
+            
+            // 2. Delete Shared User Record
+            // Note: In a strictly event-driven system, we might dispatch an AccountDeleted event
+            // and let Identity handle it. But pragmatically, accessing the Shared User is legal.
+            User::where('id', $userId)->delete();
+        });
     }
 }

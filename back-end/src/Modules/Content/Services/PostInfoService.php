@@ -18,4 +18,34 @@ class PostInfoService implements PostInfoContract
             'slug'     => $post->slug,
         ];
     }
+
+    public function getPostReadingTime(string $postId): ?object
+    {
+        $post = Post::find($postId);
+        if (!$post) return null;
+
+        return (object) [
+            'readingTime' => $post->reading_time ?? 0,
+        ];
+    }
+
+    public function getPostsByIds(array $postIds): array
+    {
+        if (empty($postIds)) return [];
+
+        $posts = Post::whereIn('id', $postIds)->get();
+
+        return $posts->mapWithKeys(function (Post $post) {
+            return [
+                $post->id => (object) [
+                    'id'             => $post->id,
+                    'title'          => $post->title,
+                    'slug'           => $post->slug,
+                    'reading_time'   => $post->reading_time ?? 0,
+                    'featured_image' => $post->featured_image,
+                    'author_id'      => $post->user_id,
+                ]
+            ];
+        })->all();
+    }
 }
