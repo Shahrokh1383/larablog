@@ -123,4 +123,11 @@ class CommentService implements CommentServiceInterface
             ->approved()
             ->count();
     }
+
+    public function getTotalCommentCountForUser(string $userId): int
+    {
+        return Comment::where('user_id', $userId)
+            ->approved()
+            ->count();
+    }
 }

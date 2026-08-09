@@ -1,37 +1,35 @@
 'use client';
 
 import { useState } from 'react';
+import { useAuth } from '@/features/auth/context/AuthContext';
+import { useDashboardOverview } from '@/features/dashboard/hooks/useDashboardOverview';
+import DashboardHeader from '@/features/dashboard/components/DashboardHeader';
 import OverviewTab from '@/features/dashboard/components/OverviewTab';
-// Import other tabs (Comments, Bookmarks, Settings) here later
 import '@/styles/dashboard.css';
 
 type TabId = 'overview' | 'comments' | 'bookmarks' | 'settings';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const { user } = useAuth();
+  const { data: overview } = useDashboardOverview();
+
+  if (!user) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="dashboard-page">
       <div className="container dashboard-container">
         
-        {/* Profile Header (Mocked for now, will be replaced by Profile hook later if needed) */}
-        <section className="profile-header">
-          <div className="profile-cover">
-            <img src="https://picsum.photos/seed/coverphoto/1200/300" alt="Cover Photo" />
-          </div>
-          <div className="profile-info-wrapper">
-            <div className="profile-avatar">
-              <img src="https://picsum.photos/seed/regularuser/120/120" alt="User" />
-              <span className="online-status"></span>
-            </div>
-            <div className="profile-details">
-              <h1 className="profile-name">Your Dashboard</h1>
-              <p className="profile-bio">Track your reading activity and manage your profile.</p>
-            </div>
-          </div>
-        </section>
+        <DashboardHeader user={user} overview={overview} />
 
-        {/* Tabs */}
         <div className="dashboard-tabs">
           <button className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
             <i className="fa-sharp fa-solid fa-grid-2"></i> Overview
@@ -47,7 +45,6 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* Tab Content */}
         <div className="tab-content-wrapper">
           {activeTab === 'overview' && <OverviewTab />}
           {activeTab === 'comments' && <div className="tab-content active"><h3>Comments coming soon</h3></div>}

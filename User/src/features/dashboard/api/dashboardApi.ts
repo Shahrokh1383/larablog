@@ -6,6 +6,8 @@ export interface DashboardOverview {
   total_reading_time: number;
   comments_count: number;
   is_top_commenter: boolean;
+  total_comments: number;
+  total_saved_posts: number;
 }
 
 export interface RecentlyReadItem {

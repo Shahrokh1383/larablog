@@ -24,4 +24,9 @@ interface CommentServiceInterface
      * Get the total number of comments made by a user this week.
      */
     public function getWeeklyCommentCountForUser(string $userId): int;
+
+    /**
+     * Get the TOTAL number of comments made by a user (all time).
+     */
+    public function getTotalCommentCountForUser(string $userId): int;
 }
