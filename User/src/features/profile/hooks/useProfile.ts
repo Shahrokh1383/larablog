@@ -10,5 +10,7 @@ export function useProfile() {
   return useQuery({
     queryKey: profileKeys.detail(),
     queryFn: profileApi.getProfile,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }

@@ -85,12 +85,10 @@
     "back-end\\database\\factories",
     "User\\app\\(public)\\post",
     "User\\app\\(public)",
-    "User\\src\\features\\posts",
-    "User\\src\\features\\comments",
     "User\\src\\styles",
     "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T20:03:56.507Z",
+  "lastModified": "2026-08-09T21:13:22.880Z",
   "version": 1
 }

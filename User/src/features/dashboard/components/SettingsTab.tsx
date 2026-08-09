@@ -10,28 +10,28 @@ import { useAuth } from '@/features/auth/context/AuthContext';
 
 export default function SettingsTab() {
   const { user: authUser } = useAuth();
-  const { data: profile, isLoading, isError } = useProfile();
+  const { data: profile, isError } = useProfile();
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
   const deleteAvatar = useDeleteAvatar();
   const deleteAccount = useDeleteAccount();
 
-  const [name, setName] = useState(authUser?.name ?? '');
-  const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  // Initialize with fallback data to prevent empty fields during initial load
+  const [name, setName] = useState(profile?.name ?? authUser?.name ?? '');
+  const [bio, setBio] = useState(profile?.bio ?? '');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(profile?.avatar ?? authUser?.avatar ?? null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Populate form fields once profile or auth user data is available
+  // Sync state when profile data finally arrives or changes
   useEffect(() => {
     if (profile) {
       setName(profile.name ?? authUser?.name ?? '');
       setBio(profile.bio ?? '');
       setAvatarUrl(profile.avatar ?? null);
     } else if (isError && authUser) {
-      // Fallback to auth user data when profile fetch fails (e.g., no row yet)
       setName(authUser.name ?? '');
       setBio('');
-      setAvatarUrl(null);
+      setAvatarUrl(authUser.avatar ?? null);
     }
   }, [profile, isError, authUser]);
 
@@ -58,21 +58,12 @@ export default function SettingsTab() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateProfile.mutateAsync({
-      name,
-      avatar: avatarUrl,
-      bio,
-    });
+    await updateProfile.mutateAsync({ name, avatar: avatarUrl, bio });
   };
 
   const handleDeleteAccount = async () => {
     await deleteAccount.mutateAsync();
   };
-
-  // While loading, return nothing so the container mounts fresh with content and triggers animation
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <div className="tab-content active" id="settingsContent">
@@ -87,12 +78,7 @@ export default function SettingsTab() {
               </div>
               <div className="col-md-6">
                 <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={authUser?.email ?? ''}
-                  disabled
-                />
+                <input type="email" className="form-control" value={authUser?.email ?? ''} disabled />
               </div>
               <div className="col-12">
                 <label className="form-label">Bio</label>
@@ -100,21 +86,10 @@ export default function SettingsTab() {
               </div>
               <div className="col-12">
                 <label className="form-label">Profile Picture</label>
-                <input
-                  type="file"
-                  className="form-control"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  disabled={uploadAvatar.isPending}
-                />
+                <input type="file" className="form-control" accept="image/*" onChange={handleAvatarChange} disabled={uploadAvatar.isPending} />
                 {avatarUrl && (
                   <div className="mt-2">
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={handleDeleteAvatar}
-                      disabled={deleteAvatar.isPending}
-                    >
+                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={handleDeleteAvatar} disabled={deleteAvatar.isPending}>
                       {deleteAvatar.isPending ? 'Deleting...' : 'Remove current avatar'}
                     </button>
                   </div>
@@ -123,14 +98,9 @@ export default function SettingsTab() {
               <div className="col-12">
                 <button type="submit" className="btn btn-primary-custom" disabled={updateProfile.isPending}>
                   {updateProfile.isPending ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Saving...
-                    </>
+                    <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...</>
                   ) : (
-                    <>
-                      <i className="fa-sharp fa-solid fa-floppy-disk"></i> Save Changes
-                    </>
+                    <><i className="fa-sharp fa-solid fa-floppy-disk"></i> Save Changes</>
                   )}
                 </button>
               </div>
@@ -139,7 +109,6 @@ export default function SettingsTab() {
         </div>
       </div>
 
-      {/* Danger Zone */}
       <div className="dashboard-card mt-4">
         <div className="card-body">
           <h4 className="card-title text-danger">Danger Zone</h4>

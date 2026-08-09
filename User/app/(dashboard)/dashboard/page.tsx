@@ -29,7 +29,6 @@ export default function DashboardPage() {
   const commentsQuery = useUserComments(commentsPage);
   const savedPostsQuery = useSavedPosts(bookmarksPage);
   
-  // Orchestrate the mutation here
   const unsaveMutation = useUnsavePost();
   const handleUnsave = (postId: string) => unsaveMutation.mutate(postId);
 
@@ -63,32 +62,35 @@ export default function DashboardPage() {
           </button>
         </div>
 
+        {/* DOM PRESERVATION: Render all tabs, hide inactive via CSS to prevent unmounting */}
         <div className="tab-content-wrapper">
-          {activeTab === 'overview' && (
+          <div style={{ display: activeTab === 'overview' ? 'block' : 'none' }}>
             <OverviewTab 
               overview={overviewQuery.data} 
               recentlyRead={recentlyReadQuery.data}
-              isLoading={overviewQuery.isLoading || recentlyReadQuery.isLoading}
+              isLoading={overviewQuery.isPending || recentlyReadQuery.isPending}
               onPageChange={setRecentlyReadPage}
             />
-          )}
-          {activeTab === 'comments' && (
+          </div>
+          <div style={{ display: activeTab === 'comments' ? 'block' : 'none' }}>
             <CommentsTab 
               user={user}
               comments={commentsQuery.data}
-              isLoading={commentsQuery.isLoading}
+              isLoading={commentsQuery.isPending}
               onPageChange={setCommentsPage}
             />
-          )}
-          {activeTab === 'bookmarks' && (
+          </div>
+          <div style={{ display: activeTab === 'bookmarks' ? 'block' : 'none' }}>
             <BookmarksTab 
               savedPosts={savedPostsQuery.data}
-              isLoading={savedPostsQuery.isLoading}
+              isLoading={savedPostsQuery.isPending}
               onPageChange={setBookmarksPage}
               onUnsave={handleUnsave}
             />
-          )}
-          {activeTab === 'settings' && <SettingsTab />}
+          </div>
+          <div style={{ display: activeTab === 'settings' ? 'block' : 'none' }}>
+            <SettingsTab />
+          </div>
         </div>
       </div>
     </main>
