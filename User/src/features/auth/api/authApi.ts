@@ -30,13 +30,13 @@ export const authApi = {
     await httpClient.post(endpoints.auth.logout);
   },
   
-  getUser: async () => {
+    getUser: async () => {
     try {
-      const { data } = await httpClient.get<User>(endpoints.auth.user);
-      return data;
+      const { data } = await httpClient.get<{ user: User }>(endpoints.auth.user);
+      return data.user;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        return null; // User is not logged in, return null instead of throwing
+        return null;
       }
       throw error;
     }

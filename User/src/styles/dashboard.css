@@ -22,9 +22,10 @@
     margin-bottom: var(--spacing-2xl);
 }
 
-/* ==================== DASHBOARD HEADER FIXES ==================== */
+/* ==================== DASHBOARD HEADER ==================== */
 .profile-cover {
     background: linear-gradient(135deg, var(--clr-primary-light), var(--clr-surface));
+    min-height: 200px;
 }
 
 .profile-avatar-fallback {
@@ -41,7 +42,6 @@
     border: 4px solid var(--clr-card-bg);
     box-shadow: var(--shadow-lg);
 }
-
 .profile-cover img {
     width: 100%;
     height: 100%;

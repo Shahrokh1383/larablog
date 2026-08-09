@@ -15,15 +15,14 @@ export default function DashboardHeader({ user, overview }: DashboardHeaderProps
   return (
     <section className="profile-header">
       <div className="profile-cover">
-        {/* Cover image is omitted as requested; using CSS gradient background instead */}
       </div>
       <div className="profile-info-wrapper">
         <div className="profile-avatar">
-          {user.avatar ? (
+          {user?.avatar ? (
             <img src={user.avatar} alt={user.name} />
           ) : (
             <div className="profile-avatar-fallback">
-              {user.name.charAt(0).toUpperCase()}
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
           )}
         </div>
