@@ -7,6 +7,7 @@ import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useComments } from '@/features/comments/hooks/useComments';
 import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies';
 import { useTrackPostRead } from '@/features/reader/hooks/useTrackPostRead';
+import { useToggleSavedPost } from '@/features/reader/hooks/useToggleSavedPost';
 import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
 import PostHeader from '@/features/posts/components/PostHeader';
 import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
@@ -29,8 +30,9 @@ export default function PostPage() {
   const commentsQuery = useComments(post?.id || '');
   const loadMoreReplies = useLoadMoreReplies(post?.id || '');
   
-  // Track post read on load
+  // Reader Experience Hooks
   useTrackPostRead(post?.id);
+  const toggleSaveMutation = useToggleSavedPost(post?.id || '');
 
   if (isLoading) {
     return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
@@ -48,11 +50,16 @@ export default function PostPage() {
             <article className="post-article">
               <PostBreadcrumb category={post.category} title={post.title} />
               
-              <div className="d-flex justify-content-between align-items-start gap-3">
-                <PostHeader post={post} />
-                {/* Save Post Button Integration */}
-                <SavePostButton postId={post.id} isSaved={post.is_saved || false} />
-              </div>
+              <PostHeader 
+                post={post} 
+                action={
+                  <SavePostButton 
+                    isSaved={post.is_saved || false}
+                    isLoading={toggleSaveMutation.isPending}
+                    onToggle={() => toggleSaveMutation.mutate()}
+                  />
+                }
+              />
 
               <PostFeaturedImage src={post.featured_image} alt={post.title} />
               <PostBody post={post} />

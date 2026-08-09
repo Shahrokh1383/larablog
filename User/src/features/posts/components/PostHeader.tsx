@@ -1,11 +1,13 @@
 import Link from 'next/link';
+import { ReactNode } from 'react';
 import { Post } from '../types/post';
 
 interface PostHeaderProps {
   post: Post;
+  action?: ReactNode;
 }
 
-export default function PostHeader({ post }: PostHeaderProps) {
+export default function PostHeader({ post, action }: PostHeaderProps) {
   const formattedDate = new Date(post.created_at).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -30,10 +32,13 @@ export default function PostHeader({ post }: PostHeaderProps) {
             <span className="post-date">{formattedDate}</span>
           </div>
         </div>
-        <div className="post-meta-details">
-          <span><i className="fa-sharp fa-solid fa-clock"></i> {post.reading_time} min read</span>
-          <span><i className="fa-sharp fa-solid fa-eye"></i> {post.views} Views</span>
-          <span><i className="fa-sharp fa-solid fa-comment"></i> {post.comments_count ?? 0} Comments</span>
+        <div className="post-meta-actions">
+          <div className="post-meta-details">
+            <span><i className="fa-sharp fa-solid fa-clock"></i> {post.reading_time} min read</span>
+            <span><i className="fa-sharp fa-solid fa-eye"></i> {post.views} Views</span>
+            <span><i className="fa-sharp fa-solid fa-comment"></i> {post.comments_count ?? 0} Comments</span>
+          </div>
+          {action}
         </div>
       </div>
     </header>

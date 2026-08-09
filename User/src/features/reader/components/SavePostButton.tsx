@@ -1,20 +1,17 @@
 'use client';
 
-import { useToggleSavedPost } from '../hooks/useToggleSavedPost';
-
 interface SavePostButtonProps {
-  postId: string;
   isSaved: boolean;
+  isLoading: boolean;
+  onToggle: () => void;
 }
 
-export default function SavePostButton({ postId, isSaved }: SavePostButtonProps) {
-  const toggleMutation = useToggleSavedPost(postId, isSaved);
-
+export default function SavePostButton({ isSaved, isLoading, onToggle }: SavePostButtonProps) {
   return (
     <button 
       className={`btn-save-post ${isSaved ? 'is-saved' : ''}`}
-      onClick={() => toggleMutation.mutate()}
-      disabled={toggleMutation.isPending}
+      onClick={onToggle}
+      disabled={isLoading}
       aria-label={isSaved ? 'Unsave Post' : 'Save Post'}
     >
       <i className={`fa-sharp fa-solid fa-bookmark`}></i>

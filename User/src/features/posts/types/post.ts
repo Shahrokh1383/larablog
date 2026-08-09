@@ -42,4 +42,5 @@ export interface Post {
   tags: Tag[];
   author: Author;
   comments_count?: number;
+  is_saved?: boolean;
 }

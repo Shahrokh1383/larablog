@@ -536,6 +536,45 @@
     border: 1px solid var(--clr-border);
 }
 
+/* ==================== SAVE POST BUTTON ==================== */
+.post-meta-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.btn-save-post {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--clr-border);
+    background: var(--clr-card-bg);
+    color: var(--clr-text-secondary);
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-save-post:hover:not(:disabled) {
+    border-color: var(--clr-primary);
+    color: var(--clr-primary);
+}
+
+.btn-save-post.is-saved {
+    background: var(--clr-primary-light);
+    border-color: var(--clr-primary-light);
+    color: var(--clr-primary);
+}
+
+.btn-save-post:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 991.98px) {
     .post-title {
@@ -578,5 +617,11 @@
     .post-meta-details {
         width: 100%;
         justify-content: space-between;
+    }
+
+    .post-meta-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
     }
 }
