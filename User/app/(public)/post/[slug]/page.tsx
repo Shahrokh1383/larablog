@@ -6,6 +6,7 @@ import { useRelatedPosts } from '@/features/posts/hooks/useRelatedPosts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useComments } from '@/features/comments/hooks/useComments';
 import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies';
+import { useTrackPostRead } from '@/features/reader/hooks/useTrackPostRead';
 import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
 import PostHeader from '@/features/posts/components/PostHeader';
 import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
@@ -14,6 +15,7 @@ import PostTags from '@/features/posts/components/PostTags';
 import AuthorBioCard from '@/features/posts/components/AuthorBioCard';
 import CommentsSection from '@/features/posts/components/CommentsSection';
 import PostSidebar from '@/features/posts/components/PostSidebar';
+import SavePostButton from '@/features/reader/components/SavePostButton';
 import '@/styles/post.css';
 
 export default function PostPage() {
@@ -24,9 +26,11 @@ export default function PostPage() {
   const { data: relatedPosts } = useRelatedPosts(slug);
   const { data: categories } = useCategories();
 
-  // Hooks live in the Page, not in components (Constitution Article V)
   const commentsQuery = useComments(post?.id || '');
   const loadMoreReplies = useLoadMoreReplies(post?.id || '');
+  
+  // Track post read on load
+  useTrackPostRead(post?.id);
 
   if (isLoading) {
     return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
@@ -43,7 +47,13 @@ export default function PostPage() {
           <div className="col-lg-8">
             <article className="post-article">
               <PostBreadcrumb category={post.category} title={post.title} />
-              <PostHeader post={post} />
+              
+              <div className="d-flex justify-content-between align-items-start gap-3">
+                <PostHeader post={post} />
+                {/* Save Post Button Integration */}
+                <SavePostButton postId={post.id} isSaved={post.is_saved || false} />
+              </div>
+
               <PostFeaturedImage src={post.featured_image} alt={post.title} />
               <PostBody post={post} />
               <PostTags tags={post.tags} />

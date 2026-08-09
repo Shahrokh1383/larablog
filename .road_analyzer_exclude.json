@@ -47,7 +47,6 @@
     "back-end\\tests\\TestCase.php",
     "User\\public",
     "back-end\\tests",
-    "User\\src\\features\\auth",
     "Admin\\src\\app",
     "Admin\\src\\features\\users",
     "back-end\\src\\Modules\\Administration",
@@ -65,7 +64,6 @@
     "User\\jsconfig.json",
     "User\\tsconfig.json",
     "back-end\\config\\sanctum.php",
-    "User\\app",
     "back-end\\database\\factories",
     "back-end\\database\\seeders",
     "back-end\\config",
@@ -75,9 +73,15 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Notification",
     "User\\src\\features\\notifications",
-    "User\\src\\shared"
+    "User\\src\\shared",
+    "User\\src\\features\\comments",
+    "User\\app\\(auth)",
+    "User\\app\\(public)\\tags",
+    "User\\app\\(public)\\category",
+    "User\\app\\(public)\\authors",
+    "User\\app\\(public)\\author"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-08T17:03:14.890Z",
+  "lastModified": "2026-08-09T10:20:08.573Z",
   "version": 1
 }
