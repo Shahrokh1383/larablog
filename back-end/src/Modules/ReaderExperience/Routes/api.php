@@ -13,4 +13,5 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('dashboard/overview', [DashboardController::class, 'overview']);
     Route::get('dashboard/recently-read', [DashboardController::class, 'recentlyRead']);
+    Route::get('dashboard/comments', [DashboardController::class, 'comments']);
 });

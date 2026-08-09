@@ -70,4 +70,9 @@ class DashboardService
 
         return $paginator;
     }
+
+    public function getUserCommentsPaginated(string $userId, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->commentService->getUserCommentsPaginated($userId, $perPage);
+    }
 }

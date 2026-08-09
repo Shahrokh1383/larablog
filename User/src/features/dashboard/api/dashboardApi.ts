@@ -22,6 +22,16 @@ export interface RecentlyReadItem {
   };
 }
 
+export interface UserCommentItem {
+  id: string;
+  body: string;
+  created_at: string;
+  post: {
+    slug: string;
+    title: string;
+  };
+}
+
 export const dashboardApi = {
   getOverview: async (): Promise<DashboardOverview> => {
     const res = await httpClient.get<ApiResponse<DashboardOverview>>('/dashboard/overview');
@@ -34,4 +44,11 @@ export const dashboardApi = {
     });
     return res.data;
   },
+
+  getUserComments: async (page = 1): Promise<PaginatedResponse<UserCommentItem>> => {
+    const res = await httpClient.get<PaginatedResponse<UserCommentItem>>('/dashboard/comments', {
+      params: { page },
+    });
+    return res.data;
+  }
 };

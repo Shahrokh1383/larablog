@@ -5,6 +5,8 @@ import { useAuth } from '@/features/auth/context/AuthContext';
 import { useDashboardOverview } from '@/features/dashboard/hooks/useDashboardOverview';
 import DashboardHeader from '@/features/dashboard/components/DashboardHeader';
 import OverviewTab from '@/features/dashboard/components/OverviewTab';
+import CommentsTab from '@/features/dashboard/components/CommentsTab';
+import BookmarksTab from '@/features/dashboard/components/BookmarksTab';
 import '@/styles/dashboard.css';
 
 type TabId = 'overview' | 'comments' | 'bookmarks' | 'settings';
@@ -47,8 +49,8 @@ export default function DashboardPage() {
 
         <div className="tab-content-wrapper">
           {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'comments' && <div className="tab-content active"><h3>Comments coming soon</h3></div>}
-          {activeTab === 'bookmarks' && <div className="tab-content active"><h3>Saved Posts coming soon</h3></div>}
+          {activeTab === 'comments' && <CommentsTab />}
+          {activeTab === 'bookmarks' && <BookmarksTab />}
           {activeTab === 'settings' && <div className="tab-content active"><h3>Settings coming soon</h3></div>}
         </div>
         

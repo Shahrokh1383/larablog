@@ -82,9 +82,11 @@
     "back-end\\src\\Modules\\Engagement",
     "back-end\\src\\Modules\\Profile",
     "User\\src\\shared",
-    "User\\src\\features\\auth"
+    "User\\src\\features\\auth",
+    "User\\src\\features\\posts",
+    "User\\app\\(public)"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T12:15:35.766Z",
+  "lastModified": "2026-08-09T16:22:45.417Z",
   "version": 1
 }
