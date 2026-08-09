@@ -4,18 +4,18 @@ import { useState, useEffect } from 'react';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useUpdateProfile } from '@/features/profile/hooks/useUpdateProfile';
 import { useUploadAvatar } from '@/features/profile/hooks/useUploadAvatar';
+import { useDeleteAvatar } from '@/features/profile/hooks/useDeleteAvatar';
 import { useDeleteAccount } from '@/features/profile/hooks/useDeleteAccount';
 
 export default function SettingsTab() {
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
+  const deleteAvatar = useDeleteAvatar();
   const deleteAccount = useDeleteAccount();
 
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [expertise, setExpertise] = useState('');
-  const [yearsOfExperience, setYearsOfExperience] = useState<number | undefined>(undefined);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -23,8 +23,6 @@ export default function SettingsTab() {
     if (profile) {
       setName(profile.name ?? '');
       setBio(profile.bio ?? '');
-      setExpertise(profile.expertise ?? '');
-      setYearsOfExperience(profile.years_of_experience ?? undefined);
       setAvatarUrl(profile.avatar ?? null);
     }
   }, [profile]);
@@ -40,14 +38,22 @@ export default function SettingsTab() {
     }
   };
 
+  const handleDeleteAvatar = async () => {
+    if (!avatarUrl) return;
+    try {
+      await deleteAvatar.mutateAsync(avatarUrl);
+      setAvatarUrl(null);
+    } catch (err) {
+      console.error('Avatar deletion failed', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateProfile.mutateAsync({
       name,
       avatar: avatarUrl,
       bio,
-      expertise: expertise || null,
-      years_of_experience: yearsOfExperience || null,
     });
   };
 
@@ -78,19 +84,6 @@ export default function SettingsTab() {
                 <label className="form-label">Bio</label>
                 <textarea className="form-control" rows={3} value={bio} onChange={(e) => setBio(e.target.value)} />
               </div>
-              <div className="col-md-6">
-                <label className="form-label">Expertise</label>
-                <input type="text" className="form-control" value={expertise} onChange={(e) => setExpertise(e.target.value)} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label">Years of Experience</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={yearsOfExperience ?? ''}
-                  onChange={(e) => setYearsOfExperience(e.target.value ? Number(e.target.value) : undefined)}
-                />
-              </div>
               <div className="col-12">
                 <label className="form-label">Profile Picture</label>
                 <input
@@ -101,8 +94,16 @@ export default function SettingsTab() {
                   disabled={uploadAvatar.isPending}
                 />
                 {avatarUrl && (
-                  <div className="mt-2">
+                  <div className="mt-2 d-flex align-items-center gap-3">
                     <img src={avatarUrl} alt="Avatar preview" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '50%' }} />
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={handleDeleteAvatar}
+                      disabled={deleteAvatar.isPending}
+                    >
+                      {deleteAvatar.isPending ? 'Deleting...' : 'Remove Avatar'}
+                    </button>
                   </div>
                 )}
               </div>
@@ -125,7 +126,7 @@ export default function SettingsTab() {
         </div>
       </div>
 
-      {/* Account Deletion Section */}
+      {/* Danger Zone */}
       <div className="dashboard-card mt-4">
         <div className="card-body">
           <h4 className="card-title text-danger">Danger Zone</h4>

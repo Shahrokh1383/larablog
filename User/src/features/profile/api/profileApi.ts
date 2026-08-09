@@ -21,9 +21,6 @@ export interface UpdateProfilePayload {
   name: string;
   avatar?: string | null;
   bio?: string | null;
-  expertise?: string | null;
-  years_of_experience?: number | null;
-  social_links?: Record<string, string>;
 }
 
 export const profileApi = {
@@ -44,6 +41,10 @@ export const profileApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return res.data;
+  },
+
+  deleteAvatar: async (url: string): Promise<void> => {
+    await httpClient.delete('/profile/delete-avatar', { data: { url } });
   },
 
   deleteAccount: async (): Promise<void> => {
