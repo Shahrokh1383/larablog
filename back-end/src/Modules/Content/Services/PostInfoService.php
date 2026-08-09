@@ -49,11 +49,11 @@ class PostInfoService implements PostInfoContract
         })->all();
     }
 
-    public function getTotalReadingTimeByIds(array $postIds): int
+    public function getTotalReadingTimeByIds($postIds): int
     {
-        if (empty($postIds)) return 0;
+        if (is_array($postIds) && empty($postIds)) return 0;
 
-        // DB level SUM, zero model hydration
+        // DB level SUM. Supports arrays, Closures, and Builders natively in Laravel
         return (int) Post::whereIn('id', $postIds)->sum('reading_time');
     }
 }

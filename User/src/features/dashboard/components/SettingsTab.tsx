@@ -8,9 +8,16 @@ import { useDeleteAvatar } from '@/features/profile/hooks/useDeleteAvatar';
 import { useDeleteAccount } from '@/features/profile/hooks/useDeleteAccount';
 import { useAuth } from '@/features/auth/context/AuthContext';
 
-export default function SettingsTab() {
+interface SettingsTabProps {
+  hasBeenActive: boolean;
+}
+
+export default function SettingsTab({ hasBeenActive }: SettingsTabProps) {
   const { user: authUser } = useAuth();
-  const { data: profile, isError } = useProfile();
+  
+  // Defer the profile fetch until the user actually visits the Settings tab
+  const { data: profile, isError } = useProfile({ enabled: hasBeenActive });
+  
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
   const deleteAvatar = useDeleteAvatar();
@@ -29,6 +36,7 @@ export default function SettingsTab() {
       setBio(profile.bio ?? '');
       setAvatarUrl(profile.avatar ?? null);
     } else if (isError && authUser) {
+      // Fallback to auth user data when profile fetch fails (e.g., no row yet)
       setName(authUser.name ?? '');
       setBio('');
       setAvatarUrl(authUser.avatar ?? null);
@@ -109,6 +117,7 @@ export default function SettingsTab() {
         </div>
       </div>
 
+      {/* Danger Zone */}
       <div className="dashboard-card mt-4">
         <div className="card-body">
           <h4 className="card-title text-danger">Danger Zone</h4>

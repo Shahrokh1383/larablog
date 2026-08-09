@@ -9,7 +9,8 @@ interface PostInfoContract
     public function getPostsByIds(array $postIds): array;
     
     /**
-     * Get the sum of reading times for a given array of post IDs at the DB level.
+     * Get the sum of reading times using an array, Closure, or Builder.
+     * @param array|\Closure|\Illuminate\Database\Eloquent\Builder $postIds
      */
-    public function getTotalReadingTimeByIds(array $postIds): int;
+    public function getTotalReadingTimeByIds($postIds): int;
 }

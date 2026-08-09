@@ -17,7 +17,7 @@ class DashboardService
         private CommentServiceInterface $commentService
     ) {}
 
-    public function getOverview(string $userId): array
+        public function getOverview(string $userId): array
     {
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
@@ -25,23 +25,24 @@ class DashboardService
         $readQuery = PostRead::where('user_id', $userId)
             ->whereBetween('read_at', [$startOfWeek, $endOfWeek]);
 
-        // 1. DB level count (No memory hydration)
         $postsReadCount = (clone $readQuery)->count();
 
-        // 2. DB level sum via Contract (No model hydration)
-        $postIds = (clone $readQuery)->distinct()->pluck('post_id')->toArray();
-        $totalReadingTime = $this->postInfoService->getTotalReadingTimeByIds($postIds);
+        $postIdsSubquery = function ($query) use ($userId, $startOfWeek, $endOfWeek) {
+            $query->select('post_id')
+                  ->from('reader_post_reads')
+                  ->where('user_id', $userId)
+                  ->whereBetween('read_at', [$startOfWeek, $endOfWeek]);
+        };
+        
+        $totalReadingTime = $this->postInfoService->getTotalReadingTimeByIds($postIdsSubquery);
 
-        // 3. Comments made this week
         $commentsCount = $this->commentService->getWeeklyCommentCountForUser($userId);
 
-        // 4. Top commenter check (Cached globally for 1 hour to avoid heavy GROUP BY on every load)
         $topCommenters = Cache::remember('weekly_top_commenters', 3600, function () {
             return $this->commentService->getWeeklyTopCommenters(10);
         });
         $isTopCommenter = $topCommenters->contains('user_id', $userId);
 
-        // 5. Total Stats for Profile Header
         $totalComments = $this->commentService->getTotalCommentCountForUser($userId);
         $totalSavedPosts = SavedPost::where('user_id', $userId)->count();
 

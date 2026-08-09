@@ -6,11 +6,16 @@ export const readerKeys = {
   savedPosts: () => [...readerKeys.all, 'saved-posts'] as const,
 };
 
-export function useSavedPosts(page = 1) {
+interface UseSavedPostsOptions {
+  enabled?: boolean;
+}
+
+export function useSavedPosts(page: number = 1, options?: UseSavedPostsOptions) {
   return useQuery({
     queryKey: [...readerKeys.savedPosts(), page],
     queryFn: () => readerApi.getSavedPosts(page),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
+    enabled: options?.enabled ?? true,
   });
 }

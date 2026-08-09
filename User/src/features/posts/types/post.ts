@@ -38,7 +38,7 @@ export interface Post {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  category: Category;
+  category: Category | null;
   tags: Tag[];
   author: Author;
   comments_count?: number;

@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request; // Added for shouldRenderJsonWhen
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,5 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // ENTERPRISE FIX: Force JSON responses for all API and Broadcasting routes.
+        // This prevents Laravel from returning HTML redirects (like /login) or HTML error pages 
+        // when the SPA is unauthenticated, completely eliminating the "XML Parsing Error" in the console.
+        $exceptions->shouldRenderJsonWhen(function (Request $request) {
+            return $request->is('api/*') || $request->is('broadcasting/*') || $request->expectsJson();
+        });
     })->create();
