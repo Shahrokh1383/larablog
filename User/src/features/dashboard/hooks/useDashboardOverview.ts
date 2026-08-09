@@ -12,5 +12,7 @@ export function useDashboardOverview() {
   return useQuery({
     queryKey: dashboardKeys.overview(),
     queryFn: () => dashboardApi.getOverview(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 30,   // 30 minutes
   });
 }

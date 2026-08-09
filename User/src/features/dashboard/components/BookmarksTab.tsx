@@ -1,12 +1,17 @@
 'use client';
 
-import { useSavedPosts } from '@/features/reader/hooks/useSavedPosts';
-import { useUnsavePost } from '@/features/reader/hooks/useUnsavePost';
+import type { SavedPostItem } from '@/features/reader/api/readerApi';
+import type { PaginatedResponse } from '@/shared/types/api';
+import Pagination from './Pagination';
 
-export default function BookmarksTab() {
-  const { data, isLoading } = useSavedPosts();
-  const unsaveMutation = useUnsavePost();
+interface BookmarksTabProps {
+  savedPosts?: PaginatedResponse<SavedPostItem>;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+  onUnsave: (postId: string) => void;
+}
 
+export default function BookmarksTab({ savedPosts, isLoading, onPageChange, onUnsave }: BookmarksTabProps) {
   if (isLoading) {
     return (
       <div className="text-center py-5">
@@ -15,7 +20,7 @@ export default function BookmarksTab() {
     );
   }
 
-  if (!data || data.data.length === 0) {
+  if (!savedPosts || savedPosts.data.length === 0) {
     return <div className="text-center py-5 text-muted">No saved posts yet.</div>;
   }
 
@@ -23,7 +28,7 @@ export default function BookmarksTab() {
     <div className="tab-content active" id="bookmarksContent">
       <h3 className="section-title mb-4">Saved Posts</h3>
       <div className="row g-4">
-        {data.data.map((item) => (
+        {savedPosts.data.map((item) => (
           <div key={item.id} className="col-lg-4 col-md-6">
             <article className="post-card post-card-standard">
               <div className="post-card-image">
@@ -35,7 +40,13 @@ export default function BookmarksTab() {
               </div>
               <div className="post-card-body">
                 <div className="post-card-meta">
-                  <span className="post-card-date">{new Date(item.saved_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  <span className="post-card-date">
+                    {new Date(item.saved_at).toLocaleDateString('en-US', { 
+                      month: 'short', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    })}
+                  </span>
                   <span className="post-card-read-time">{item.post.reading_time} min read</span>
                 </div>
                 <h3 className="post-card-title">
@@ -44,8 +55,7 @@ export default function BookmarksTab() {
                 <div className="post-card-footer">
                   <button
                     className="btn-icon-sm remove-bookmark"
-                    onClick={() => unsaveMutation.mutate(item.post.id)}
-                    disabled={unsaveMutation.isPending}
+                    onClick={() => onUnsave(item.post.id)}
                     aria-label="Remove from saved"
                   >
                     <i className="fa-sharp fa-solid fa-bookmark"></i>
@@ -56,6 +66,12 @@ export default function BookmarksTab() {
           </div>
         ))}
       </div>
+
+      <Pagination 
+        currentPage={savedPosts.meta.current_page} 
+        lastPage={savedPosts.meta.last_page} 
+        onPageChange={onPageChange} 
+      />
     </div>
   );
 }

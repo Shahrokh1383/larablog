@@ -17,6 +17,9 @@ return new class extends Migration
             $table->unique(['user_id', 'post_id']);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('post_id')->references('id')->on('content_posts')->onDelete('cascade');
+            
+            // PERFORMANCE INDEX for Dashboard queries
+            $table->index(['user_id', 'saved_at'], 'idx_user_saved_at');
         });
     }
 

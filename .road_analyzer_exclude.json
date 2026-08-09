@@ -79,14 +79,18 @@
     "back-end\\src\\Modules\\Engagement",
     "User\\src\\shared",
     "User\\src\\features\\auth",
-    "User\\src\\features\\dashboard",
-    "User\\src\\features\\reader",
-    "User\\app\\(dashboard)",
-    "User\\src\\features\\profile",
     "back-end\\src\\Modules\\Profile",
-    "back-end\\src\\Modules\\Content"
+    "back-end\\src\\Modules\\Content",
+    "back-end\\database\\seeders",
+    "back-end\\database\\factories",
+    "User\\app\\(public)\\post",
+    "User\\app\\(public)",
+    "User\\src\\features\\posts",
+    "User\\src\\features\\comments",
+    "User\\src\\styles",
+    "back-end\\database"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T18:54:05.373Z",
+  "lastModified": "2026-08-09T20:03:56.507Z",
   "version": 1
 }

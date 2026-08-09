@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
             ProfileSeeder::class,
             ContentSeeder::class,
             CommentSeeder::class,
-            //SavedPostSeeder::class,
-            //PostReadSeeder::class,
+            SavedPostSeeder::class,
+            PostReadSeeder::class,
         ]);
     }
 }

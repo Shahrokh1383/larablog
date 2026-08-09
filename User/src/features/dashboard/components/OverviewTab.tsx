@@ -1,15 +1,21 @@
 'use client';
 
-import { useDashboardOverview } from '../hooks/useDashboardOverview';
+import type { DashboardOverview, RecentlyReadItem } from '../api/dashboardApi';
+import type { PaginatedResponse } from '@/shared/types/api';
+import Pagination from './Pagination';
 
-export default function OverviewTab() {
-  const { data: overview, isLoading } = useDashboardOverview();
+interface OverviewTabProps {
+  overview?: DashboardOverview;
+  recentlyRead?: PaginatedResponse<RecentlyReadItem>;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+}
 
+export default function OverviewTab({ overview, recentlyRead, isLoading, onPageChange }: OverviewTabProps) {
   if (isLoading || !overview) {
     return <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>;
   }
 
-  // Convert minutes to "Xh Ym" format
   const formatTime = (mins: number) => {
     const h = Math.floor(mins / 60);
     const m = mins % 60;
@@ -61,43 +67,40 @@ export default function OverviewTab() {
         )}
       </div>
 
-      <RecentlyReadSection />
-    </div>
-  );
-}
-
-function RecentlyReadSection() {
-  const { data, isLoading } = useRecentlyRead();
-
-  if (isLoading) return <div className="mt-5 text-center"><div className="spinner-border text-primary"></div></div>;
-
-  return (
-    <>
       <div className="section-header mt-5">
         <h3>Recently Read</h3>
       </div>
-      <div className="row g-4">
-        {data?.data.map((item) => (
-          <div className="col-lg-4 col-md-6" key={item.id}>
-            <article className="post-card post-card-standard">
-              <div className="post-card-image">
-                <img src={item.post.featured_image || `https://picsum.photos/seed/${item.post.id}/600/350`} alt={item.post.title} loading="lazy" />
+
+      {recentlyRead?.data && recentlyRead.data.length > 0 ? (
+        <>
+          <div className="row g-4">
+            {recentlyRead.data.map((item) => (
+              <div className="col-lg-4 col-md-6" key={item.id}>
+                <article className="post-card post-card-standard">
+                  <div className="post-card-image">
+                    <img src={item.post.featured_image || `https://picsum.photos/seed/${item.post.id}/600/350`} alt={item.post.title} loading="lazy" />
+                  </div>
+                  <div className="post-card-body">
+                    <div className="post-card-meta">
+                      <span className="post-card-read-time">{item.post.reading_time} min read</span>
+                    </div>
+                    <h3 className="post-card-title">
+                      <a href={`/post/${item.post.slug}`}>{item.post.title}</a>
+                    </h3>
+                  </div>
+                </article>
               </div>
-              <div className="post-card-body">
-                <div className="post-card-meta">
-                  <span className="post-card-read-time">{item.post.reading_time} min read</span>
-                </div>
-                <h3 className="post-card-title">
-                  <a href={`/post/${item.post.slug}`}>{item.post.title}</a>
-                </h3>
-              </div>
-            </article>
+            ))}
           </div>
-        ))}
-      </div>
-    </>
+          <Pagination 
+            currentPage={recentlyRead.meta.current_page} 
+            lastPage={recentlyRead.meta.last_page} 
+            onPageChange={onPageChange} 
+          />
+        </>
+      ) : (
+        <p className="text-muted text-center mt-4">No recently read articles.</p>
+      )}
+    </div>
   );
 }
-
-// Need to import useRecentlyRead here for the sub-component
-import { useRecentlyRead } from '../hooks/useRecentlyRead';

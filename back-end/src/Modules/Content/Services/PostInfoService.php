@@ -48,4 +48,12 @@ class PostInfoService implements PostInfoContract
             ];
         })->all();
     }
+
+    public function getTotalReadingTimeByIds(array $postIds): int
+    {
+        if (empty($postIds)) return 0;
+
+        // DB level SUM, zero model hydration
+        return (int) Post::whereIn('id', $postIds)->sum('reading_time');
+    }
 }

@@ -23,6 +23,10 @@ return new class extends Migration
             
             $table->index('post_id');
             $table->index('parent_id');
+            
+            // PERFORMANCE INDEXES for Dashboard queries
+            $table->index(['user_id', 'created_at'], 'idx_user_created_at');
+            $table->index(['post_id', 'is_approved'], 'idx_post_approved');
         });
     }
 

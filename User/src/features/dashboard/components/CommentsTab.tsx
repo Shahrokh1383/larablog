@@ -1,12 +1,18 @@
 'use client';
 
-import { useAuth } from '@/features/auth/context/AuthContext';
-import { useUserComments } from '../hooks/useUserComments';
+import type { User } from '@/features/auth/types/auth';
+import type { UserCommentItem } from '../api/dashboardApi';
+import type { PaginatedResponse } from '@/shared/types/api';
+import Pagination from './Pagination';
 
-export default function CommentsTab() {
-  const { user } = useAuth();
-  const { data, isLoading } = useUserComments();
+interface CommentsTabProps {
+  user: User;
+  comments?: PaginatedResponse<UserCommentItem>;
+  isLoading: boolean;
+  onPageChange: (page: number) => void;
+}
 
+export default function CommentsTab({ user, comments, isLoading, onPageChange }: CommentsTabProps) {
   if (isLoading) {
     return (
       <div className="text-center py-5">
@@ -15,7 +21,7 @@ export default function CommentsTab() {
     );
   }
 
-  if (!data || data.data.length === 0) {
+  if (!comments || comments.data.length === 0) {
     return <div className="text-center py-5 text-muted">No comments yet.</div>;
   }
 
@@ -23,7 +29,7 @@ export default function CommentsTab() {
     <div className="tab-content active" id="commentsContent">
       <h3 className="section-title mb-4">Your Comments</h3>
       <div className="comments-list">
-        {data.data.map((comment) => (
+        {comments.data.map((comment) => (
           <div key={comment.id} className="comment-item">
             <div className="comment-avatar">
               {user?.avatar ? (
@@ -54,6 +60,12 @@ export default function CommentsTab() {
           </div>
         ))}
       </div>
+
+      <Pagination 
+        currentPage={comments.meta.current_page} 
+        lastPage={comments.meta.last_page} 
+        onPageChange={onPageChange} 
+      />
     </div>
   );
 }

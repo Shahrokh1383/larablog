@@ -14,8 +14,8 @@ return new class extends Migration
             $table->uuid('post_id');
             $table->timestamp('read_at')->useCurrent();
 
-            // Index for efficiently querying user's weekly reading history
-            $table->index(['user_id', 'read_at']);
+            // PERFORMANCE INDEX for Dashboard queries
+            $table->index(['user_id', 'read_at'], 'idx_user_read_at');
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('post_id')->references('id')->on('content_posts')->onDelete('cascade');
