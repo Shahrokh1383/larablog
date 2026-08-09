@@ -8,6 +8,15 @@ interface CommentItemProps {
   fetchingReplyId?: string | null;
 }
 
+function AvatarPlaceholder({ name }: { name: string }) {
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  return (
+    <div className="comment-avatar-placeholder" aria-hidden="true">
+      {initials}
+    </div>
+  );
+}
+
 export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetchingReplyId }: CommentItemProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -39,7 +48,11 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
     <li className="comment-item">
       <div className="comment-body">
         <div className="comment-avatar">
-          <img src={`https://picsum.photos/seed/${comment.author.name}/50/50`} alt={comment.author.name} loading="lazy" />
+          {comment.author.avatar ? (
+            <img src={comment.author.avatar} alt={comment.author.name}      loading="lazy" />
+          ) : (
+            <AvatarPlaceholder name={comment.author.name} />
+          )}
         </div>
         <div className="comment-content">
           <div className="comment-header">

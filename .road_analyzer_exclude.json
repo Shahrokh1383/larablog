@@ -73,7 +73,6 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Notification",
     "User\\src\\features\\notifications",
-    "User\\src\\features\\comments",
     "User\\app\\(auth)",
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\category",
@@ -82,12 +81,14 @@
     "back-end\\src\\Modules\\Engagement",
     "User\\src\\shared",
     "User\\src\\features\\auth",
-    "User\\src\\features\\posts",
-    "User\\app\\(public)",
     "back-end\\src\\Modules\\ReaderExperience",
-    "back-end\\src\\Modules\\Content"
+    "back-end\\src\\Modules\\Content",
+    "User\\src\\features\\dashboard",
+    "User\\src\\features\\reader",
+    "User\\app\\(dashboard)",
+    "User\\src\\features\\profile"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T16:52:11.726Z",
+  "lastModified": "2026-08-09T17:48:06.824Z",
   "version": 1
 }

@@ -15,10 +15,12 @@ class CommentPublicResource extends JsonResource
             'parent_id'  => $this->parent_id,
             'body'       => $this->body,
             'author'     => $this->user ? [
-                'id'   => $this->user->id,
-                'name' => $this->user->name,
+                'id'     => $this->user->id,
+                'name'   => $this->user->name,
+                'avatar' => $this->avatar ?? null,
             ] : [
-                'name' => $this->name,
+                'name'   => $this->name,
+                'avatar' => null,
             ],
             'replies'    => CommentPublicResource::collection($this->whenLoaded('replies')),
             'replies_count' => $this->when(isset($this->replies_count), $this->replies_count, 0),

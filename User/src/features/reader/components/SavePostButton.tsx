@@ -14,7 +14,7 @@ export default function SavePostButton({ isSaved, isLoading, onToggle }: SavePos
       disabled={isLoading}
       aria-label={isSaved ? 'Unsave Post' : 'Save Post'}
     >
-      <i className={`fa-sharp fa-solid fa-bookmark`}></i>
+      <i className={`fa-sharp ${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark`}></i>
       <span>{isSaved ? 'Saved' : 'Save'}</span>
     </button>
   );

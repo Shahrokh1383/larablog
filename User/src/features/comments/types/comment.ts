@@ -2,6 +2,7 @@ export interface CommentAuthor {
   id?: string;
   name: string;
   username?: string;
+  avatar?: string | null;
 }
 
 export interface Comment {
