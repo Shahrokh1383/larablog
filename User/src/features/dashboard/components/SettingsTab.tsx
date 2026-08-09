@@ -6,26 +6,34 @@ import { useUpdateProfile } from '@/features/profile/hooks/useUpdateProfile';
 import { useUploadAvatar } from '@/features/profile/hooks/useUploadAvatar';
 import { useDeleteAvatar } from '@/features/profile/hooks/useDeleteAvatar';
 import { useDeleteAccount } from '@/features/profile/hooks/useDeleteAccount';
+import { useAuth } from '@/features/auth/context/AuthContext';
 
 export default function SettingsTab() {
-  const { data: profile, isLoading } = useProfile();
+  const { user: authUser } = useAuth();
+  const { data: profile, isLoading, isError } = useProfile();
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
   const deleteAvatar = useDeleteAvatar();
   const deleteAccount = useDeleteAccount();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState(authUser?.name ?? '');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Populate form fields once profile or auth user data is available
   useEffect(() => {
     if (profile) {
-      setName(profile.name ?? '');
+      setName(profile.name ?? authUser?.name ?? '');
       setBio(profile.bio ?? '');
       setAvatarUrl(profile.avatar ?? null);
+    } else if (isError && authUser) {
+      // Fallback to auth user data when profile fetch fails (e.g., no row yet)
+      setName(authUser.name ?? '');
+      setBio('');
+      setAvatarUrl(null);
     }
-  }, [profile]);
+  }, [profile, isError, authUser]);
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,8 +69,9 @@ export default function SettingsTab() {
     await deleteAccount.mutateAsync();
   };
 
+  // While loading, return nothing so the container mounts fresh with content and triggers animation
   if (isLoading) {
-    return <div className="text-center py-5"><div className="spinner-border text-primary" role="status" /></div>;
+    return null;
   }
 
   return (
@@ -78,7 +87,12 @@ export default function SettingsTab() {
               </div>
               <div className="col-md-6">
                 <label className="form-label">Email Address</label>
-                <input type="email" className="form-control" value={profile?.username ? `${profile.username}@example.com` : ''} disabled />
+                <input
+                  type="email"
+                  className="form-control"
+                  value={authUser?.email ?? ''}
+                  disabled
+                />
               </div>
               <div className="col-12">
                 <label className="form-label">Bio</label>
@@ -94,15 +108,14 @@ export default function SettingsTab() {
                   disabled={uploadAvatar.isPending}
                 />
                 {avatarUrl && (
-                  <div className="mt-2 d-flex align-items-center gap-3">
-                    <img src={avatarUrl} alt="Avatar preview" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '50%' }} />
+                  <div className="mt-2">
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm"
                       onClick={handleDeleteAvatar}
                       disabled={deleteAvatar.isPending}
                     >
-                      {deleteAvatar.isPending ? 'Deleting...' : 'Remove Avatar'}
+                      {deleteAvatar.isPending ? 'Deleting...' : 'Remove current avatar'}
                     </button>
                   </div>
                 )}
