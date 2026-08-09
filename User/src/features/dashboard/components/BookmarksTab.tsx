@@ -45,7 +45,7 @@ export default function BookmarksTab() {
                   <button
                     className="btn-icon-sm remove-bookmark"
                     onClick={() => unsaveMutation.mutate(item.post.id)}
-                    disabled={unsaveMutation.isLoading}
+                    disabled={unsaveMutation.isPending}
                     aria-label="Remove from saved"
                   >
                     <i className="fa-sharp fa-solid fa-bookmark"></i>
