@@ -8,13 +8,13 @@ interface SavePostButtonProps {
 
 export default function SavePostButton({ isSaved, isLoading, onToggle }: SavePostButtonProps) {
   return (
-    <button 
-      className={`btn-save-post ${isSaved ? 'is-saved' : ''}`}
-      onClick={onToggle}
-      disabled={isLoading}
+    <button
+      className={`btn-save-post ${isSaved ? 'is-saved' : ''} ${isLoading ? 'is-loading' : ''}`}
+      onClick={() => !isLoading && onToggle()}
       aria-label={isSaved ? 'Unsave Post' : 'Save Post'}
+      aria-disabled={isLoading}
     >
-      <i className={`fa-sharp ${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark`}></i>
+      <i className={`fa-sharp ${isSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark`} />
       <span>{isSaved ? 'Saved' : 'Save'}</span>
     </button>
   );

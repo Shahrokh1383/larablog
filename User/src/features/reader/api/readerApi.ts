@@ -19,8 +19,8 @@ export const readerApi = {
   },
 
   toggleSave: async (postId: string): Promise<{ saved: boolean }> => {
-    const res = await httpClient.post<ApiResponse<{ saved: boolean }>>(`/saved-posts/${postId}`);
-    return res.data.data;
+    const res = await httpClient.post<{ saved: boolean }>(`/saved-posts/${postId}`);
+    return res.data;
   },
 
   getSavedPosts: async (page = 1): Promise<PaginatedResponse<SavedPostItem>> => {

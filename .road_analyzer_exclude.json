@@ -81,14 +81,14 @@
     "back-end\\src\\Modules\\Engagement",
     "User\\src\\shared",
     "User\\src\\features\\auth",
-    "back-end\\src\\Modules\\ReaderExperience",
-    "back-end\\src\\Modules\\Content",
     "User\\src\\features\\dashboard",
     "User\\src\\features\\reader",
     "User\\app\\(dashboard)",
-    "User\\src\\features\\profile"
+    "User\\src\\features\\profile",
+    "back-end\\src\\Modules\\Profile",
+    "back-end\\src\\Modules\\Content"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T17:48:06.824Z",
+  "lastModified": "2026-08-09T18:45:20.684Z",
   "version": 1
 }

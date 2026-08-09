@@ -7,14 +7,17 @@ use Modules\Content\Models\Category;
 use Modules\Content\Models\Tag;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
+use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class PostPublicService
 {
     public function __construct(
         private FetchesPublicProfiles $profileService,
         private CommentServiceInterface $commentService,
+        private SavedPostInteractionContract $savedPostService,
     ) {}
 
     public function getHomeData(int $perPage = 10): LengthAwarePaginator
@@ -26,6 +29,7 @@ class PostPublicService
 
         $this->mapAuthorsToPosts($posts);
         $this->mapCommentsToPosts($posts);
+        $this->mapSavedStatusToPosts($posts);
 
         return $posts;
     }
@@ -45,6 +49,7 @@ class PostPublicService
 
         $this->mapAuthorsToPosts([$post]);
         $this->mapCommentsToPosts([$post]);
+        $this->mapSavedStatusToPosts([$post]);
 
         return $post;
     }
@@ -66,6 +71,7 @@ class PostPublicService
 
         $this->mapAuthorsToPosts($related);
         $this->mapCommentsToPosts($related);
+        $this->mapSavedStatusToPosts($related);
 
         return $related->all();
     }
@@ -87,6 +93,7 @@ class PostPublicService
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
         $this->mapCommentsToPosts($posts);
+        $this->mapSavedStatusToPosts($posts);
 
         return $posts;
     }
@@ -108,6 +115,7 @@ class PostPublicService
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
         $this->mapCommentsToPosts($posts);
+        $this->mapSavedStatusToPosts($posts);
 
         return $posts;
     }
@@ -129,6 +137,7 @@ class PostPublicService
         $posts = $query->paginate($perPage);
         $this->mapAuthorsToPosts($posts);
         $this->mapCommentsToPosts($posts);
+        $this->mapSavedStatusToPosts($posts);
 
         return $posts;
     }
@@ -161,6 +170,25 @@ class PostPublicService
     
         $postsCollection->each(function (Post $post) use ($counts) {
             $post->comments_count = $counts[$post->id] ?? 0;
+        });
+    }
+
+    private function mapSavedStatusToPosts(LengthAwarePaginator|Collection|array $posts): void
+    {
+        $user = Auth::user();
+        if (!$user) return;
+
+        $postsCollection = $posts instanceof LengthAwarePaginator 
+            ? collect($posts->items()) 
+            : collect($posts);
+
+        $postIds = $postsCollection->pluck('id')->toArray();
+        if (empty($postIds)) return;
+
+        $savedIds = $this->savedPostService->getSavedPostIdsForUser($user->id, $postIds);
+
+        $postsCollection->each(function (Post $post) use ($savedIds) {
+            $post->is_saved = in_array($post->id, $savedIds);
         });
     }
 }

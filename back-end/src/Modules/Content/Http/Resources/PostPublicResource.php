@@ -19,6 +19,7 @@ class PostPublicResource extends JsonResource
             'reading_time'   => $this->reading_time,
             'views'          => $this->views,
             'comments_count' => $this->comments_count ?? 0,
+            'is_saved'       => $this->is_saved ?? false,
             'published_at'   => $this->published_at,
             'category'       => new CategoryResource($this->whenLoaded('category')),
             'tags'           => TagResource::collection($this->whenLoaded('tags')),

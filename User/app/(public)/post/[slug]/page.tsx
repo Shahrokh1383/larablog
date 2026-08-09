@@ -32,7 +32,7 @@ export default function PostPage() {
   
   // Reader Experience Hooks
   useTrackPostRead(post?.id);
-  const toggleSaveMutation = useToggleSavedPost(post?.id || '');
+  const toggleSaveMutation = useToggleSavedPost(post?.id || '', slug);
 
   if (isLoading) {
     return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;

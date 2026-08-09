@@ -6,8 +6,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\Content\Services\Contracts\PostInfoContract;
 use Modules\ReaderExperience\Actions\ToggleSavedPostAction;
 use Modules\ReaderExperience\Models\SavedPost;
+use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;
 
-class SavedPostService
+class SavedPostService implements SavedPostInteractionContract
 {
     public function __construct(
         private ToggleSavedPostAction $toggleAction,
@@ -25,7 +26,6 @@ class SavedPostService
             ->orderBy('saved_at', 'desc')
             ->paginate($perPage);
 
-        // Pragmatic Bounded Context: Fetch post data via Content Service Contract
         $postIds = $paginator->getCollection()->pluck('post_id')->unique()->toArray();
         $postsMap = $this->postInfoService->getPostsByIds($postIds);
 
@@ -35,5 +35,17 @@ class SavedPostService
         });
 
         return $paginator;
+    }
+
+    public function getSavedPostIdsForUser(string $userId, array $postIds): array
+    {
+        if (empty($postIds)) {
+            return [];
+        }
+
+        return SavedPost::where('user_id', $userId)
+            ->whereIn('post_id', $postIds)
+            ->pluck('post_id')
+            ->toArray();
     }
 }

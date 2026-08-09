@@ -3,12 +3,13 @@
 namespace Modules\ReaderExperience;
 
 use Illuminate\Support\ServiceProvider;
-
+use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;
+use Modules\ReaderExperience\Services\SavedPostService;
 class ReaderExperienceServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        // Bind contracts here in future phases if needed
+        $this->app->bind(SavedPostInteractionContract::class, SavedPostService::class);
     }
 
     public function boot(): void
