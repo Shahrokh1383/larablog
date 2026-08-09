@@ -14,6 +14,8 @@ class DashboardOverviewResource extends JsonResource
             'total_reading_time' => $this->resource['total_reading_time'],
             'comments_count'     => $this->resource['comments_count'],
             'is_top_commenter'   => $this->resource['is_top_commenter'],
+            'total_comments'     => $this->resource['total_comments'],
+            'total_saved_posts'  => $this->resource['total_saved_posts'],
         ];
     }
 }

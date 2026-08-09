@@ -79,9 +79,12 @@
     "User\\app\\(public)\\category",
     "User\\app\\(public)\\authors",
     "User\\app\\(public)\\author",
-    "User\\src\\features"
+    "back-end\\src\\Modules\\Engagement",
+    "back-end\\src\\Modules\\Profile",
+    "User\\src\\shared",
+    "User\\src\\features\\auth"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T10:43:13.015Z",
+  "lastModified": "2026-08-09T12:15:35.766Z",
   "version": 1
 }

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { readerApi } from '../api/readerApi';
 import { postKeys } from '@/features/posts/hooks/usePost';
+import { dashboardKeys } from '@/features/dashboard/hooks/useDashboardOverview';
 
 export function useToggleSavedPost(postId: string) {
   const queryClient = useQueryClient();
@@ -28,7 +29,10 @@ export function useToggleSavedPost(postId: string) {
         ...old,
         is_saved: data.saved,
       }));
+      // Invalidate saved posts list
       queryClient.invalidateQueries({ queryKey: ['reader', 'saved-posts'] });
+      // Also invalidate dashboard overview so header counts update
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.overview() });
     },
   });
 }
