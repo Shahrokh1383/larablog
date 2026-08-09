@@ -7,6 +7,7 @@ import DashboardHeader from '@/features/dashboard/components/DashboardHeader';
 import OverviewTab from '@/features/dashboard/components/OverviewTab';
 import CommentsTab from '@/features/dashboard/components/CommentsTab';
 import BookmarksTab from '@/features/dashboard/components/BookmarksTab';
+import SettingsTab from '@/features/dashboard/components/SettingsTab';
 import '@/styles/dashboard.css';
 
 type TabId = 'overview' | 'comments' | 'bookmarks' | 'settings';
@@ -51,7 +52,7 @@ export default function DashboardPage() {
           {activeTab === 'overview' && <OverviewTab />}
           {activeTab === 'comments' && <CommentsTab />}
           {activeTab === 'bookmarks' && <BookmarksTab />}
-          {activeTab === 'settings' && <div className="tab-content active"><h3>Settings coming soon</h3></div>}
+          {activeTab === 'settings' && <SettingsTab />}
         </div>
         
       </div>

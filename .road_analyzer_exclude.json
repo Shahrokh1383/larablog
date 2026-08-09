@@ -80,13 +80,14 @@
     "User\\app\\(public)\\authors",
     "User\\app\\(public)\\author",
     "back-end\\src\\Modules\\Engagement",
-    "back-end\\src\\Modules\\Profile",
     "User\\src\\shared",
     "User\\src\\features\\auth",
     "User\\src\\features\\posts",
-    "User\\app\\(public)"
+    "User\\app\\(public)",
+    "back-end\\src\\Modules\\ReaderExperience",
+    "back-end\\src\\Modules\\Content"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T16:22:45.417Z",
+  "lastModified": "2026-08-09T16:52:11.726Z",
   "version": 1
 }
