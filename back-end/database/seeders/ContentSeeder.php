@@ -11,7 +11,7 @@ use Modules\Identity\Models\User;
 
 class ContentSeeder extends Seeder
 {
-    private const POSTS_COUNT = 10_000;
+    private const POSTS_COUNT = 1_000;
     private const CATEGORIES_COUNT = 50;
     private const TAGS_COUNT = 500;
     private const TAGS_PER_POST_MIN = 5;
