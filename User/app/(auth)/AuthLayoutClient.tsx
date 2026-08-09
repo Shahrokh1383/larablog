@@ -1,14 +1,36 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import '@/styles/auth.css';
 import { useTheme } from '@/providers/ThemeProvider';
 import AuthSlider from '@/features/auth/components/AuthSlider';
+import { useAuth } from '@/features/auth/context/AuthContext';
 
 export default function AuthLayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  // Show a loading spinner while checking auth state or redirecting
+  if (isLoading || isAuthenticated) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   // Determine layout state based on route
   const isSignup = pathname.includes('register');
   const isSinglePanel = pathname.includes('forgot') || pathname.includes('reset') || pathname.includes('verify-email');

@@ -73,15 +73,15 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Notification",
     "User\\src\\features\\notifications",
-    "User\\src\\shared",
     "User\\src\\features\\comments",
     "User\\app\\(auth)",
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\category",
     "User\\app\\(public)\\authors",
-    "User\\app\\(public)\\author"
+    "User\\app\\(public)\\author",
+    "User\\src\\features"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-09T10:20:08.573Z",
+  "lastModified": "2026-08-09T10:43:13.015Z",
   "version": 1
 }
