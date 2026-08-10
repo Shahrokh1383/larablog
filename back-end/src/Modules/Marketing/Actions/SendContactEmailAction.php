@@ -20,7 +20,7 @@ class SendContactEmailAction
         ]);
 
         // Send email to admin (queued for performance)
-        Mail::to(config('mail.admin_address', 'admin@larablog.com'))
+        Mail::to(config('mail.admin_address', 'LaraBlog@gmail.com'))
             ->queue(new ContactFormMail($message));
 
         return $message;

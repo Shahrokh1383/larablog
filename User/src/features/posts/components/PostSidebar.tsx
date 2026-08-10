@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { Author, Category, Post } from '../types/post';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
 
 interface PostSidebarProps {
   author: Author;
@@ -8,6 +10,8 @@ interface PostSidebarProps {
 }
 
 export default function PostSidebar({ author, relatedPosts, categories }: PostSidebarProps) {
+  const newsletterState = useSubscribeNewsletter();
+
   return (
     <aside className="col-lg-4">
       <div className="sidebar">
@@ -54,15 +58,8 @@ export default function PostSidebar({ author, relatedPosts, categories }: PostSi
           </div>
         </div>
 
-        {/* Newsletter */}
-        <div className="sidebar-card newsletter-sidebar">
-          <h4 className="sidebar-title">Newsletter</h4>
-          <p>Get the best articles delivered to your inbox.</p>
-          <form className="newsletter-sidebar-form" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" className="form-control" placeholder="your@email.com" required />
-            <button type="submit" className="btn btn-primary-custom w-100 mt-2">Subscribe</button>
-          </form>
-        </div>
+        {/* Newsletter (DRY Refactor) */}
+        <NewsletterSidebar {...newsletterState} />
       </div>
     </aside>
   );

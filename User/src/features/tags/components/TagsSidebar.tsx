@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import type { Tag } from '../types/tag';
 import type { Category } from '@/features/categories/types/category';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
 
 interface TagsSidebarProps {
   popularTags: Tag[];
@@ -8,8 +10,8 @@ interface TagsSidebarProps {
 }
 
 export default function TagsSidebar({ popularTags, categories }: TagsSidebarProps) {
-  // Limit to 7 items for the sidebar
   const visibleCategories = categories.slice(0, 7);
+  const newsletterState = useSubscribeNewsletter();
 
   return (
     <aside className="col-lg-4">
@@ -46,14 +48,8 @@ export default function TagsSidebar({ popularTags, categories }: TagsSidebarProp
           </Link>
         </div>
 
-        <div className="sidebar-card newsletter-sidebar">
-          <h4 className="sidebar-title">Newsletter</h4>
-          <p>Get the best articles delivered to your inbox.</p>
-          <form className="newsletter-sidebar-form">
-            <input type="email" className="form-control" placeholder="your@email.com" required />
-            <button type="submit" className="btn btn-primary-custom w-100 mt-2">Subscribe</button>
-          </form>
-        </div>
+        {/* Newsletter (DRY Refactor) */}
+        <NewsletterSidebar {...newsletterState} />
       </div>
     </aside>
   );
