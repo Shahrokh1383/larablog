@@ -9,5 +9,6 @@ return [
         \Modules\Engagement\EngagementServiceProvider::class,
         \Modules\Notification\NotificationServiceProvider::class,
         \Modules\ReaderExperience\ReaderExperienceServiceProvider::class,
+        \Modules\Marketing\MarketingServiceProvider::class,
     ],
 ];

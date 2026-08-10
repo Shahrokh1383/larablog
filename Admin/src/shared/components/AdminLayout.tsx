@@ -25,6 +25,8 @@ export default function AdminLayout() {
   // Conditionally add User Management link for admins
   if (user?.roles.includes('admin')) {
     navItems.push({ to: '/users', label: 'User Management', icon: 'fa-users' });
+    navItems.push({ to: '/subscribers', label: 'Subscribers', icon: 'fa-envelope-open-text' });
+    navItems.push({ to: '/contact-messages', label: 'Messages', icon: 'fa-inbox' });
   }
 
   return (

@@ -75,7 +75,6 @@
     "User\\app\\(public)\\author",
     "User\\src\\shared",
     "back-end\\src\\Modules\\Profile",
-    "back-end\\src\\Modules\\Content",
     "back-end\\database\\seeders",
     "back-end\\database\\factories",
     "User\\app\\(public)\\post",
@@ -85,9 +84,10 @@
     "User\\src\\features\\auth",
     "User\\src\\features\\posts",
     "User\\src\\features\\profile",
-    "back-end\\src\\Modules\\Identity"
+    "back-end\\src\\Modules\\Identity",
+    "back-end\\src\\Modules\\ReaderExperience"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-10T12:09:58.545Z",
+  "lastModified": "2026-08-10T15:11:36.962Z",
   "version": 1
 }

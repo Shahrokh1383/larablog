@@ -11,6 +11,8 @@ import CategoriesPage from '@/pages/Categories';
 import TagsPage from '@/pages/Tags';
 import ProfilePage from '@/pages/Profile';
 import PostCommentsPage from '@/pages/PostComments';
+import SubscribersPage from '@/pages/Subscribers';
+import ContactMessagesPage from '@/pages/ContactMessages';
 
 export default function AppRouter() {
   return (
@@ -41,6 +43,14 @@ export default function AppRouter() {
             </RequireAdmin>
           }
         />
+        <Route
+          path="/subscribers"
+          element={<RequireAdmin><SubscribersPage /></        RequireAdmin>}
+        />
+        <Route
+          path="/contact-messages"
+          element={<RequireAdmin><ContactMessagesPage /></RequireAdmin>}
+          />
       </Route>
       
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

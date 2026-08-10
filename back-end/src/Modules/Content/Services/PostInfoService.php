@@ -4,6 +4,7 @@ namespace Modules\Content\Services;
 
 use Modules\Content\Models\Post;
 use Modules\Content\Services\Contracts\PostInfoContract;
+use Carbon\Carbon;
 
 class PostInfoService implements PostInfoContract
 {
@@ -55,5 +56,21 @@ class PostInfoService implements PostInfoContract
 
         // DB level SUM. Supports arrays, Closures, and Builders natively in Laravel
         return (int) Post::whereIn('id', $postIds)->sum('reading_time');
+    }
+
+    public function getTopPostsOfWeek(int $limit = 5): array
+    {
+        return Post::published()
+            ->where('published_at', '>=', Carbon::now()->subWeek())
+            ->orderByDesc('views')
+            ->limit($limit)
+            ->get()
+            ->map(fn(Post $post) => (object)[
+                'id'      => $post->id,
+                'title'   => $post->title,
+                'slug'    => $post->slug,
+                'excerpt' => $post->excerpt,
+                'views'   => $post->views,
+            ])->all();
     }
 }
