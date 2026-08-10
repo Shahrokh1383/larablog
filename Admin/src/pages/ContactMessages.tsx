@@ -1,16 +1,33 @@
 import { useState } from 'react';
-import { useContactMessages, useDeleteContactMessage } from '@/features/marketing/hooks/useMarketing';
+import { useContactMessages, useDeleteContactMessage, useToggleMessageReadStatus, useReplyToMessage } from '@/features/marketing/hooks/useMarketing';
 import ContactMessageTable from '@/features/marketing/components/ContactMessageTable';
+import ReplyMessageModal from '@/features/marketing/components/ReplyMessageModal';
+import type { ContactMessage } from '@/features/marketing/types/marketing';
 
 export default function ContactMessagesPage() {
   const [page, setPage] = useState(1);
+  const [replyingTo, setReplyingTo] = useState<ContactMessage | null>(null);
+  
   const { data, isLoading, isError } = useContactMessages(page);
   const deleteMutation = useDeleteContactMessage();
+  const toggleReadMutation = useToggleMessageReadStatus();
+  const replyMutation = useReplyToMessage();
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this message?')) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const handleToggleRead = (id: string) => {
+    toggleReadMutation.mutate(id);
+  };
+
+  const handleReplySubmit = (replyBody: string) => {
+    if (!replyingTo) return;
+    replyMutation.mutate({ id: replyingTo.id, replyBody }, {
+      onSuccess: () => setReplyingTo(null),
+    });
   };
 
   return (
@@ -26,7 +43,10 @@ export default function ContactMessagesPage() {
             <ContactMessageTable 
               messages={data.data}
               onDelete={handleDelete}
+              onToggleRead={handleToggleRead}
+              onReply={setReplyingTo}
               isLoading={deleteMutation.isPending}
+              isToggling={toggleReadMutation.isPending}
             />
           )}
 
@@ -49,6 +69,13 @@ export default function ContactMessagesPage() {
           )}
         </div>
       </div>
+
+      <ReplyMessageModal 
+        message={replyingTo}
+        isLoading={replyMutation.isPending}
+        onClose={() => setReplyingTo(null)}
+        onSubmit={handleReplySubmit}
+      />
     </div>
   );
 }

@@ -33,4 +33,9 @@ class NewsletterService
     {
         $subscriber->delete();
     }
+
+    public function toggleStatus(Subscriber $subscriber): void
+    {
+        $subscriber->update(['is_active' => !$subscriber->is_active]);
+    }
 }

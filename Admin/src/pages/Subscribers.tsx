@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSubscribers, useDeleteSubscriber, useSendNewsletter } from '@/features/marketing/hooks/useMarketing';
+import { useSubscribers, useDeleteSubscriber, useSendNewsletter, useToggleSubscriberStatus } from '@/features/marketing/hooks/useMarketing';
 import SubscriberTable from '@/features/marketing/components/SubscriberTable';
 
 export default function SubscribersPage() {
@@ -9,6 +9,7 @@ export default function SubscribersPage() {
   const { data, isLoading, isError } = useSubscribers(page);
   const deleteMutation = useDeleteSubscriber();
   const sendMutation = useSendNewsletter();
+  const toggleStatusMutation = useToggleSubscriberStatus();
 
   const handleToggleSelect = (id: string) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -25,6 +26,10 @@ export default function SubscribersPage() {
     if (confirm('Are you sure you want to delete this subscriber?')) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const handleToggleStatus = (id: string) => {
+    toggleStatusMutation.mutate(id);
   };
 
   const handleSendNewsletter = (sendToAll: boolean) => {
@@ -80,7 +85,9 @@ export default function SubscribersPage() {
               onToggleSelect={handleToggleSelect}
               onSelectAll={handleSelectAll}
               onDelete={handleDelete}
+              onToggleStatus={handleToggleStatus}
               isLoading={deleteMutation.isPending}
+              isToggling={toggleStatusMutation.isPending}
             />
           )}
 

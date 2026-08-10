@@ -47,3 +47,26 @@ export function useDeleteContactMessage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing', 'messages'] }),
   });
 }
+export function useToggleSubscriberStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: marketingApi.toggleSubscriberStatus,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing', 'subscribers'] }),
+  });
+}
+
+export function useToggleMessageReadStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: marketingApi.toggleMessageReadStatus,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing', 'messages'] }),
+  });
+}
+
+export function useReplyToMessage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, replyBody }: { id: string; replyBody: string }) => marketingApi.replyToMessage(id, replyBody),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['marketing', 'messages'] }),
+  });
+}

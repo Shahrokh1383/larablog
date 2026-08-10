@@ -13,6 +13,7 @@ use Modules\Marketing\Models\ContactMessage;
 use Modules\Marketing\Http\Requests\SendNewsletterRequest;
 use Modules\Marketing\Http\Resources\SubscriberResource;
 use Modules\Marketing\Http\Resources\ContactMessageResource;
+use Modules\Marketing\Http\Requests\ReplyToContactMessageRequest;
 
 class MarketingAdminController extends Controller
 {
@@ -65,5 +66,26 @@ class MarketingAdminController extends Controller
         $this->authorize('delete', $message);
         $this->contactService->deleteMessage($message);
         return response()->json(null, 204);
+    }
+
+    public function toggleSubscriberStatus(Subscriber $subscriber): JsonResponse
+    {
+        $this->authorize('update', $subscriber);
+        $this->newsletterService->toggleStatus($subscriber);
+        return response()->json(['message' => 'Subscriber status updated.']);
+    }
+
+    public function toggleReadStatus(ContactMessage $message): JsonResponse
+    {
+        $this->authorize('update', $message);
+        $this->contactService->toggleReadStatus($message);
+        return response()->json(['message' => 'Message status updated.']);
+    }
+
+    public function replyToMessage(ReplyToContactMessageRequest $request, ContactMessage $message): JsonResponse
+    {
+        $this->authorize('update', $message);
+        $this->contactService->replyToMessage($message, $request->validated('reply_body'));
+        return response()->json(['message' => 'Reply sent successfully.'], 202);
     }
 }

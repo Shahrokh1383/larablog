@@ -20,7 +20,7 @@ export default function ContactInfoCards() {
               <h3>Email Us</h3>
               <p>
                 <a href="mailto:LaraBlog@gmail.com">LaraBlog@gmail.com</a><br />
-                <a href="mailto:LaraBlogSuport@gmail.com">LaraBlogSuport@gmail.com</a>
+                <a href="mailto:LaraBlogSuport@gmail.com">LaraBlogSupport@gmail.com</a>
               </p>
             </div>
           </div>

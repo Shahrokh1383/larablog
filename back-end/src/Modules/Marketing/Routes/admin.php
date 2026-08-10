@@ -9,9 +9,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::get('/subscribers', [MarketingAdminController::class, 'subscribers']);
     Route::post('/newsletter/send', [MarketingAdminController::class, 'sendNewsletter']);
     Route::delete('/subscribers/{subscriber}', [MarketingAdminController::class, 'deleteSubscriber']);
+    Route::patch('/subscribers/{subscriber}/toggle-status', [MarketingAdminController::class, 'toggleSubscriberStatus']);
 
     // Contact Messages
     Route::get('/contact-messages', [MarketingAdminController::class, 'contactMessages']);
     Route::get('/contact-messages/{message}', [MarketingAdminController::class, 'showContactMessage']);
     Route::delete('/contact-messages/{message}', [MarketingAdminController::class, 'deleteContactMessage']);
+    Route::patch('/contact-messages/{message}/toggle-read', [MarketingAdminController::class, 'toggleReadStatus']);
+    Route::post('/contact-messages/{message}/reply', [MarketingAdminController::class, 'replyToMessage']);
 });

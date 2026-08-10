@@ -24,4 +24,15 @@ export const marketingApi = {
   deleteContactMessage: async (id: string): Promise<void> => {
     await httpClient.delete(`/admin/contact-messages/${id}`);
   },
+
+  toggleSubscriberStatus: async (id: string): Promise<void> => {
+    await httpClient.patch(`/admin/subscribers/${id}/toggle-status`);
+  },
+  toggleMessageReadStatus: async (id: string): Promise<void> => {
+    await httpClient.patch(`/admin/contact-messages/${id}/toggle-read`);
+  },
+  replyToMessage: async (id: string, replyBody: string): Promise<ApiResponse<null>> => {
+    const res = await httpClient.post<ApiResponse<null>>(`/admin/contact-messages/${id}/reply`, { reply_body: replyBody });
+    return res.data;
+  },
 };

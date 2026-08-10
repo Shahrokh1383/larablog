@@ -10,24 +10,28 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
-class ContactFormMail extends Mailable
+class AdminReplyMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public ContactMessage $contactMessage) {}
+    public function __construct(
+        public ContactMessage $originalMessage, 
+        public string $replyBody
+    ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Contact Message: ' . $this->contactMessage->subject,
-            replyTo: [
-                new Address($this->contactMessage->email, $this->contactMessage->name),
-            ],
+            subject: 'Re: ' . $this->originalMessage->subject,
+            from: new Address(
+                config('mail.from.address', 'support@larablog.com'), 
+                config('mail.from.name', 'LaraBlog Support')
+            ),
         );
     }
 
     public function content(): Content
     {
-        return new Content(view: 'marketing::emails.contact-form');
+        return new Content(view: 'marketing::emails.admin-reply');
     }
 }

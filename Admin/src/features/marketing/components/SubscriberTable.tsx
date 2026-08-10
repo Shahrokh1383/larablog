@@ -6,10 +6,21 @@ interface Props {
   onToggleSelect: (id: string) => void;
   onSelectAll: () => void;
   onDelete: (id: string) => void;
+  onToggleStatus: (id: string) => void;
   isLoading: boolean;
+  isToggling: boolean;
 }
 
-export default function SubscriberTable({ subscribers, selectedIds, onToggleSelect, onSelectAll, onDelete, isLoading }: Props) {
+export default function SubscriberTable({ 
+  subscribers, 
+  selectedIds, 
+  onToggleSelect, 
+  onSelectAll, 
+  onDelete, 
+  onToggleStatus, 
+  isLoading, 
+  isToggling 
+}: Props) {
   const allSelected = subscribers.length > 0 && subscribers.every(s => selectedIds.includes(s.id));
 
   return (
@@ -39,9 +50,21 @@ export default function SubscriberTable({ subscribers, selectedIds, onToggleSele
               </td>
               <td>{sub.email}</td>
               <td>
-                <span className={`badge ${sub.is_active ? 'bg-success' : 'bg-secondary'}`}>
-                  {sub.is_active ? 'Active' : 'Inactive'}
-                </span>
+                <div className="form-check form-switch mb-0">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    checked={sub.is_active}
+                    onChange={() => onToggleStatus(sub.id)}
+                    disabled={isToggling}
+                  />
+                  <label className="form-check-label ms-1">
+                    <span className={`badge ${sub.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                      {sub.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </label>
+                </div>
               </td>
               <td>{new Date(sub.created_at).toLocaleDateString()}</td>
               <td>
