@@ -25,7 +25,6 @@ class AuthController extends Controller
 
         return response()->json([
             'user'  => new UserResource($result['user']),
-            'token' => $result['token'],
         ], 201);
     }
 
@@ -72,6 +71,12 @@ class AuthController extends Controller
 
         $user->markEmailAsVerified();
 
-        return response()->json(['message' => 'Email verified successfully']);
+        // Auto-login after verification (standard SPA flow)
+        Auth::login($user);
+
+        return response()->json([
+            'message' => 'Email verified successfully',
+            'user'    => new UserResource($user),
+        ]);
     }
 }

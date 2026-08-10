@@ -46,9 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['auth', 'user'], data.user);
-    },
   });
 
   const logoutMutation = useMutation({

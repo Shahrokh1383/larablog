@@ -59,7 +59,7 @@ export const authApi = {
   },
   
   verifyEmail: async (id: string, hash: string, params: Record<string, string | null>) => {
-    const { data } = await httpClient.get<{ message: string }>(
+    const { data } = await httpClient.get<{ message: string; user?: User}>(
       endpoints.auth.emailVerify(id, hash),
       { params }
     );

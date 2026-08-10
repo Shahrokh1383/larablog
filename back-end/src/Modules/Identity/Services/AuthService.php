@@ -26,9 +26,7 @@ class AuthService
         // Send email verification notification
         $user->sendEmailVerificationNotification();
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return ['user' => $user, 'token' => $token];
+        return ['user' => $user];
     }
 
     public function login(UserLoginDTO $dto): array

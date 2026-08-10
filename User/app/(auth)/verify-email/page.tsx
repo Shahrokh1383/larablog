@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/features/auth/api/authApi';
+import { useAuth } from '@/features/auth/context/AuthContext';
 import Link from 'next/link';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error' | 'waiting'>('waiting');
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -16,18 +18,20 @@ export default function VerifyEmailPage() {
     const expires = searchParams.get('expires');
     const signature = searchParams.get('signature');
 
-    // If parameters exist, this is a click from the email
     if (id && hash && expires && signature) {
       setStatus('verifying');
       authApi.verifyEmail(id, hash, { expires, signature })
-        .then(() => {
+        .then((data) => {
           setStatus('success');
-          // Redirect to the main website page after 3 seconds
-          setTimeout(() => router.push('/'), 3000);
+          if (data.user) {
+            setUser(data.user);
+          }
+          // Redirect to dashboard (standard post-verification destination)
+          setTimeout(() => router.push('/dashboard'), 3000);
         })
         .catch(() => setStatus('error'));
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, setUser]);
 
   if (status === 'verifying') {
     return (
@@ -45,7 +49,7 @@ export default function VerifyEmailPage() {
       <div className="auth-form-wrapper active">
         <div className="auth-form-header">
           <h2 className="auth-title">Email Verified!</h2>
-          <p className="auth-subtitle">Your email has been successfully verified. Redirecting to the homepage...</p>
+          <p className="auth-subtitle">Your email has been successfully verified. Redirecting to your dashboard...</p>
         </div>
       </div>
     );
@@ -65,7 +69,7 @@ export default function VerifyEmailPage() {
     );
   }
 
-  // waiting state (user just registered, waiting to click email link)
+  // waiting state (just registered, no link clicked yet)
   return (
     <div className="auth-form-wrapper active">
       <div className="auth-form-header">
