@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/context/AuthContext';
-import { useDashboardOverview } from '@/features/dashboard/hooks/useDashboardOverview';
+import { useDashboardOverview, dashboardKeys } from '@/features/dashboard/hooks/useDashboardOverview';
+import { dashboardApi } from '@/features/dashboard/api/dashboardApi';
 import { useRecentlyRead } from '@/features/dashboard/hooks/useRecentlyRead';
 import { useUserComments } from '@/features/dashboard/hooks/useUserComments';
 import { useSavedPosts } from '@/features/reader/hooks/useSavedPosts';
@@ -18,19 +20,48 @@ type TabId = 'overview' | 'comments' | 'bookmarks' | 'settings';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [settingsVisited, setSettingsVisited] = useState(false); // Track if settings tab has been activated
+  
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   
   const [recentlyReadPage, setRecentlyReadPage] = useState(1);
   const [commentsPage, setCommentsPage] = useState(1);
   const [bookmarksPage, setBookmarksPage] = useState(1);
 
+  // Fetch data strictly for the active tab to save bandwidth and prevent network waterfalls
   const overviewQuery = useDashboardOverview();
-  const recentlyReadQuery = useRecentlyRead(recentlyReadPage);
-  const commentsQuery = useUserComments(commentsPage);
-  const savedPostsQuery = useSavedPosts(bookmarksPage);
+  const recentlyReadQuery = useRecentlyRead(recentlyReadPage, { enabled: activeTab === 'overview' });
+  const commentsQuery = useUserComments(commentsPage, { enabled: activeTab === 'comments' });
+  const savedPostsQuery = useSavedPosts(bookmarksPage, { enabled: activeTab === 'bookmarks' });
   
   const unsaveMutation = useUnsavePost();
   const handleUnsave = (postId: string) => unsaveMutation.mutate(postId);
+
+  // Prefetch data on hover for instant 2-3ms perceived load times
+  const handleTabHover = (tab: TabId) => {
+    if (tab === 'comments') {
+      queryClient.prefetchQuery({
+        queryKey: [...dashboardKeys.comments(), 1],
+        queryFn: () => dashboardApi.getUserComments(1)
+      });
+    }
+    // Add similar prefetch logic for other tabs if desired
+  };
+
+  const handleTabClick = (tab: TabId) => {
+    setActiveTab(tab);
+    
+    // Latch the settingsVisited flag to true once visited
+    if (tab === 'settings') {
+      setSettingsVisited(true);
+    }
+    
+    // Reset to page 1 when switching tabs to ensure fresh pagination state
+    if (tab === 'comments') setCommentsPage(1);
+    if (tab === 'bookmarks') setBookmarksPage(1);
+    if (tab === 'overview') setRecentlyReadPage(1);
+  };
 
   if (!user) {
     return (
@@ -48,21 +79,33 @@ export default function DashboardPage() {
         <DashboardHeader user={user} overview={overviewQuery.data} />
 
         <div className="dashboard-tabs">
-          <button className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
+          <button 
+            className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('overview')}
+          >
             <i className="fa-sharp fa-solid fa-grid-2"></i> Overview
           </button>
-          <button className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`} onClick={() => setActiveTab('comments')}>
+          <button 
+            className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('comments')}
+            onMouseEnter={() => handleTabHover('comments')}
+          >
             <i className="fa-sharp fa-solid fa-comments"></i> My Comments
           </button>
-          <button className={`tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`} onClick={() => setActiveTab('bookmarks')}>
+          <button 
+            className={`tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('bookmarks')}
+          >
             <i className="fa-sharp fa-solid fa-bookmark"></i> Saved Posts
           </button>
-          <button className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+          <button 
+            className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`} 
+            onClick={() => handleTabClick('settings')}
+          >
             <i className="fa-sharp fa-solid fa-gear"></i> Settings
           </button>
         </div>
 
-        {/* DOM PRESERVATION: Render all tabs, hide inactive via CSS to prevent unmounting */}
         <div className="tab-content-wrapper">
           <div style={{ display: activeTab === 'overview' ? 'block' : 'none' }}>
             <OverviewTab 
@@ -89,7 +132,7 @@ export default function DashboardPage() {
             />
           </div>
           <div style={{ display: activeTab === 'settings' ? 'block' : 'none' }}>
-            <SettingsTab />
+            <SettingsTab hasBeenActive={settingsVisited} />
           </div>
         </div>
       </div>

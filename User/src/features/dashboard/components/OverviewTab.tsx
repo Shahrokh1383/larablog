@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { DashboardOverview, RecentlyReadItem } from '../api/dashboardApi';
 import type { PaginatedResponse } from '@/shared/types/api';
 import Pagination from './Pagination';
@@ -13,7 +14,31 @@ interface OverviewTabProps {
 
 export default function OverviewTab({ overview, recentlyRead, isLoading, onPageChange }: OverviewTabProps) {
   if (isLoading || !overview) {
-    return <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>;
+    return (
+      <div className="tab-content active" id="overviewContent">
+        <div className="row g-4">
+          <div className="col-lg-8">
+            <div className="dashboard-card welcome-card skeleton-loading" style={{ height: '200px' }}></div>
+          </div>
+          <div className="col-lg-4">
+            <div className="dashboard-card achievement-card skeleton-loading" style={{ height: '200px' }}></div>
+          </div>
+        </div>
+        <div className="row g-4 mt-2">
+          {[1, 2, 3].map((i) => (
+            <div className="col-lg-4 col-md-6" key={i}>
+              <div className="post-card post-card-standard">
+                <div className="post-card-image skeleton-loading" style={{ height: '200px' }}></div>
+                <div className="post-card-body">
+                  <div className="skeleton-loading" style={{ height: '12px', width: '30%', marginBottom: '10px' }}></div>
+                  <div className="skeleton-loading" style={{ height: '20px', width: '80%' }}></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const formatTime = (mins: number) => {
@@ -78,7 +103,14 @@ export default function OverviewTab({ overview, recentlyRead, isLoading, onPageC
               <div className="col-lg-4 col-md-6" key={item.id}>
                 <article className="post-card post-card-standard">
                   <div className="post-card-image">
-                    <img src={item.post.featured_image || `https://picsum.photos/seed/${item.post.id}/600/350`} alt={item.post.title} loading="lazy" />
+                    <Image 
+                      src={item.post.featured_image || `https://picsum.photos/seed/${item.post.id}/600/350`} 
+                      alt={item.post.title} 
+                      width={600}
+                      height={350}
+                      loading="lazy"
+                      style={{ width: '100%', height: 'auto' }}
+                    />
                   </div>
                   <div className="post-card-body">
                     <div className="post-card-meta">

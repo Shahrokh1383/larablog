@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { SavedPostItem } from '@/features/reader/api/readerApi';
 import type { PaginatedResponse } from '@/shared/types/api';
 import Pagination from './Pagination';
@@ -14,8 +15,21 @@ interface BookmarksTabProps {
 export default function BookmarksTab({ savedPosts, isLoading, onPageChange, onUnsave }: BookmarksTabProps) {
   if (isLoading) {
     return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-primary" role="status" />
+      <div className="tab-content active" id="bookmarksContent">
+        <h3 className="section-title mb-4">Saved Posts</h3>
+        <div className="row g-4">
+          {[1, 2, 3].map((i) => (
+            <div className="col-lg-4 col-md-6" key={i}>
+              <div className="post-card post-card-standard">
+                <div className="post-card-image skeleton-loading" style={{ height: '200px' }}></div>
+                <div className="post-card-body">
+                  <div className="skeleton-loading" style={{ height: '12px', width: '40%', marginBottom: '10px' }}></div>
+                  <div className="skeleton-loading" style={{ height: '20px', width: '80%' }}></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -32,10 +46,13 @@ export default function BookmarksTab({ savedPosts, isLoading, onPageChange, onUn
           <div key={item.id} className="col-lg-4 col-md-6">
             <article className="post-card post-card-standard">
               <div className="post-card-image">
-                <img
+                <Image
                   src={item.post.featured_image || `https://picsum.photos/seed/${item.post.id}/600/350`}
                   alt={item.post.title}
+                  width={600}
+                  height={350}
                   loading="lazy"
+                  style={{ width: '100%', height: 'auto' }}
                 />
               </div>
               <div className="post-card-body">

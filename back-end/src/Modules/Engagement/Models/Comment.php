@@ -17,12 +17,11 @@ class Comment extends Model
 
     protected $fillable = [
         'post_id', 'user_id', 'parent_id', 'name', 'email', 
-        'body', 'is_approved', 'read_at',
+        'body', 'is_approved',
     ];
 
     protected $casts = [
         'is_approved' => 'boolean',
-        'read_at'     => 'datetime',
     ];
 
     public function scopeApproved(Builder $query): Builder

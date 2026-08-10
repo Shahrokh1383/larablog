@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { readerApi } from '../api/readerApi';
 
 export const readerKeys = {
@@ -17,5 +17,6 @@ export function useSavedPosts(page: number = 1, options?: UseSavedPostsOptions) 
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
     enabled: options?.enabled ?? true,
+    placeholderData: keepPreviousData, // Smooth pagination transition
   });
 }
