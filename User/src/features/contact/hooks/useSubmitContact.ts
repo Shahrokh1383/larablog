@@ -41,8 +41,8 @@ export function useSubmitContact() {
 
   return {
     formData,
-    handleChange,
-    handleSubmit,
+    onChange: handleChange,
+    onSubmit: handleSubmit,
     isAuthenticated,
     isPending: mutation.isPending,
     isSuccess: mutation.isSuccess,

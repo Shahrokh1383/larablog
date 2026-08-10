@@ -58,7 +58,7 @@ export default function PostSidebar({ author, relatedPosts, categories }: PostSi
           </div>
         </div>
 
-        {/* Newsletter (DRY Refactor) */}
+        {/* Newsletter */}
         <NewsletterSidebar {...newsletterState} />
       </div>
     </aside>

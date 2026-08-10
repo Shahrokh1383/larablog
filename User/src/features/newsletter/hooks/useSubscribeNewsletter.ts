@@ -21,8 +21,8 @@ export function useSubscribeNewsletter() {
 
   return {
     email,
-    setEmail,
-    handleSubmit,
+    onEmailChange: setEmail,
+    onSubmit: handleSubmit,
     isPending: mutation.isPending,
     isSuccess: mutation.isSuccess,
     isError: mutation.isError,
