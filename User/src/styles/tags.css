@@ -376,13 +376,6 @@
     color: var(--clr-primary);
 }
 
-.newsletter-sidebar-form .form-control {
-    background: var(--clr-bg);
-    border: 1px solid var(--clr-border);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-}
-
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 991.98px) {
     .tags-hero-title, .tag-hero-title { font-size: var(--fs-3xl); }

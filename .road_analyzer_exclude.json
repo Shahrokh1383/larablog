@@ -64,7 +64,6 @@
     "back-end\\config",
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\profile",
-    "Admin\\src\\features\\posts",
     "back-end\\src\\Modules\\Notification",
     "User\\src\\features\\notifications",
     "User\\app\\(public)\\authors",
@@ -83,9 +82,14 @@
     "User\\app\\(dashboard)",
     "User\\src\\features\\comments",
     "User\\src\\features\\dashboard",
-    "User\\src\\features\\reader"
+    "User\\src\\features\\reader",
+    "back-end\\src\\Modules\\Engagement",
+    "back-end\\src\\Modules\\Marketing",
+    "Admin\\src\\features\\auth",
+    "Admin\\src\\features\\comments",
+    "Admin\\src\\features\\marketing"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-10T21:05:55.101Z",
+  "lastModified": "2026-08-10T23:37:40.559Z",
   "version": 1
 }

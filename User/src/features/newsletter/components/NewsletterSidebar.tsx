@@ -1,3 +1,5 @@
+import '@/styles/newsletter.css';
+
 interface NewsletterSidebarProps {
   email: string;
   onEmailChange: (value: string) => void;
@@ -18,12 +20,12 @@ export default function NewsletterSidebar({
   message,
 }: NewsletterSidebarProps) {
   return (
-    <div className="sidebar-card newsletter-sidebar">
-      <h4 className="sidebar-title">Newsletter</h4>
+    <div className="newsletter-sidebar">
+      <h4 className="newsletter-title">Newsletter</h4>
       <p>Get the best articles delivered to your inbox.</p>
       
       {isSuccess ? (
-        <div className="alert alert-success mt-2 mb-0" role="alert">
+        <div className="alert alert-success" role="alert">
           <i className="fa-sharp fa-solid fa-circle-check me-2"></i>
           {message || 'Successfully subscribed!'}
         </div>

@@ -543,12 +543,6 @@
     color: #FFFFFF;
 }
 
-/* Newsletter Sidebar */
-.newsletter-sidebar-form .form-control {
-    background: var(--clr-bg);
-    border: 1px solid var(--clr-border);
-}
-
 /* ==================== SAVE POST BUTTON ==================== */
 .post-meta-actions {
     display: flex;

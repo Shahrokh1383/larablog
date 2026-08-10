@@ -165,14 +165,6 @@
     color: #fff;
 }
 
-/* Newsletter Sidebar */
-.newsletter-sidebar-form .form-control {
-    background: var(--clr-bg);
-    border: 1px solid var(--clr-border);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-}
-
 /* ==================== CATEGORY GRID CARDS ==================== */
 .category-card {
     display: flex;

@@ -1,0 +1,92 @@
+/* ============================================================
+   LARABLOG - newsletter.css
+   Isolated Styles for the Reusable Newsletter Sidebar Component
+   ============================================================ */
+
+/* Base Card Layout (Decoupled from post.css) */
+.newsletter-sidebar {
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.newsletter-title {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--clr-text);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+    padding-bottom: var(--spacing-sm);
+}
+
+.newsletter-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--clr-primary);
+    border-radius: 2px;
+}
+
+.newsletter-sidebar p {
+    color: var(--clr-text-secondary);
+    font-size: var(--fs-sm);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+/* Form Input Styling (Dark Mode Safe) */
+.newsletter-sidebar-form .form-control {
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
+    color: var(--clr-text);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-family: var(--ff-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.newsletter-sidebar-form .form-control:focus {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 4px var(--clr-primary-light);
+    outline: none;
+    color: var(--clr-text);
+    background: var(--clr-bg);
+}
+
+.newsletter-sidebar-form .form-control::placeholder {
+    color: var(--clr-text-muted);
+    opacity: 1;
+}
+
+/* Validation Error State */
+.newsletter-sidebar-form .form-control.is-invalid {
+    border-color: var(--clr-error);
+    background-image: none; /* Remove Bootstrap's default red exclamation icon */
+}
+
+.newsletter-sidebar-form .invalid-feedback {
+    display: block;
+    font-size: var(--fs-xs);
+    color: var(--clr-error);
+    margin-top: var(--spacing-xs);
+}
+
+/* Success Alert Override for Sidebar Context */
+.newsletter-sidebar .alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--clr-success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    font-size: var(--fs-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    margin-bottom: 0;
+}
