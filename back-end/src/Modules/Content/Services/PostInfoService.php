@@ -34,7 +34,10 @@ class PostInfoService implements PostInfoContract
     {
         if (empty($postIds)) return [];
 
-        $posts = Post::whereIn('id', $postIds)->get();
+        // Select only required columns. Prevents hydrating the heavy `body` text column.
+        $posts = Post::select(['id', 'title', 'slug', 'featured_image', 'reading_time', 'user_id'])
+            ->whereIn('id', $postIds)
+            ->get();
 
         return $posts->mapWithKeys(function (Post $post) {
             return [
@@ -52,19 +55,24 @@ class PostInfoService implements PostInfoContract
 
     public function getTotalReadingTimeByIds($postIds): int
     {
-        if (is_array($postIds) && empty($postIds)) return 0;
+        // STRICT short-circuit: If the array is empty (new user), return 0 instantly.
+        // Do NOT hit the database. This prevents the 60s timeout.
+        if (is_array($postIds) && empty($postIds)) {
+            return 0;
+        }
 
-        // DB level SUM. Supports arrays, Closures, and Builders natively in Laravel
+        // DB level SUM. Supports Closures and Builders for backward compatibility.
         return (int) Post::whereIn('id', $postIds)->sum('reading_time');
     }
 
     public function getTopPostsOfWeek(int $limit = 5): array
     {
+        // Uses the new `idx_published_date_views` index
         return Post::published()
             ->where('published_at', '>=', Carbon::now()->subWeek())
             ->orderByDesc('views')
             ->limit($limit)
-            ->get()
+            ->get(['id', 'title', 'slug', 'excerpt', 'views'])
             ->map(fn(Post $post) => (object)[
                 'id'      => $post->id,
                 'title'   => $post->title,

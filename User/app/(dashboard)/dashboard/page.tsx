@@ -7,7 +7,8 @@ import { useDashboardOverview, dashboardKeys } from '@/features/dashboard/hooks/
 import { dashboardApi } from '@/features/dashboard/api/dashboardApi';
 import { useRecentlyRead } from '@/features/dashboard/hooks/useRecentlyRead';
 import { useUserComments } from '@/features/dashboard/hooks/useUserComments';
-import { useSavedPosts } from '@/features/reader/hooks/useSavedPosts';
+import { useSavedPosts, readerKeys } from '@/features/reader/hooks/useSavedPosts';
+import { readerApi } from '@/features/reader/api/readerApi';
 import { useUnsavePost } from '@/features/reader/hooks/useUnsavePost';
 import DashboardHeader from '@/features/dashboard/components/DashboardHeader';
 import OverviewTab from '@/features/dashboard/components/OverviewTab';
@@ -20,7 +21,7 @@ type TabId = 'overview' | 'comments' | 'bookmarks' | 'settings';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [settingsVisited, setSettingsVisited] = useState(false); // Track if settings tab has been activated
+  const [settingsVisited, setSettingsVisited] = useState(false);
   
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -29,35 +30,46 @@ export default function DashboardPage() {
   const [commentsPage, setCommentsPage] = useState(1);
   const [bookmarksPage, setBookmarksPage] = useState(1);
 
-  // Fetch data strictly for the active tab to save bandwidth and prevent network waterfalls
+  // 1. PRIMARY QUERY: Fires immediately on mount
   const overviewQuery = useDashboardOverview();
-  const recentlyReadQuery = useRecentlyRead(recentlyReadPage, { enabled: activeTab === 'overview' });
-  const commentsQuery = useUserComments(commentsPage, { enabled: activeTab === 'comments' });
-  const savedPostsQuery = useSavedPosts(bookmarksPage, { enabled: activeTab === 'bookmarks' });
+
+  // 2. SEQUENTIAL QUERIES: Disabled until Overview succeeds.
+  // This prevents the `php artisan serve` single-thread deadlock.
+  const recentlyReadQuery = useRecentlyRead(recentlyReadPage, { 
+    enabled: activeTab === 'overview' && overviewQuery.isSuccess 
+  });
+  
+  const commentsQuery = useUserComments(commentsPage, { 
+    enabled: activeTab === 'comments' && !!user 
+  });
+  
+  const savedPostsQuery = useSavedPosts(bookmarksPage, { 
+    enabled: activeTab === 'bookmarks' && !!user 
+  });
   
   const unsaveMutation = useUnsavePost();
   const handleUnsave = (postId: string) => unsaveMutation.mutate(postId);
 
-  // Prefetch data on hover for instant 2-3ms perceived load times
+  // Prefetch data on hover for instant perceived load times
   const handleTabHover = (tab: TabId) => {
-    if (tab === 'comments') {
+    if (tab === 'comments' && !commentsQuery.data) {
       queryClient.prefetchQuery({
         queryKey: [...dashboardKeys.comments(), 1],
         queryFn: () => dashboardApi.getUserComments(1)
       });
     }
-    // Add similar prefetch logic for other tabs if desired
+    if (tab === 'bookmarks' && !savedPostsQuery.data) {
+      // FIX: Use readerApi and readerKeys (Saved Posts belong to ReaderExperience module)
+      queryClient.prefetchQuery({
+        queryKey: [...readerKeys.savedPosts(), 1],
+        queryFn: () => readerApi.getSavedPosts(1)
+      });
+    }
   };
 
   const handleTabClick = (tab: TabId) => {
     setActiveTab(tab);
-    
-    // Latch the settingsVisited flag to true once visited
-    if (tab === 'settings') {
-      setSettingsVisited(true);
-    }
-    
-    // Reset to page 1 when switching tabs to ensure fresh pagination state
+    if (tab === 'settings') setSettingsVisited(true);
     if (tab === 'comments') setCommentsPage(1);
     if (tab === 'bookmarks') setBookmarksPage(1);
     if (tab === 'overview') setRecentlyReadPage(1);
@@ -95,6 +107,7 @@ export default function DashboardPage() {
           <button 
             className={`tab-btn ${activeTab === 'bookmarks' ? 'active' : ''}`} 
             onClick={() => handleTabClick('bookmarks')}
+            onMouseEnter={() => handleTabHover('bookmarks')}
           >
             <i className="fa-sharp fa-solid fa-bookmark"></i> Saved Posts
           </button>
@@ -107,33 +120,33 @@ export default function DashboardPage() {
         </div>
 
         <div className="tab-content-wrapper">
-          <div style={{ display: activeTab === 'overview' ? 'block' : 'none' }}>
+          {activeTab === 'overview' && (
             <OverviewTab 
               overview={overviewQuery.data} 
               recentlyRead={recentlyReadQuery.data}
               isLoading={overviewQuery.isPending || recentlyReadQuery.isPending}
               onPageChange={setRecentlyReadPage}
             />
-          </div>
-          <div style={{ display: activeTab === 'comments' ? 'block' : 'none' }}>
+          )}
+          {activeTab === 'comments' && (
             <CommentsTab 
               user={user}
               comments={commentsQuery.data}
               isLoading={commentsQuery.isPending}
               onPageChange={setCommentsPage}
             />
-          </div>
-          <div style={{ display: activeTab === 'bookmarks' ? 'block' : 'none' }}>
+          )}
+          {activeTab === 'bookmarks' && (
             <BookmarksTab 
               savedPosts={savedPostsQuery.data}
               isLoading={savedPostsQuery.isPending}
               onPageChange={setBookmarksPage}
               onUnsave={handleUnsave}
             />
-          </div>
-          <div style={{ display: activeTab === 'settings' ? 'block' : 'none' }}>
+          )}
+          {activeTab === 'settings' && (
             <SettingsTab hasBeenActive={settingsVisited} />
-          </div>
+          )}
         </div>
       </div>
     </main>

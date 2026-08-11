@@ -19,24 +19,23 @@ class DashboardService
 
     public function getOverview(string $userId): array
     {
-        // Cache overview per user for 5 minutes to achieve instant load times
         return Cache::remember("dashboard_overview_{$userId}", now()->addMinutes(5), function () use ($userId) {
             $startOfWeek = Carbon::now()->startOfWeek();
             $endOfWeek = Carbon::now()->endOfWeek();
 
-            $readQuery = PostRead::where('user_id', $userId)
-                ->whereBetween('read_at', [$startOfWeek, $endOfWeek]);
+            // 1. Fetch IDs into a PHP array.
+            // For new users, this returns [] instantly and prevents the subquery deadlock.
+            $postIds = PostRead::where('user_id', $userId)
+                ->whereBetween('read_at', [$startOfWeek, $endOfWeek])
+                ->pluck('post_id')
+                ->unique()
+                ->values()
+                ->toArray();
 
-            $postsReadCount = (clone $readQuery)->count();
-
-            $postIdsSubquery = function ($query) use ($userId, $startOfWeek, $endOfWeek) {
-                $query->select('post_id')
-                      ->from('reader_post_reads')
-                      ->where('user_id', $userId)
-                      ->whereBetween('read_at', [$startOfWeek, $endOfWeek]);
-            };
+            $postsReadCount = count($postIds);
             
-            $totalReadingTime = $this->postInfoService->getTotalReadingTimeByIds($postIdsSubquery);
+            // 2. Pass array directly. PostInfoService will short-circuit if empty.
+            $totalReadingTime = $this->postInfoService->getTotalReadingTimeByIds($postIds);
 
             $commentsCount = $this->commentService->getWeeklyCommentCountForUser($userId);
 
@@ -61,11 +60,19 @@ class DashboardService
 
     public function getRecentlyRead(string $userId, int $perPage = 15): LengthAwarePaginator
     {
-        $paginator = PostRead::where('user_id', $userId)
+        // Select only required columns to reduce memory footprint
+        $paginator = PostRead::select(['id', 'post_id', 'read_at'])
+            ->where('user_id', $userId)
             ->orderBy('read_at', 'desc')
             ->paginate($perPage);
 
         $postIds = $paginator->getCollection()->pluck('post_id')->unique()->toArray();
+
+        // Short-circuit for new users
+        if (empty($postIds)) {
+            return $paginator;
+        }
+
         $postsMap = $this->postInfoService->getPostsByIds($postIds);
 
         $paginator->getCollection()->transform(function (PostRead $postRead) use ($postsMap) {

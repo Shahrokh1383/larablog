@@ -21,12 +21,15 @@ return new class extends Migration
             $table->boolean('is_approved')->default(false);
             $table->timestamps();
             
+            // Base relational indexes
             $table->index('post_id');
             $table->index('parent_id');
             
-            // PERFORMANCE INDEXES for Dashboard queries
-            $table->index(['user_id', 'created_at'], 'idx_user_created_at');
-            $table->index(['post_id', 'is_approved'], 'idx_post_approved');
+            // PERFORMANCE INDEXES optimized for Dashboard aggregations & pagination
+            $table->index(['user_id', 'created_at'], 'idx_user_created_at'); // For paginated user comments
+            $table->index(['user_id', 'is_approved'], 'idx_user_approved'); // For total/wkly comment counts
+            $table->index(['post_id', 'is_approved'], 'idx_post_approved'); // For post comment counts
+            $table->index(['created_at', 'is_approved', 'user_id'], 'idx_created_approved_user'); // For Weekly Top Commenters
         });
     }
 
