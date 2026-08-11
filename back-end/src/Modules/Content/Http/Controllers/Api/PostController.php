@@ -31,7 +31,10 @@ class PostController extends Controller
         $perPage = $request->query('per_page', 15);
         $page = $request->query('page', 1);
         $search = $request->query('search');
-        $posts = $this->postService->getAll($search, $request->user(), $perPage, $page);
+        $isEditorsPick = $request->has('is_editors_pick') 
+            ? $request->boolean('is_editors_pick') 
+            : null;
+        $posts = $this->postService->getAll($search, $request->user(), $perPage, $page, $isEditorsPick);
         return PostResource::collection($posts);
     }
 

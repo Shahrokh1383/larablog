@@ -8,13 +8,21 @@ export default function PostsPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [showEditorsPicksOnly, setShowEditorsPicksOnly] = useState(false);
+
   const debouncedSearch = useDebounce(search, 500);
 
+  // Reset to page 1 when search or filter changes
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, showEditorsPicksOnly]);
 
-  const { data, isLoading, isError } = usePosts(page, debouncedSearch);
+  const { data, isLoading, isError } = usePosts({
+    page,
+    search: debouncedSearch,
+    isEditorsPick: showEditorsPicksOnly ? true : undefined,
+  });
+
   const { deletePost } = usePostMutations();
 
   const handleDelete = (post: Post) => {
@@ -25,7 +33,8 @@ export default function PostsPage() {
 
   const handleComments = (post: Post) => {
     navigate(`/posts/${post.id}/comments`);
-  }
+  };
+
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -37,17 +46,36 @@ export default function PostsPage() {
 
       <div className="card shadow-sm">
         <div className="card-header bg-white p-3">
-          <div className="input-group">
-            <span className="input-group-text bg-light border-0">
-              <i className="fas fa-search text-muted"></i>
-            </span>
-            <input
-              type="text"
-              className="form-control border-0 bg-light"
-              placeholder="Search posts..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="row align-items-center">
+            <div className="col-md-8">
+              <div className="input-group">
+                <span className="input-group-text bg-light border-0">
+                  <i className="fas fa-search text-muted"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control border-0 bg-light"
+                  placeholder="Search posts..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 text-end">
+              <div className="form-check form-switch d-inline-block">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="editorsPickFilter"
+                  checked={showEditorsPicksOnly}
+                  onChange={(e) => setShowEditorsPicksOnly(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="editorsPickFilter">
+                  <i className="fas fa-star text-warning me-1"></i>
+                  Editor's Picks only
+                </label>
+              </div>
+            </div>
           </div>
         </div>
         <div className="card-body">

@@ -3,10 +3,12 @@ import type { Post, PostFormData } from '../types/post';
 import type { PaginatedResponse, ApiResponse } from '@/shared/types/api';
 
 export const postsApi = {
-  getAll: async (page = 1, search = ''): Promise<PaginatedResponse<Post>> => {
-    const response = await httpClient.get<PaginatedResponse<Post>>('/admin/posts', {
-      params: { page, search },
-    });
+  getAll: async (page = 1, search = '', isEditorsPick?: boolean): Promise<PaginatedResponse<Post>> => {
+    const params: Record<string, string | number | boolean> = { page, search };
+    if (isEditorsPick !== undefined) {
+      params.is_editors_pick = isEditorsPick;
+    }
+    const response = await httpClient.get<PaginatedResponse<Post>>('/admin/posts', { params });
     return response.data;
   },
 

@@ -21,7 +21,7 @@ class PostService implements PostAdminServiceInterface
         private AssignTagsToPostAction $assignTagsToPostAction,
     ) {}
 
-    public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1): LengthAwarePaginator
+    public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1, ?bool $isEditorPick = null): LengthAwarePaginator
     {
         return Post::with(['user', 'category', 'tags'])
             ->when($user && $user->hasRole('author'), function ($query) use ($user) {
@@ -30,6 +30,9 @@ class PostService implements PostAdminServiceInterface
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
                     ->orWhere('excerpt', 'like', "%{$search}%");
+            })
+            ->when($isEditorPick !== null, function ($query) use ($isEditorPick) {
+                $query->where('is_editors_pick', $isEditorPick);
             })
         ->latest()
         ->paginate($perPage, ['*'], 'page', $page);

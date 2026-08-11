@@ -48,6 +48,7 @@ export default function PostDataTable({
             <th>Category</th>
             <th>Views</th>
             <th>Status</th>
+            <th>Featured</th>
             <th>Created</th>
             <th className="text-end">Actions</th>
           </tr>
@@ -67,6 +68,15 @@ export default function PostDataTable({
                   <span className="badge bg-success">Published</span>
                 ) : (
                   <span className="badge bg-warning text-dark">Draft</span>
+                )}
+              </td>
+              <td>
+                {post.is_editors_pick ? (
+                  <span className="text-warning" title="Editor's Pick">
+                    <i className="fas fa-star"></i>
+                  </span>
+                ) : (
+                  <span className="text-muted">—</span>
                 )}
               </td>
               <td>{new Date(post.created_at).toLocaleDateString()}</td>
