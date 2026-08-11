@@ -11,13 +11,16 @@ use Modules\Identity\Models\User;
 
 class ContentSeeder extends Seeder
 {
-    private const POSTS_COUNT = 1_000;
     private const CATEGORIES_COUNT = 50;
     private const TAGS_COUNT = 500;
     private const TAGS_PER_POST_MIN = 5;
     private const TAGS_PER_POST_MAX = 15;
     private const POST_CHUNK_SIZE = 500;
     private const PIVOT_CHUNK_SIZE = 2000;
+    
+    // NEW: Enforce 10 to 20 posts per author/editor
+    private const MIN_POSTS_PER_USER = 10;
+    private const MAX_POSTS_PER_USER = 20;
 
     public function run(): void
     {
@@ -27,17 +30,16 @@ class ContentSeeder extends Seeder
         $this->command?->info('Seeding tags...');
         $tags = Tag::factory()->count(self::TAGS_COUNT)->create();
 
-        $this->command?->info('Fetching author/editor user IDs...');
-        // Only users with author or editor role can be post authors
-        $userIds = User::role(['author', 'editor'])->pluck('id')->all();
+        $this->command?->info('Fetching author/editor users...');
+        $users = User::role(['author', 'editor'])->get();
 
-        if (empty($userIds)) {
+        if ($users->isEmpty()) {
             $this->command?->error('No author/editor users found. Run UserSeeder first.');
             return;
         }
 
-        $this->command?->info('Generating post data...');
-        $posts = $this->generatePostData($userIds, $categories);
+        $this->command?->info('Generating post data (10-20 posts per author/editor)...');
+        $posts = $this->generatePostData($users, $categories);
 
         $this->command?->info('Inserting posts in chunks...');
         $this->insertPosts($posts);
@@ -51,36 +53,41 @@ class ContentSeeder extends Seeder
         $this->command?->info('Content seeding completed.');
     }
 
-    private function generatePostData(array $userIds, $categories): array
+    private function generatePostData($users, $categories): array
     {
         $posts = [];
         $now = now()->toDateTimeString();
         $categoryIds = $categories->pluck('id')->all();
 
-        for ($i = 0; $i < self::POSTS_COUNT; $i++) {
-            $title = fake()->sentence();
-            $isPublished = rand(1, 10) > 3; // 70% chance published
+        // Iterate over each user to guarantee the 10-20 post rule
+        foreach ($users as $user) {
+            $postCountForUser = rand(self::MIN_POSTS_PER_USER, self::MAX_POSTS_PER_USER);
+            
+            for ($i = 0; $i < $postCountForUser; $i++) {
+                $title = fake()->sentence();
+                $isPublished = rand(1, 10) > 3; // 70% chance published
 
-            $posts[] = [
-                'id'             => (string) Str::orderedUuid(),
-                'title'          => $title,
-                'slug'           => Str::slug($title) . '-' . Str::random(6),
-                'body'           => fake()->paragraphs(rand(2, 5), true),
-                'excerpt'        => null,
-                'featured_image' => null,
-                'is_published'   => $isPublished,
-                'published_at'   => $isPublished
-                    ? fake()->dateTimeBetween('-1 year')->format('Y-m-d H:i:s')
-                    : null,
-                'reading_time'   => rand(1, 15),
-                'views'          => rand(0, 5000),
-                'user_id'        => $userIds[array_rand($userIds)],
-                'category_id'    => rand(1, 10) > 2
-                    ? $categoryIds[array_rand($categoryIds)]
-                    : null,
-                'created_at'     => $now,
-                'updated_at'     => $now,
-            ];
+                $posts[] = [
+                    'id'             => (string) Str::orderedUuid(),
+                    'title'          => $title,
+                    'slug'           => Str::slug($title) . '-' . Str::random(6),
+                    'body'           => fake()->paragraphs(rand(2, 5), true),
+                    'excerpt'        => null,
+                    'featured_image' => null,
+                    'is_published'   => $isPublished,
+                    'published_at'   => $isPublished
+                        ? fake()->dateTimeBetween('-1 year')->format('Y-m-d H:i:s')
+                        : null,
+                    'reading_time'   => rand(1, 15),
+                    'views'          => rand(0, 5000),
+                    'user_id'        => $user->id,
+                    'category_id'    => rand(1, 10) > 2
+                        ? $categoryIds[array_rand($categoryIds)]
+                        : null,
+                    'created_at'     => $now,
+                    'updated_at'     => $now,
+                ];
+            }
         }
 
         return $posts;
@@ -101,7 +108,6 @@ class ContentSeeder extends Seeder
 
         foreach ($postIds as $postId) {
             $count = rand(self::TAGS_PER_POST_MIN, self::TAGS_PER_POST_MAX);
-            // Pick random unique tags
             $selectedTags = (array) array_rand(array_flip($tagIds), $count);
             foreach ($selectedTags as $tagId) {
                 $pivots[] = [

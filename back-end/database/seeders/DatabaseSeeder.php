@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CommentSeeder::class,
             SavedPostSeeder::class,
             PostReadSeeder::class,
+            SubscriberSeeder::class,
         ]);
     }
 }
