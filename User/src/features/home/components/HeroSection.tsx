@@ -1,3 +1,5 @@
+import CountUp from './CountUp';
+
 export default function HeroSection() {
   return (
     <section className="hero-section" id="heroSection">
@@ -37,17 +39,17 @@ export default function HeroSection() {
             </div>
             <div className="hero-stats animate-fade-in-up delay-4">
               <div className="stat-item">
-                <span className="stat-number">250+</span>
+                <CountUp target={250} suffix="+" />
                 <span className="stat-label">Articles</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <span className="stat-number">15+</span>
+                <CountUp target={20} suffix="+" />
                 <span className="stat-label">Authors</span>
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <span className="stat-number">50K+</span>
+                <CountUp target={50} suffix="K+" />
                 <span className="stat-label">Monthly Readers</span>
               </div>
             </div>

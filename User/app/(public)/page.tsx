@@ -22,17 +22,19 @@ export default function HomePage() {
       {/* Hero Section Component */}
       <HeroSection />
 
-      {/* Featured Posts Section */}
-      <section className="featured-section section-padding">
-        <div className="container">
-          <div className="section-header text-center">
-            <span className="section-badge">Editor's Pick</span>
-            <h2 className="section-title"><span className="text-gradient">Featured</span> Articles</h2>
-            <p className="section-desc">Hand‑picked articles you can't afford to miss this week</p>
+      {/* Conditional Featured Posts Section */}
+      {data.featured_posts.length > 0 && (
+        <section className="featured-section section-padding">
+          <div className="container">
+            <div className="section-header text-center">
+              <span className="section-badge">Editor's Pick</span>
+              <h2 className="section-title"><span className="text-gradient">Featured</span> Articles</h2>
+              <p className="section-desc">Hand‑picked articles you can't afford to miss this week</p>
+            </div>
+            <FeaturedPosts posts={data.featured_posts} />
           </div>
-          <FeaturedPosts posts={data.featured_posts} />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Recent Posts Section */}
       <section className="recent-section section-padding bg-light-alt">
