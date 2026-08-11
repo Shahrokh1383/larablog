@@ -68,6 +68,7 @@ export default function PostEditorPage() {
         excerpt: post.excerpt ?? '',
         featured_image: post.featured_image ?? '',
         is_published: post.is_published,
+        is_editors_pick: post.is_editors_pick,
         category_id: post.category?.id ?? '',
         tag_ids: post.tags.map((t) => t.id),
       }

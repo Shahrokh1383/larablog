@@ -17,6 +17,7 @@ class PostResource extends JsonResource
             'excerpt'        => $this->excerpt,
             'featured_image' => $this->featured_image,
             'is_published'   => $this->is_published,
+            'is_editors_pick' => $this->is_editors_pick,
             'published_at'   => $this->published_at,
             'reading_time'   => $this->reading_time,
             'views'          => (int) $this->views,

@@ -28,6 +28,7 @@ export default function PostForm({
   const [excerpt, setExcerpt] = useState(initialData?.excerpt ?? '');
   const [featuredImage, setFeaturedImage] = useState(initialData?.featured_image ?? '');
   const [isPublished, setIsPublished] = useState(initialData?.is_published ?? false);
+  const [isEditorsPick, setIsEditorsPick] = useState(initialData?.is_editors_pick ?? false);
   const [categoryId, setCategoryId] = useState(initialData?.category_id ?? '');
   const [tagIds, setTagIds] = useState<string[]>(initialData?.tag_ids ?? []);
   
@@ -67,6 +68,7 @@ export default function PostForm({
       excerpt: excerpt || undefined,
       featured_image: featuredImage || undefined,
       is_published: isPublished,
+      is_editors_pick: isEditorsPick,
       category_id: categoryId || undefined,
       tag_ids: tagIds.length > 0 ? tagIds : undefined,
     });
@@ -136,6 +138,18 @@ export default function PostForm({
           <div className="form-check mt-4">
             <input type="checkbox" className="form-check-input" id="is_published" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
             <label className="form-check-label" htmlFor="is_published">Publish immediately</label>
+          </div>
+          <div className='from-check mt-2'>
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="is_editors_pick"
+              checked={isEditorsPick}
+              onChange={(e) => setIsEditorsPick(e.target.checked)}
+            />
+            <label className="form-check-label" htmlFor="is_editors_pick">
+              Editor’s Pick
+            </label>
           </div>
         </div>
       </div>

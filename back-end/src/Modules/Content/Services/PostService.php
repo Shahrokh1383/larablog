@@ -104,6 +104,10 @@ class PostService implements PostAdminServiceInterface
             $data['published_at'] = $dto->publishedAt;
         }
 
+        if ($dto->isEditorsPick !== null) {
+            $data['is_editors_pick'] = $dto->isEditorsPick;
+        }
+
         DB::transaction(function () use ($post, $data, $dto) {
             $post->update($data);
 

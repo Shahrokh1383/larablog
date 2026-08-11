@@ -10,6 +10,7 @@ final class PostUpdateDTO
         public readonly ?string $excerpt = null,
         public readonly ?string $featuredImage = null,
         public readonly ?bool $isPublished = null,
+        public readonly ?bool $isEditorsPick = null,
         public readonly ?string $publishedAt = null,
         public readonly ?string $categoryId = null,
         public readonly ?array $tagIds = null,

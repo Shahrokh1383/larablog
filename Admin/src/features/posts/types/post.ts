@@ -25,6 +25,7 @@ export interface Post {
   excerpt: string | null;
   featured_image: string | null;
   is_published: boolean;
+  is_editors_pick: boolean;
   published_at: string | null;
   reading_time: number | null;
   views: number;
@@ -41,6 +42,7 @@ export interface PostFormData {
   excerpt?: string;
   featured_image?: string;
   is_published: boolean;
+  is_editors_pick: boolean;
   category_id?: string;
   tag_ids?: string[];
 }

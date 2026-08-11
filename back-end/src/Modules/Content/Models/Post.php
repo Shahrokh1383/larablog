@@ -17,12 +17,13 @@ class Post extends Model
 
     protected $fillable = [
         'title', 'slug', 'body', 'excerpt', 'featured_image',
-        'is_published', 'published_at', 'reading_time',
+        'is_published', 'is_editors_pick', 'published_at', 'reading_time',
         'user_id', 'category_id', 'views',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
+        'is_editors_pick' => 'boolean',
         'published_at' => 'datetime',
     ];
 

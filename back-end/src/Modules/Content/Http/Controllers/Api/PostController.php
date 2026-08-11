@@ -65,6 +65,7 @@ class PostController extends Controller
             excerpt: $request->validated('excerpt'),
             featuredImage: $request->validated('featured_image'),
             isPublished: $request->validated('is_published'),
+            isEditorsPick: $request->validated('is_editors_pick'),
             categoryId: $request->validated('category_id'),
             tagIds: $request->validated('tag_ids'),
         );

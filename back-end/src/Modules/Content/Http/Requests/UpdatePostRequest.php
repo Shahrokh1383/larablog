@@ -19,6 +19,7 @@ class UpdatePostRequest extends FormRequest
             'excerpt'        => ['nullable', 'string'],
             'featured_image' => ['nullable', 'url'],
             'is_published'   => ['boolean'],
+            'is_editors_pick'  => ['boolean'],
             'category_id'    => ['nullable', 'exists:content_categories,id'],
             'tag_ids'        => ['nullable', 'array'],
             'tag_ids.*'      => ['exists:content_tags,id'],

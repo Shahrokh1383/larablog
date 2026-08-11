@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('excerpt')->nullable();
             $table->string('featured_image')->nullable();
             $table->boolean('is_published')->default(false);
+            $table->boolean('is_editors_pick')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('reading_time')->default(0); // in minutes
             $table->unsignedBigInteger('views')->default(0);
