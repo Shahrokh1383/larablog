@@ -13,7 +13,7 @@ class PostPublicController extends Controller
 
     public function index(): JsonResponse
     {
-        $posts = $this->postPublicService->getHomeData();
+        $posts = $this->postPublicService->getPaginatedPosts();
         return PostPublicResource::collection($posts)->response();
     }
 

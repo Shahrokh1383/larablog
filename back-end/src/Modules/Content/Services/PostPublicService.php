@@ -5,31 +5,22 @@ namespace Modules\Content\Services;
 use Modules\Content\Models\Post;
 use Modules\Content\Models\Category;
 use Modules\Content\Models\Tag;
-use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
-use Modules\Engagement\Services\Contracts\CommentServiceInterface;
-use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;
+use Modules\Content\Actions\MapPostRelationsAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-
 class PostPublicService
 {
     public function __construct(
-        private FetchesPublicProfiles $profileService,
-        private CommentServiceInterface $commentService,
-        private SavedPostInteractionContract $savedPostService,
+        private MapPostRelationsAction $mapPostRelations,
     ) {}
 
-    public function getHomeData(int $perPage = 10): LengthAwarePaginator
+    public function getPaginatedPosts(int $perPage = 10): LengthAwarePaginator
     {
         $posts = Post::with(['category', 'tags'])
             ->published()
             ->latest('published_at')
             ->paginate($perPage);
 
-        $this->mapAuthorsToPosts($posts);
-        $this->mapCommentsToPosts($posts);
-        $this->mapSavedStatusToPosts($posts);
+        $this->mapPostRelations->execute($posts);
 
         return $posts;
     }
@@ -46,10 +37,7 @@ class PostPublicService
         }
 
         $post->increment('views');
-
-        $this->mapAuthorsToPosts([$post]);
-        $this->mapCommentsToPosts([$post]);
-        $this->mapSavedStatusToPosts([$post]);
+        $this->mapPostRelations->execute([$post]);
 
         return $post;
     }
@@ -69,9 +57,7 @@ class PostPublicService
             ->take($limit)
             ->get();
 
-        $this->mapAuthorsToPosts($related);
-        $this->mapCommentsToPosts($related);
-        $this->mapSavedStatusToPosts($related);
+        $this->mapPostRelations->execute($related);
 
         return $related->all();
     }
@@ -91,9 +77,7 @@ class PostPublicService
         };
 
         $posts = $query->paginate($perPage);
-        $this->mapAuthorsToPosts($posts);
-        $this->mapCommentsToPosts($posts);
-        $this->mapSavedStatusToPosts($posts);
+        $this->mapPostRelations->execute($posts);
 
         return $posts;
     }
@@ -113,9 +97,7 @@ class PostPublicService
         };
 
         $posts = $query->paginate($perPage);
-        $this->mapAuthorsToPosts($posts);
-        $this->mapCommentsToPosts($posts);
-        $this->mapSavedStatusToPosts($posts);
+        $this->mapPostRelations->execute($posts);
 
         return $posts;
     }
@@ -135,60 +117,8 @@ class PostPublicService
         };
 
         $posts = $query->paginate($perPage);
-        $this->mapAuthorsToPosts($posts);
-        $this->mapCommentsToPosts($posts);
-        $this->mapSavedStatusToPosts($posts);
+        $this->mapPostRelations->execute($posts);
 
         return $posts;
-    }
-
-    private function mapAuthorsToPosts(LengthAwarePaginator|Collection|array $posts): void
-    {
-        $postsCollection = $posts instanceof LengthAwarePaginator 
-            ? collect($posts->items()) 
-            : collect($posts);
-
-        $authorIds = $postsCollection->pluck('user_id')->unique()->filter()->values()->toArray();
-        if (empty($authorIds)) return;
-
-        $profilesMap = $this->profileService->getPublicProfilesMap($authorIds);
-        $postsCollection->each(function (Post $post) use ($profilesMap) {
-            $post->author = $profilesMap[$post->user_id] ?? null;
-        });
-    }
-
-    private function mapCommentsToPosts(LengthAwarePaginator|Collection|array $posts): void
-    {
-        $postsCollection = $posts instanceof LengthAwarePaginator 
-            ? collect($posts->items()) 
-            : collect($posts);
-
-        $postIds = $postsCollection->pluck('id')->toArray();
-        if (empty($postIds)) return;
-
-        $counts = $this->commentService->getCommentCountsForPosts($postIds);
-    
-        $postsCollection->each(function (Post $post) use ($counts) {
-            $post->comments_count = $counts[$post->id] ?? 0;
-        });
-    }
-
-    private function mapSavedStatusToPosts(LengthAwarePaginator|Collection|array $posts): void
-    {
-        $user = Auth::user();
-        if (!$user) return;
-
-        $postsCollection = $posts instanceof LengthAwarePaginator 
-            ? collect($posts->items()) 
-            : collect($posts);
-
-        $postIds = $postsCollection->pluck('id')->toArray();
-        if (empty($postIds)) return;
-
-        $savedIds = $this->savedPostService->getSavedPostIdsForUser($user->id, $postIds);
-
-        $postsCollection->each(function (Post $post) use ($savedIds) {
-            $post->is_saved = in_array($post->id, $savedIds);
-        });
     }
 }

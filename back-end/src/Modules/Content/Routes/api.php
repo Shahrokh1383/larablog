@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Content\Http\Controllers\Api\PostPublicController;
 use Modules\Content\Http\Controllers\Api\CategoryPublicController;
 use Modules\Content\Http\Controllers\Api\TagPublicController;
+use Modules\Content\Http\Controllers\Api\HomePublicController;
 
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostPublicController::class, 'index']);
@@ -21,3 +22,5 @@ Route::prefix('tags')->group(function () {
     Route::get('/popular', [TagPublicController::class, 'popular']);
     Route::get('{slug}/posts', [TagPublicController::class, 'posts']);
 });
+
+Route::get('/home', [HomePublicController::class, 'index']);

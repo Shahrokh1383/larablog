@@ -83,7 +83,6 @@
     "Admin\\src\\features\\marketing",
     "User\\src\\features\\categories",
     "User\\src\\features\\contact",
-    "User\\src\\features\\posts",
     "User\\src\\features\\tags",
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\post",
@@ -94,6 +93,6 @@
     "User\\src\\styles"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-11T15:18:36.600Z",
+  "lastModified": "2026-08-11T16:09:25.275Z",
   "version": 1
 }
