@@ -26,7 +26,7 @@ export function CategoryCard({ category, isMoreCard = false, totalPostsCount }: 
     <Link href={`/category/${category.slug}`} className="category-card">
       <div className="category-icon">
         {/* In a real app, map icon dynamically based on category */}
-        <i className="fa-sharp fa-solid fa-code"></i> 
+        <i className="fas fa-solid fa-folder"></i> 
       </div>
       <h4 className="category-name">{category.name}</h4>
       <span className="category-count">{category.posts_count} articles</span>
