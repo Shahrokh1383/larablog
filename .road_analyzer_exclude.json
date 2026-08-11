@@ -71,7 +71,6 @@
     "User\\src\\shared",
     "back-end\\src\\Modules\\Profile",
     "back-end\\database\\factories",
-    "User\\src\\styles",
     "User\\proxy.ts",
     "User\\src\\features\\auth",
     "User\\src\\features\\profile",
@@ -86,9 +85,15 @@
     "User\\src\\features\\contact",
     "User\\src\\features\\posts",
     "User\\src\\features\\tags",
-    "User\\src\\features\\newsletter"
+    "User\\app\\(public)\\tags",
+    "User\\app\\(public)\\post",
+    "User\\app\\(public)\\category",
+    "User\\src\\features\\comments",
+    "User\\src\\features\\dashboard",
+    "User\\src\\features\\reader",
+    "User\\src\\styles"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-11T13:20:20.336Z",
+  "lastModified": "2026-08-11T15:18:36.600Z",
   "version": 1
 }

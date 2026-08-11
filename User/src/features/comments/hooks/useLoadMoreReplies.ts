@@ -6,7 +6,8 @@ import type { CommentsResponse } from '../api/commentsApi';
 
 export function useLoadMoreReplies(postId: string) {
   const queryClient = useQueryClient();
-  const queryKey = commentKeys.list(postId);
+  
+  const queryKey = commentKeys.byPost(postId); 
 
   return useMutation({
     mutationFn: (commentId: string) => {
@@ -27,7 +28,7 @@ export function useLoadMoreReplies(postId: string) {
       return commentsApi.getReplies(commentId, skip);
     },
     onSuccess: (data, commentId) => {
-      // Update the cache centrally
+      // Update the cache centrally with the correct query key
       queryClient.setQueryData<InfiniteData<CommentsResponse>>(queryKey, (oldData) => {
         if (!oldData) return oldData;
         
