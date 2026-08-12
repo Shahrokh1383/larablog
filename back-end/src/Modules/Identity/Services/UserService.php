@@ -23,10 +23,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
     public function updateRole(User $user, string $role): User
     {
         $user->syncRoles([$role]);
-        
-        // Bump updated_at timestamp so the user appears at the top of lists
         $user->touch();
-
         return $user->load('roles');
     }
 
@@ -56,7 +53,27 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
                       ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->latest('updated_at') // Sort by recently updated
+            ->latest('updated_at')
             ->paginate($perPage);
+    }
+
+    public function getUsersWithRolesMap(array $userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $users = User::with('roles')->whereIn('id', $userIds)->get();
+
+        return $users->mapWithKeys(function ($user) {
+            return [
+                $user->id => [
+                    'id'    => $user->id,
+                    'name'  => $user->name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->pluck('name')->toArray(),
+                ]
+            ];
+        })->all();
     }
 }

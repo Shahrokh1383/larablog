@@ -57,15 +57,14 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
             return [];
         }
 
-        $profiles = Profile::with('user')->whereIn('user_id', $userIds)->get();
+        $profiles = Profile::whereIn('user_id', $userIds)->get();
 
         return $profiles->mapWithKeys(function (Profile $profile) {
             return [
                 $profile->user_id => [
-                    'name'     => $profile->user->name,
-                    'username' => $profile->user->username,
-                    'avatar'   => $profile->avatar,
-                    'bio'      => $profile->bio,
+                    'avatar'       => $profile->avatar,
+                    'bio'          => $profile->bio,
+                    'expertise'    => $profile->expertise,
                     'social_links' => $profile->social_links ?? [],
                 ]
             ];
@@ -89,12 +88,7 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function deleteAccount(string $userId): void
     {
         DB::transaction(function () use ($userId) {
-            // 1. Delete Profile
             Profile::where('user_id', $userId)->delete();
-            
-            // 2. Delete Shared User Record
-            // Note: In a strictly event-driven system, we might dispatch an AccountDeleted event
-            // and let Identity handle it. But pragmatically, accessing the Shared User is legal.
             User::where('id', $userId)->delete();
         });
     }

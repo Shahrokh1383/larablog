@@ -7,7 +7,6 @@ use Modules\About\Services\TeamService;
 use Modules\About\DTOs\TeamMemberDTO;
 use Modules\About\Http\Requests\StoreTeamMemberRequest;
 use Modules\About\Http\Requests\UpdateTeamMemberRequest;
-use Modules\About\Http\Resources\TeamMemberResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,17 +18,9 @@ class AdminTeamMemberController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = (int) $request->input('per_page', 10);
-        $members = $this->teamService->getMembersForAdmin($perPage);
+        $data = $this->teamService->getMembersForAdminData($perPage);
 
-        return response()->json([
-            'data' => TeamMemberResource::collection($members->items()),
-            'meta' => [
-                'current_page' => $members->currentPage(),
-                'last_page'    => $members->lastPage(),
-                'per_page'     => $members->perPage(),
-                'total'        => $members->total(),
-            ],
-        ]);
+        return response()->json($data);
     }
 
     public function eligibleUsers(Request $request): JsonResponse
@@ -63,23 +54,23 @@ class AdminTeamMemberController extends Controller
 
     public function store(StoreTeamMemberRequest $request): JsonResponse
     {
-        $dto    = TeamMemberDTO::fromRequest($request->validated());
-        $member = $this->teamService->create($dto);
+        $dto = TeamMemberDTO::fromRequest($request->validated());
+        $memberData = $this->teamService->create($dto);
 
         return response()->json([
             'message' => 'Team member created.',
-            'data'    => new TeamMemberResource($member->load('user')),
+            'data'    => $memberData,
         ], 201);
     }
 
     public function update(UpdateTeamMemberRequest $request, TeamMember $teamMember): JsonResponse
     {
-        $dto    = TeamMemberDTO::fromRequest($request->validated());
-        $member = $this->teamService->update($teamMember, $dto);
+        $dto = TeamMemberDTO::fromRequest($request->validated());
+        $memberData = $this->teamService->update($teamMember, $dto);
 
         return response()->json([
             'message' => 'Team member updated.',
-            'data'    => new TeamMemberResource($member),
+            'data'    => $memberData,
         ]);
     }
 

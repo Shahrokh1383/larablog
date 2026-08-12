@@ -218,7 +218,6 @@
     line-height: 1.8;
 }
 
-/* ==================== TEAM SECTION ==================== */
 .team-card {
     background: var(--clr-card-bg);
     border: 1px solid var(--clr-border-light);
@@ -261,6 +260,8 @@
     gap: var(--spacing-md);
     opacity: 0;
     transition: opacity var(--transition-base);
+    flex-wrap: wrap;
+    padding: var(--spacing-sm);
 }
 
 .team-card:hover .team-social-overlay {
