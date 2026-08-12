@@ -5,7 +5,6 @@ namespace Modules\Identity\Services;
 use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\DTOs\UserLoginDTO;
 use Modules\Identity\Actions\CreateUserAction;
-use Modules\Identity\Actions\AssignRoleAction;
 use Modules\Identity\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -15,18 +14,19 @@ class AuthService
 {
     public function __construct(
         protected CreateUserAction $createUser,
-        protected AssignRoleAction $assignRole,
     ) {}
 
     public function register(UserRegisterDTO $dto): array
     {
         $user = $this->createUser->execute($dto);
-        $this->assignRole->execute($user, 'user');
+        
+        $user->assignRole('user');
 
         // Send email verification notification
         $user->sendEmailVerificationNotification();
 
-        return ['user' => $user];
+        // Eager load roles for the resource to prevent N+1 and ensure data consistency
+        return ['user' => $user->load('roles')];
     }
 
     public function login(UserLoginDTO $dto): array
@@ -44,7 +44,8 @@ class AuthService
         $user = Auth::user();
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return ['user' => $user, 'token' => $token];
+        // Eager load roles for the resource
+        return ['user' => $user->load('roles'), 'token' => $token];
     }
 
     public function logout(User $user): void

@@ -11,7 +11,6 @@ use Modules\About\Http\Resources\TeamMemberResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 
 class AdminTeamMemberController extends Controller
 {
@@ -36,31 +35,20 @@ class AdminTeamMemberController extends Controller
     public function eligibleUsers(Request $request): JsonResponse
     {
         $search  = $request->input('search');
-        $perPage = (int) $request->input('per_page', 15);
+        $perPage = (int) $request->input('per_page', 500); 
         $paginator = $this->teamService->getEligibleUsers($search, $perPage);
 
-        // Exclude users who are already team members
-        $excludedIds = TeamMember::pluck('user_id')->toArray();
-
-        $mapped = collect($paginator->items())->reject(function ($user) use ($excludedIds) {
-            return in_array($user->id, $excludedIds);
-        })->map(function ($user) {
-            $profile = DB::table('profiles')->where('user_id', $user->id)->first();
-            $roles = DB::table('model_has_roles')
-                ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-                ->where('model_has_roles.model_type', 'Modules\\Identity\\Models\\User')
-                ->where('model_has_roles.model_id', $user->id)
-                ->pluck('roles.name')
-                ->toArray();
-
-            return [
-                'id'     => $user->id,
-                'name'   => $user->name,
-                'email'  => $user->email,
-                'avatar' => $profile?->avatar ?? null,
-                'roles'  => $roles,
-            ];
-        })->values();
+        $mapped = collect($paginator->items())
+            ->map(function ($user) {
+                return [
+                    'id'     => $user->id,
+                    'name'   => $user->name,
+                    'email'  => $user->email,
+                    'avatar' => $user->avatar,
+                    'roles'  => $user->roles->pluck('name')->toArray(),
+                ];
+            })
+            ->values();
 
         return response()->json([
             'data' => $mapped,
@@ -71,24 +59,6 @@ class AdminTeamMemberController extends Controller
                 'total'        => $paginator->total(),
             ],
         ]);
-    }
-
-    public function bulkStore(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'user_ids' => ['required', 'array', 'min:1'],
-            'user_ids.*' => ['required', 'exists:users,id'],
-        ]);
-
-        foreach ($validated['user_ids'] as $userId) {
-            $this->teamService->create(new TeamMemberDTO(
-                userId: $userId,
-                sortOrder: 0,
-                isActive: true
-            ));
-        }
-
-        return response()->json(['message' => 'Team members created.'], 201);
     }
 
     public function store(StoreTeamMemberRequest $request): JsonResponse

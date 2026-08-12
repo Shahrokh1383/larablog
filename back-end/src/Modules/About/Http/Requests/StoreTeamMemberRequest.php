@@ -14,9 +14,9 @@ class StoreTeamMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'    => 'required|exists:users,id',
-            'sort_order' => 'integer|min:0',
-            'is_active'  => 'boolean',
+            'user_id'    => ['required', 'exists:users,id', 'unique:about_team_members,user_id'],
+            'sort_order' => ['integer', 'min:0'],
+            'is_active'  => ['boolean'],
         ];
     }
 }

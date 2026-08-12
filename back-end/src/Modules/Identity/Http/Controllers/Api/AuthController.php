@@ -41,8 +41,10 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user()->load('roles');
+
         return response()->json([
-            'user' => new UserResource($request->user()),
+            'user' => new UserResource($user),
         ]);
     }
 
@@ -76,7 +78,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Email verified successfully',
-            'user'    => new UserResource($user),
+            'user'    => new UserResource($user->load('roles')), // Eager load here as well
         ]);
     }
 }

@@ -101,9 +101,13 @@
     "User\\app\\(public)\\layout.tsx",
     "User\\src\\features\\search",
     "User\\src\\features\\tags",
-    "User\\public"
+    "User\\public",
+    "Admin\\src\\features\\users",
+    "Admin\\src\\features\\profile",
+    "back-end\\src\\Modules\\Identity",
+    "back-end\\src\\Modules\\Profile"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-12T17:04:43.898Z",
+  "lastModified": "2026-08-12T20:00:06.863Z",
   "version": 1
 }

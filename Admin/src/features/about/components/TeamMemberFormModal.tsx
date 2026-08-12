@@ -7,7 +7,7 @@ interface Props {
   member: TeamMember | null;
   isLoading: boolean;
   onClose: () => void;
-  onCreate: (userIds: string[]) => void; // Changed to support multiple
+  onCreate: (userId: string) => void;
   onUpdate: (payload: { user_id: string; sort_order: number; is_active: boolean }) => void;
 }
 
@@ -18,10 +18,10 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
     page,
     setPage,
     data,
-    isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
   } = useEligibleUsers();
 
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState(member?.sort_order || 0);
   const [isActive, setIsActive] = useState(member ? member.is_active : true);
 
@@ -29,17 +29,15 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
 
   const handleToggleUser = (userId: string) => {
     if (member) return; // Don't allow changing user in edit mode
-    setSelectedUserIds((prev) =>
-      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
-    );
+    setSelectedUserId((prev) => (prev === userId ? null : userId));
   };
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (member) {
       onUpdate({ user_id: member.user_id, sort_order: sortOrder, is_active: isActive });
-    } else {
-      onCreate(selectedUserIds);
+    } else if (selectedUserId) {
+      onCreate(selectedUserId);
     }
   };
 
@@ -48,7 +46,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">{member ? 'Edit Team Member' : 'Add Team Members'}</h5>
+            <h5 className="modal-title">{member ? 'Edit Team Member' : 'Add Team Member'}</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <form onSubmit={handleSubmit}>
@@ -56,7 +54,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
               {!member ? (
                 <>
                   <div className="mb-3">
-                    <label className="form-label">Search & Select Users</label>
+                    <label className="form-label">Search & Select User</label>
                     <input
                       type="text"
                       className="form-control"
@@ -70,7 +68,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
                   </div>
 
                   <div className="mb-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                    {isLoadingUsers && (
+                    {isFetchingUsers && (
                       <div className="text-center py-3">
                         <div className="spinner-border spinner-border-sm" />
                       </div>
@@ -80,7 +78,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
                           <div
                             key={user.id}
                             className={`p-2 border rounded mb-1 d-flex align-items-center ${
-                              selectedUserIds.includes(user.id) ? 'bg-primary text-white' : ''
+                              selectedUserId === user.id ? 'bg-primary text-white' : ''
                             }`}
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleToggleUser(user.id)}
@@ -101,7 +99,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
                             </div>
                           </div>
                         ))
-                      : !isLoadingUsers && <p className="text-muted">No users found.</p>}
+                      : !isFetchingUsers && <p className="text-muted">No users found.</p>}
                   </div>
 
                   {data?.meta && data.meta.last_page > 1 && (
@@ -166,7 +164,7 @@ export default function TeamMemberFormModal({ isOpen, member, isLoading, onClose
               <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary" disabled={isLoading || (!member && selectedUserIds.length === 0)}>
+              <button type="submit" className="btn btn-primary" disabled={isLoading || (!member && !selectedUserId)}>
                 {isLoading ? 'Saving...' : 'Save'}
               </button>
             </div>

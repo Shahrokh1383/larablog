@@ -25,12 +25,12 @@ export const aboutApi = {
     });
   },
 
-  // Team Members (unchanged)
+  // Team Members
   getTeamMembers: async (page = 1, perPage = 10): Promise<PaginatedResponse<TeamMember>> => {
     const response = await httpClient.get('/admin/about/team-members', { params: { page, per_page: perPage } });
     return response.data;
   },
-  getEligibleUsers: async (search = '', page = 1, perPage = 15): Promise<PaginatedResponse<AdminUser>> => {
+  getEligibleUsers: async (search = '', page = 1, perPage = 500): Promise<PaginatedResponse<AdminUser>> => {
     const response = await httpClient.get('/admin/about/eligible-users', { params: { search, page, per_page: perPage } });
     return response.data;
   },

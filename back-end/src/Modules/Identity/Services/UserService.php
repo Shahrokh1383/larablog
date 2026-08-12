@@ -23,6 +23,10 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
     public function updateRole(User $user, string $role): User
     {
         $user->syncRoles([$role]);
+        
+        // Bump updated_at timestamp so the user appears at the top of lists
+        $user->touch();
+
         return $user->load('roles');
     }
 
@@ -37,10 +41,14 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
         User::where('id', $userId)->update(['name' => $name]);
     }
 
-    public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage): LengthAwarePaginator
+    public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage, array $excludedIds = []): LengthAwarePaginator
     {
-        return User::whereHas('roles', function ($query) use ($roles) {
+        return User::with('roles')
+            ->whereHas('roles', function ($query) use ($roles) {
                 $query->whereIn('name', $roles);
+            })
+            ->when(!empty($excludedIds), function ($query) use ($excludedIds) {
+                $query->whereNotIn('id', $excludedIds);
             })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -48,7 +56,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
                       ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+            ->latest('updated_at') // Sort by recently updated
             ->paginate($perPage);
     }
 }

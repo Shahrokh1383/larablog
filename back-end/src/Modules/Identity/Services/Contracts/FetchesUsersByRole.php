@@ -6,5 +6,5 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface FetchesUsersByRole
 {
-    public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage): LengthAwarePaginator;
+    public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage, array $excludedIds = []): LengthAwarePaginator;
 }

@@ -19,7 +19,7 @@ export default function AboutPage() {
   const { data: settingsData, isLoading: settingsLoading } = useSiteSettings();
   const updateSettings = useUpdateSiteSettings();
   const uploadStoryImage = useUploadStoryImage();
-  const deleteStoryImage = useDeleteStoryImage(); // Added
+  const deleteStoryImage = useDeleteStoryImage();
 
   // Team members
   const [page, setPage] = useState(1);
@@ -52,7 +52,6 @@ export default function AboutPage() {
   const handleUploadStoryImage = (file: File) => {
     uploadStoryImage.mutate(file, {
       onSuccess: (url) => {
-        // Preserve all existing settings, only change story_image
         const currentSettings = settingsData?.data ?? {};
         updateSettings.mutate({
           ...currentSettings,
@@ -66,13 +65,11 @@ export default function AboutPage() {
     deleteStoryImage.mutate(url);
   };
 
-  const handleCreate = (userIds: string[]) => {
-    userIds.forEach((userId) => {
-      createMember.mutate(
-        { user_id: userId, sort_order: 0, is_active: true },
-        { onSuccess: () => closeModal() }
-      );
-    });
+  const handleCreate = (userId: string) => {
+    createMember.mutate(
+      { user_id: userId, sort_order: 0, is_active: true },
+      { onSuccess: () => closeModal() }
+    );
   };
 
   const handleUpdate = (payload: { user_id: string; sort_order: number; is_active: boolean }) => {
@@ -122,7 +119,7 @@ export default function AboutPage() {
             <div className="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 className="mb-0">Team Members</h5>
               <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                <i className="fas fa-plus me-1"></i> Add Member(s)
+                <i className="fas fa-plus me-1"></i> Add Member
               </button>
             </div>
             <div className="card-body">
