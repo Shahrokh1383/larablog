@@ -7,6 +7,7 @@ import {
   useUpdateTeamMember,
   useDeleteTeamMember,
   useUploadStoryImage,
+  useDeleteStoryImage,
   SiteSettingsForm,
   TeamMemberTable,
   TeamMemberFormModal,
@@ -18,6 +19,7 @@ export default function AboutPage() {
   const { data: settingsData, isLoading: settingsLoading } = useSiteSettings();
   const updateSettings = useUpdateSiteSettings();
   const uploadStoryImage = useUploadStoryImage();
+  const deleteStoryImage = useDeleteStoryImage(); // Added
 
   // Team members
   const [page, setPage] = useState(1);
@@ -50,9 +52,18 @@ export default function AboutPage() {
   const handleUploadStoryImage = (file: File) => {
     uploadStoryImage.mutate(file, {
       onSuccess: (url) => {
-        updateSettings.mutate({ story_image: url });
+        // Preserve all existing settings, only change story_image
+        const currentSettings = settingsData?.data ?? {};
+        updateSettings.mutate({
+          ...currentSettings,
+          story_image: url,
+        });
       },
     });
+  };
+
+  const handleDeleteStoryImage = (url: string) => {
+    deleteStoryImage.mutate(url);
   };
 
   const handleCreate = (userIds: string[]) => {
@@ -96,7 +107,9 @@ export default function AboutPage() {
                 isLoading={settingsLoading}
                 isSaving={updateSettings.isPending}
                 isUploadingImage={uploadStoryImage.isPending}
+                isDeletingImage={deleteStoryImage.isPending}
                 onUploadStoryImage={handleUploadStoryImage}
+                onDeleteStoryImage={handleDeleteStoryImage}
                 onSubmit={handleSettingsSubmit}
               />
             </div>
@@ -121,7 +134,6 @@ export default function AboutPage() {
               {membersError && <div className="alert alert-danger">Failed to load team members.</div>}
               {!membersLoading && !membersError && membersData && (
                 <>
-                  {/* TeamMemberTable is now properly rendered here */}
                   <TeamMemberTable members={membersData.data} onEdit={openEdit} onDelete={handleDelete} />
                   
                   {membersData.meta.last_page > 1 && (

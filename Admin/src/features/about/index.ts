@@ -9,4 +9,5 @@ export { default as SiteSettingsForm } from './components/SiteSettingsForm';
 export { default as TeamMemberTable } from './components/TeamMemberTable';
 export { default as TeamMemberFormModal } from './components/TeamMemberFormModal';
 export { useUploadStoryImage } from './hooks/useUploadStoryImage';
+export { useDeleteStoryImage } from './hooks/useDeleteStoryImage';
 export type { SiteSettings, TeamMember, TeamMemberFormData } from './types/about';

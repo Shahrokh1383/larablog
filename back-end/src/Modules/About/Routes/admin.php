@@ -9,6 +9,7 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::get('about/settings', [AdminSiteSettingsController::class, 'show']);
     Route::put('about/settings', [AdminSiteSettingsController::class, 'update']);
     Route::post('about/upload-story-image', [AdminSiteSettingsController::class, 'uploadStoryImage']);
+    Route::delete('about/delete-story-image', [AdminSiteSettingsController::class, 'deleteStoryImage']);
 
     // Team Members
     Route::get('about/team-members', [AdminTeamMemberController::class, 'index']);

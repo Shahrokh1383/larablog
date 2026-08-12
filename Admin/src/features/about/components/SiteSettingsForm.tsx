@@ -6,11 +6,15 @@ interface Props {
   isLoading: boolean;
   isSaving: boolean;
   isUploadingImage: boolean;
+  isDeletingImage: boolean;
   onUploadStoryImage: (file: File) => void;
+  onDeleteStoryImage: (url: string) => void;
   onSubmit: (data: Partial<SiteSettings>) => void;
 }
 
-export default function SiteSettingsForm({ settings, isLoading, isSaving, isUploadingImage, onUploadStoryImage, onSubmit }: Props) {
+export default function SiteSettingsForm({ 
+  settings, isLoading, isSaving, isUploadingImage, isDeletingImage, onUploadStoryImage, onDeleteStoryImage, onSubmit 
+}: Props) {
   const [phone, setPhone] = useState('');
   const [email1, setEmail1] = useState('');
   const [email2, setEmail2] = useState('');
@@ -23,7 +27,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
     instagram: '',
     dribbble: '',
     youtube: '',
-    discord: '', // Added
+    discord: '',
   });
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
         instagram: settings.social_links?.instagram || '',
         dribbble: settings.social_links?.dribbble || '',
         youtube: settings.social_links?.youtube || '',
-        discord: settings.social_links?.discord || '', // Added
+        discord: settings.social_links?.discord || '',
       });
     }
   }, [settings]);
@@ -51,10 +55,11 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
     }
   };
 
-  // Update local state when upload finishes and settings prop updates
-  useEffect(() => {
-    setStoryImage(settings?.story_image || null);
-  }, [settings?.story_image]);
+  const handleDeleteImage = () => {
+    if (storyImage) {
+      onDeleteStoryImage(storyImage);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +68,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
       call_us_phone: phone || null,
       call_us_emails,
       visit_address: visitAddress || null,
-      story_image: storyImage, // Send the URL string to the update payload
+      story_image: storyImage,
       social_links: socialLinks,
     });
   };
@@ -97,25 +102,31 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
       <h5 className="mb-3">About Page</h5>
       <div className="mb-3">
         <label className="form-label">Story Image</label>
-        {isUploadingImage && (
+        
+        {(isUploadingImage || isDeletingImage) && (
           <div className="mb-2">
             <div className="spinner-border spinner-border-sm text-primary" role="status">
-              <span className="visually-hidden">Uploading...</span>
+              <span className="visually-hidden">Processing...</span>
             </div>
-            <span className="ms-2 small">Uploading image...</span>
+            <span className="ms-2 small">{isDeletingImage ? 'Deleting...' : 'Uploading...'}</span>
           </div>
         )}
-        {!isUploadingImage && storyImage && (
-          <div className="mb-2">
-            <img src={storyImage} alt="Story Preview" className="img-thumbnail" style={{ maxHeight: '150px' }} />
+
+        {!isUploadingImage && !isDeletingImage && storyImage && (
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <img src={storyImage} alt="Story Preview" className="img-thumbnail" style={{ maxHeight: '100px' }} />
+            <button type="button" className="btn btn-sm btn-outline-danger" onClick={handleDeleteImage}>
+              <i className="fas fa-trash"></i> Remove
+            </button>
           </div>
         )}
+
         <input 
           type="file" 
           className="form-control" 
           accept="image/png, image/jpeg, image/jpg, image/webp"
           onChange={handleImageChange} 
-          disabled={isUploadingImage}
+          disabled={isUploadingImage || isDeletingImage}
         />
       </div>
 
@@ -134,7 +145,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, isUplo
         ))}
       </div>
 
-      <button type="submit" className="btn btn-primary" disabled={isSaving || isUploadingImage}>
+      <button type="submit" className="btn btn-primary" disabled={isSaving || isUploadingImage || isDeletingImage}>
         {isSaving ? 'Saving...' : 'Save Settings'}
       </button>
     </form>

@@ -16,10 +16,13 @@ export const aboutApi = {
   uploadStoryImage: async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('story_image', file);
-    const response = await httpClient.post<{ url: string }>('/admin/about/upload-story-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await httpClient.post<{ url: string }>('/admin/about/upload-story-image', formData);
     return response.data.url;
+  },
+  deleteStoryImage: async (url: string): Promise<void> => {
+    await httpClient.delete('/admin/about/delete-story-image', {
+      data: { url },
+    });
   },
 
   // Team Members (unchanged)
