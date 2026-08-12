@@ -1,0 +1,149 @@
+/* ============================================================
+   LARABLOG - search.css
+   Search Results Page Styles
+   ============================================================ */
+
+/* Search Page Header */
+.search-page-header {
+    text-align: center;
+    margin-bottom: var(--spacing-3xl);
+}
+
+.search-page-title {
+    font-size: var(--fs-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-xl);
+    color: var(--clr-text);
+}
+
+/* Inline Search Form */
+.search-page-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-page-input-group {
+    display: flex;
+    align-items: center;
+    background: var(--clr-bg-elevated);
+    border: 2px solid var(--clr-border);
+    border-radius: var(--radius-full);
+    padding: 0.5rem;
+    transition: all var(--transition-base);
+}
+
+.search-page-input-group:focus-within {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 6px var(--clr-primary-light);
+}
+
+.search-page-input-group .input-icon {
+    padding: 0 var(--spacing-md);
+    color: var(--clr-text-muted);
+    font-size: var(--fs-lg);
+}
+
+.search-page-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 0;
+    font-size: var(--fs-base);
+    color: var(--clr-text);
+    font-family: var(--ff-primary);
+}
+
+.search-page-input:focus {
+    outline: none;
+}
+
+.search-page-input::placeholder {
+    color: var(--clr-text-muted);
+}
+
+.search-page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1.75rem;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: var(--fs-base);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-base);
+    font-family: var(--ff-primary);
+}
+
+.search-page-btn:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateX(2px);
+}
+
+/* Results Info */
+.results-info {
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--fs-sm);
+    color: var(--clr-text-secondary);
+}
+
+.results-info strong {
+    color: var(--clr-text);
+    font-weight: 700;
+}
+
+/* No Results State */
+.no-results {
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    animation: fadeInUp 0.6s ease;
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    color: var(--clr-text-muted);
+    margin-bottom: var(--spacing-lg);
+}
+
+.no-results-title {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--spacing-sm);
+    color: var(--clr-text);
+}
+
+.no-results-desc {
+    color: var(--clr-text-secondary);
+    max-width: 400px;
+    margin: 0 auto var(--spacing-xl);
+    line-height: 1.8;
+}
+
+/* Post card animations already shared in app.css, we can reuse */
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .search-page-title {
+        font-size: var(--fs-3xl);
+    }
+    .search-page-input-group {
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+    .search-page-input {
+        background: var(--clr-bg-elevated);
+        border: 2px solid var(--clr-border);
+        border-radius: var(--radius-full);
+        padding: 0.75rem 1rem;
+        width: 100%;
+    }
+    .search-page-btn {
+        width: 100%;
+        justify-content: center;
+        margin-top: var(--spacing-sm);
+    }
+}
