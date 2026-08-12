@@ -1,3 +1,5 @@
+'use client';
+
 import { useCountUp } from '../hooks/useCountUp';
 
 interface CountUpProps {

@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient';
+import httpClient from '@/shared/api/httpClient';
 import { AboutData } from '../types/about';
 
 export const aboutApi = {
