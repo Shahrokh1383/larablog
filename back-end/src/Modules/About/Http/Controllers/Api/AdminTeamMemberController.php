@@ -37,9 +37,9 @@ class AdminTeamMemberController extends Controller
     {
         $search  = $request->input('search');
         $perPage = (int) $request->input('per_page', 15);
-        $users   = $this->teamService->getEligibleUsers($search, $perPage);
+        $paginator = $this->teamService->getEligibleUsers($search, $perPage);
 
-        $data = $users->map(function ($user) {
+        $mapped = collect($paginator->items())->map(function ($user) {
             $profile = DB::table('profiles')->where('user_id', $user->id)->first();
             $roles = DB::table('model_has_roles')
                 ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
@@ -55,15 +55,15 @@ class AdminTeamMemberController extends Controller
                 'avatar' => $profile?->avatar ?? null,
                 'roles'  => $roles,
             ];
-        });
+        })->values();
 
         return response()->json([
-            'data' => $data,
+            'data' => $mapped,
             'meta' => [
-                'current_page' => $users->currentPage(),
-                'last_page'    => $users->lastPage(),
-                'per_page'     => $users->perPage(),
-                'total'        => $users->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
             ],
         ]);
     }
