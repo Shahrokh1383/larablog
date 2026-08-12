@@ -1,0 +1,369 @@
+/* ============================================================
+   LARABLOG - about.css
+   About Page Styles
+   ============================================================ */
+
+/* ==================== HERO SECTION ==================== */
+.about-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--clr-bg);
+    padding-top: var(--spacing-3xl);
+    padding-bottom: var(--spacing-3xl);
+}
+
+.about-hero-bg-shapes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.about-hero-bg-shapes .shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.08;
+}
+
+.about-hero-bg-shapes .shape-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--clr-primary);
+    top: -20%;
+    left: -10%;
+    animation: floatShape 20s ease-in-out infinite;
+}
+
+.about-hero-bg-shapes .shape-2 {
+    width: 350px;
+    height: 350px;
+    background: var(--clr-accent);
+    bottom: -10%;
+    right: -5%;
+    animation: floatShape 25s ease-in-out infinite reverse;
+}
+
+.about-hero-bg-shapes .shape-3 {
+    width: 250px;
+    height: 250px;
+    background: #6366F1;
+    top: 40%;
+    right: 20%;
+    animation: floatShape 18s ease-in-out infinite;
+}
+
+.about-hero-title {
+    font-size: var(--fs-5xl);
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-hero-subtitle {
+    font-size: var(--fs-lg);
+    color: var(--clr-text-secondary);
+    line-height: 1.9;
+    margin-bottom: var(--spacing-2xl);
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-hero-actions {
+    position: relative;
+    z-index: 1;
+}
+
+/* Animation delays from index.css reused */
+.animate-fade-in-up {
+    opacity: 0;
+    animation: fadeInUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+.delay-1 { animation-delay: 0.15s; }
+.delay-2 { animation-delay: 0.3s; }
+.delay-3 { animation-delay: 0.45s; }
+
+/* ==================== STORY SECTION ==================== */
+.story-image-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 600px;
+}
+
+.story-image {
+    width: 100%;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    z-index: 2;
+}
+
+.story-image-accent {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--clr-primary);
+    border-radius: var(--radius-2xl);
+    z-index: 1;
+    opacity: 0.4;
+}
+
+.story-floating-card {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    background: var(--clr-card-bg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--clr-text);
+    z-index: 3;
+    border: 1px solid var(--clr-border-light);
+}
+
+.story-floating-card i {
+    color: var(--clr-primary);
+    font-size: var(--fs-xl);
+}
+
+.story-text {
+    color: var(--clr-text-secondary);
+    line-height: 1.9;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--fs-base);
+}
+
+.story-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.story-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.story-stat-number {
+    font-size: var(--fs-2xl);
+    font-weight: 800;
+    color: var(--clr-primary);
+}
+
+.story-stat-label {
+    font-size: var(--fs-sm);
+    color: var(--clr-text-muted);
+}
+
+/* ==================== VALUES SECTION ==================== */
+.value-card {
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    transition: all var(--transition-base);
+    height: 100%;
+}
+
+.value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--clr-primary-light);
+}
+
+.value-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-lg);
+    background: var(--clr-primary-light);
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-3xl);
+    color: var(--clr-primary);
+    transition: all var(--transition-base);
+}
+
+.value-card:hover .value-icon {
+    background: var(--clr-primary);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-glow);
+}
+
+.value-title {
+    font-size: var(--fs-xl);
+    margin-bottom: var(--spacing-sm);
+}
+
+.value-desc {
+    color: var(--clr-text-secondary);
+    font-size: var(--fs-sm);
+    line-height: 1.8;
+}
+
+/* ==================== TEAM SECTION ==================== */
+.team-card {
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    height: 100%;
+}
+
+.team-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--clr-primary-light);
+}
+
+.team-avatar {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+
+.team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.team-card:hover .team-avatar img {
+    transform: scale(1.1);
+}
+
+.team-social-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.team-card:hover .team-social-overlay {
+    opacity: 1;
+}
+
+.team-social-overlay .social-link {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.2);
+    color: #FFFFFF;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-lg);
+    transition: all var(--transition-fast);
+}
+
+.team-social-overlay .social-link:hover {
+    background: var(--clr-primary);
+    transform: scale(1.15);
+}
+
+.team-info {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.team-name {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.team-role {
+    font-size: var(--fs-sm);
+    color: var(--clr-text-secondary);
+}
+
+/* ==================== CTA SECTION ==================== */
+.cta-wrapper {
+    background: linear-gradient(135deg, var(--clr-primary-light), var(--clr-bg-alt));
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 300px;
+    height: 300px;
+    background: var(--clr-primary);
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.1;
+}
+
+.cta-title {
+    font-size: var(--fs-3xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-sm);
+    position: relative;
+}
+
+.cta-desc {
+    color: var(--clr-text-secondary);
+    font-size: var(--fs-base);
+    position: relative;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 991.98px) {
+    .about-hero-title {
+        font-size: var(--fs-4xl);
+    }
+    .story-image-wrapper {
+        margin-bottom: var(--spacing-xl);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .about-hero-title {
+        font-size: var(--fs-3xl);
+    }
+    .story-stats {
+        flex-wrap: wrap;
+        gap: var(--spacing-md);
+    }
+    .story-floating-card {
+        position: static;
+        margin-top: var(--spacing-md);
+    }
+    .cta-wrapper {
+        text-align: center;
+    }
+    .cta-wrapper .btn {
+        margin-top: var(--spacing-lg);
+    }
+}

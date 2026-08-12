@@ -11,7 +11,6 @@ class TeamMemberResource extends JsonResource
     {
         $user = $this->user;
 
-        // Build user data without crossing module boundaries
         $userData = null;
         if ($user) {
             $profile = DB::table('profiles')->where('user_id', $user->id)->first();
@@ -23,13 +22,14 @@ class TeamMemberResource extends JsonResource
                 ->toArray();
 
             $userData = [
-                'id'        => $user->id,
-                'name'      => $user->name,
-                'email'     => $user->email,
-                'avatar'    => $profile?->avatar ?? null,
-                'bio'       => $profile?->bio ?? null,
-                'expertise' => $profile?->expertise ?? null,
-                'roles'     => $roles,
+                'id'           => $user->id,
+                'name'         => $user->name,
+                'email'        => $user->email,
+                'avatar'       => $profile?->avatar ?? null,
+                'bio'          => $profile?->bio ?? null,
+                'expertise'    => $profile?->expertise ?? null,
+                'roles'        => $roles,
+                'social_links' => isset($profile->social_links) ? json_decode($profile->social_links, true) : null,
             ];
         }
 

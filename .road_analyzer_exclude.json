@@ -45,7 +45,6 @@
     "back-end\\config\\auth.php",
     "back-end\\tests\\Feature\\Identity",
     "back-end\\tests\\TestCase.php",
-    "User\\public",
     "back-end\\tests",
     "back-end\\src\\Shared",
     "Admin\\src\\features\\dashboard",
@@ -85,7 +84,6 @@
     "User\\src\\features\\posts",
     "User\\src\\features\\newsletter",
     "User\\src\\features\\home",
-    "User\\app",
     "Admin\\src\\features\\posts",
     "back-end\\database\\seeders",
     "back-end\\src\\Modules\\Engagement",
@@ -94,9 +92,14 @@
     "back-end\\src\\Modules\\Identity",
     "User\\src\\shared",
     "back-end\\src\\Modules\\Search",
-    "back-end\\src\\Modules\\Content"
+    "back-end\\src\\Modules\\Content",
+    "back-end\\database",
+    "back-end\\src\\Modules\\Profile",
+    "User\\src\\features\\authors",
+    "User\\src\\features\\categories",
+    "User\\app\\(public)\\search"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-12T13:53:16.556Z",
+  "lastModified": "2026-08-12T14:47:37.255Z",
   "version": 1
 }
