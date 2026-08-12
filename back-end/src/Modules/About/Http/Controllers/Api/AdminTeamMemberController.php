@@ -11,6 +11,7 @@ use Modules\About\Http\Resources\TeamMemberResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 class AdminTeamMemberController extends Controller
 {
@@ -38,8 +39,26 @@ class AdminTeamMemberController extends Controller
         $perPage = (int) $request->input('per_page', 15);
         $users   = $this->teamService->getEligibleUsers($search, $perPage);
 
+        $data = $users->map(function ($user) {
+            $profile = DB::table('profiles')->where('user_id', $user->id)->first();
+            $roles = DB::table('model_has_roles')
+                ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->where('model_has_roles.model_type', 'Modules\\Identity\\Models\\User')
+                ->where('model_has_roles.model_id', $user->id)
+                ->pluck('roles.name')
+                ->toArray();
+
+            return [
+                'id'     => $user->id,
+                'name'   => $user->name,
+                'email'  => $user->email,
+                'avatar' => $profile?->avatar ?? null,
+                'roles'  => $roles,
+            ];
+        });
+
         return response()->json([
-            'data' => \Modules\Identity\Http\Resources\UserResource::collection($users->items()),
+            'data' => $data,
             'meta' => [
                 'current_page' => $users->currentPage(),
                 'last_page'    => $users->lastPage(),
@@ -67,7 +86,7 @@ class AdminTeamMemberController extends Controller
 
         return response()->json([
             'message' => 'Team member updated.',
-            'data'    => new TeamMemberResource($member->load('user')),
+            'data'    => new TeamMemberResource($member),
         ]);
     }
 

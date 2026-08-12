@@ -53,7 +53,7 @@ class TeamService
             'sort_order' => $dto->sortOrder,
             'is_active'  => $dto->isActive,
         ]);
-        return $member->fresh();
+        return $member->fresh()->load('user');
     }
 
     public function delete(TeamMember $member): void

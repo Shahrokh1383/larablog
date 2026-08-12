@@ -20,7 +20,6 @@ class UserResource extends JsonResource
             'avatar'     => $profile?->avatar,
             'bio'        => $profile?->bio,
             'roles'      => $this->roles->pluck('name')->toArray(),
-            'expertise' => $profile?->expertise,
             'created_at' => $this->created_at,
         ];
     }
