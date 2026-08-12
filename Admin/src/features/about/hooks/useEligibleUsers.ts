@@ -12,6 +12,7 @@ export function useEligibleUsers(initialSearch = '') {
     queryKey: ['about', 'eligible-users', debouncedSearch, page],
     queryFn: () => aboutApi.getEligibleUsers(debouncedSearch, page),
     placeholderData: keepPreviousData,
+    refetchOnMount: 'always',
   });
 
   return {

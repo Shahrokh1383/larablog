@@ -3,8 +3,18 @@ import { ProfileForm } from '@/features/profile/components/ProfileForm';
 import { UpdateProfilePayload } from '@/features/profile/types/profile';
 
 export default function ProfilePage() {
-  const { data: profile, isLoading: isFetching } = useProfile();
+  const { data: profile, isLoading: isFetching, isError } = useProfile();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
+
+  if (isError) {
+    return (
+      <div className="p-4">
+        <div className="alert alert-danger">
+          Failed to load profile. Please try again later.
+        </div>
+      </div>
+    );
+  }
 
   if (isFetching || !profile) {
     return (

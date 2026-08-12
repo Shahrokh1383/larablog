@@ -19,7 +19,7 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 
     public function getByUserId(string $userId): ?Profile
     {
-        return Profile::where('user_id', $userId)->first();
+        return Profile::firstOrCreate('user_id', $userId)->first();
     }
 
     public function getPublicProfileByUsername(string $username): ?Profile

@@ -11,6 +11,7 @@ export function useUpdateUserRole() {
       usersApi.updateRole(userId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ['about', 'eligible-users'] });
     },
   });
 }
