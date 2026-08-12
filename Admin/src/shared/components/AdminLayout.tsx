@@ -27,6 +27,7 @@ export default function AdminLayout() {
     navItems.push({ to: '/users', label: 'User Management', icon: 'fa-users' });
     navItems.push({ to: '/subscribers', label: 'Subscribers', icon: 'fa-envelope-open-text' });
     navItems.push({ to: '/contact-messages', label: 'Messages', icon: 'fa-inbox' });
+    navItems.push({ to: '/about', label: 'About Page', icon: 'fa-info-circle' }); 
   }
 
   return (

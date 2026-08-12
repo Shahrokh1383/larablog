@@ -4,8 +4,9 @@ namespace Modules\Identity\Services;
 
 use Modules\Identity\Models\User;
 use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
+use Modules\Identity\Services\Contracts\FetchesUsersByRole;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
+use Illuminate\Support\Collection;
 class UserService implements UpdatesUserBasicInfo
 {
     public function getAllUsers(int $perPage = 15, ?string $search = null): LengthAwarePaginator
@@ -34,5 +35,12 @@ class UserService implements UpdatesUserBasicInfo
     public function updateName(string $userId, string $name): void
     {
         User::where('id', $userId)->update(['name' => $name]);
+    }
+
+    public function getUsersWithRoles(array $roles): Collection
+    {
+        return User::whereHas('roles', function ($query) use ($roles) {
+            $query->whereIn('name', $roles);
+        })->get();
     }
 }

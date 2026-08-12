@@ -13,6 +13,7 @@ import ProfilePage from '@/pages/Profile';
 import PostCommentsPage from '@/pages/PostComments';
 import SubscribersPage from '@/pages/Subscribers';
 import ContactMessagesPage from '@/pages/ContactMessages';
+import AboutPage from '@/pages/About';
 
 export default function AppRouter() {
   return (
@@ -45,11 +46,20 @@ export default function AppRouter() {
         />
         <Route
           path="/subscribers"
-          element={<RequireAdmin><SubscribersPage /></        RequireAdmin>}
+          element={<RequireAdmin><SubscribersPage /></RequireAdmin>}
         />
         <Route
           path="/contact-messages"
           element={<RequireAdmin><ContactMessagesPage /></RequireAdmin>}
+          />
+
+          <Route
+            path="/about"
+            element={
+              <RequireAdmin>
+                <AboutPage />
+              </RequireAdmin>
+            }
           />
       </Route>
       
