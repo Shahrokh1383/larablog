@@ -104,10 +104,10 @@
     "Admin\\src\\features\\users",
     "Admin\\src\\features\\profile",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\src\\Modules\\Profile",
-    "User\\src\\shared"
+    "User\\src\\shared",
+    "back-end\\src\\Modules\\About"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-12T20:11:52.040Z",
+  "lastModified": "2026-08-12T20:25:28.752Z",
   "version": 1
 }
