@@ -15,10 +15,6 @@ export interface SiteSettings {
 export interface TeamMember {
   id: string;
   user_id: string;
-  display_name: string | null;
-  position: string;
-  bio: string | null;
-  photo: string | null;
   sort_order: number;
   is_active: boolean;
   user?: {
@@ -26,17 +22,10 @@ export interface TeamMember {
     name: string;
     email: string;
     avatar: string | null;
+    bio: string | null;
+    expertise: string | null;
+    roles: string[];
   };
   created_at: string;
   updated_at: string;
-}
-
-export interface TeamMemberFormData {
-  user_id: string;
-  display_name?: string;
-  position: string;
-  bio?: string;
-  photo?: File | null;
-  sort_order: number;
-  is_active: boolean;
 }

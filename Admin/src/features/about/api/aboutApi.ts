@@ -19,20 +19,18 @@ export const aboutApi = {
     const response = await httpClient.get('/admin/about/team-members', { params: { page, per_page: perPage } });
     return response.data;
   },
-  getEligibleUsers: async (): Promise<{ data: AdminUser[] }> => {
-    const response = await httpClient.get('/admin/about/eligible-users');
+  getEligibleUsers: async (search = '', page = 1, perPage = 15): Promise<PaginatedResponse<AdminUser>> => {
+    const response = await httpClient.get('/admin/about/eligible-users', { params: { search, page, per_page: perPage } });
     return response.data;
   },
-  createTeamMember: async (formData: FormData): Promise<{ message: string; data: TeamMember }> => {
-    const response = await httpClient.post('/admin/about/team-members', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+
+  createTeamMember: async (payload: { user_id: string; sort_order: number; is_active: boolean }): Promise<{ message: string; data: TeamMember }> => {
+    const response = await httpClient.post('/admin/about/team-members', payload);
     return response.data;
   },
-  updateTeamMember: async (id: string, formData: FormData): Promise<{ message: string; data: TeamMember }> => {
-    const response = await httpClient.put(`/admin/about/team-members/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+
+  updateTeamMember: async (id: string, payload: { user_id?: string; sort_order?: number; is_active?: boolean }): Promise<{ message: string; data: TeamMember }> => {
+    const response = await httpClient.put(`/admin/about/team-members/${id}`, payload);
     return response.data;
   },
   deleteTeamMember: async (id: string): Promise<{ message: string }> => {

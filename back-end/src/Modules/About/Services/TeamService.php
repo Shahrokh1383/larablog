@@ -6,7 +6,6 @@ use Modules\About\Models\TeamMember;
 use Modules\About\DTOs\TeamMemberDTO;
 use Modules\Identity\Services\Contracts\FetchesUsersByRole;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 class TeamService
 {
@@ -29,34 +28,30 @@ class TeamService
             ->paginate($perPage);
     }
 
-    public function getEligibleUsers(): Collection
+    public function getEligibleUsers(?string $search = null, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->userFetcher->getUsersWithRoles(['admin', 'editor', 'author']);
+        return $this->userFetcher->getPaginatedUsersWithRoles(
+            ['admin', 'editor', 'author'],
+            $search,
+            $perPage
+        );
     }
 
     public function create(TeamMemberDTO $dto): TeamMember
     {
         return TeamMember::create([
-            'user_id' => $dto->userId,
-            'display_name' => $dto->displayName,
-            'position' => $dto->position,
-            'bio' => $dto->bio,
-            'photo' => $dto->photo,
+            'user_id'    => $dto->userId,
             'sort_order' => $dto->sortOrder,
-            'is_active' => $dto->isActive,
+            'is_active'  => $dto->isActive,
         ]);
     }
 
     public function update(TeamMember $member, TeamMemberDTO $dto): TeamMember
     {
         $member->update([
-            'user_id' => $dto->userId,
-            'display_name' => $dto->displayName,
-            'position' => $dto->position,
-            'bio' => $dto->bio,
-            'photo' => $dto->photo,
+            'user_id'    => $dto->userId,
             'sort_order' => $dto->sortOrder,
-            'is_active' => $dto->isActive,
+            'is_active'  => $dto->isActive,
         ]);
         return $member->fresh();
     }

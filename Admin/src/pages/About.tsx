@@ -3,7 +3,6 @@ import {
   useSiteSettings,
   useUpdateSiteSettings,
   useTeamMembers,
-  useEligibleUsers,
   useCreateTeamMember,
   useUpdateTeamMember,
   useDeleteTeamMember,
@@ -21,7 +20,6 @@ export default function AboutPage() {
   // Team members
   const [page, setPage] = useState(1);
   const { data: membersData, isLoading: membersLoading, isError: membersError } = useTeamMembers(page, 10);
-  const { data: eligibleUsersData } = useEligibleUsers();
   const createMember = useCreateTeamMember();
   const updateMember = useUpdateTeamMember();
   const deleteMember = useDeleteTeamMember();
@@ -47,15 +45,14 @@ export default function AboutPage() {
     updateSettings.mutate(data);
   };
 
-  const handleTeamMemberSubmit = (formData: FormData) => {
+  const handleTeamMemberSubmit = (payload: { user_id: string; sort_order: number; is_active: boolean }) => {
     if (editingMember) {
-      updateMember.mutate({ id: editingMember.id, formData }, {
-        onSuccess: () => closeModal(),
-      });
+      updateMember.mutate(
+        { id: editingMember.id, ...payload },
+        { onSuccess: () => closeModal() }
+      );
     } else {
-      createMember.mutate(formData, {
-        onSuccess: () => closeModal(),
-      });
+      createMember.mutate(payload, { onSuccess: () => closeModal() });
     }
   };
 
@@ -97,28 +94,33 @@ export default function AboutPage() {
               </button>
             </div>
             <div className="card-body">
-              {membersLoading && <div className="text-center py-3"><div className="spinner-border" /></div>}
+              {membersLoading && (
+                <div className="text-center py-3">
+                  <div className="spinner-border" />
+                </div>
+              )}
               {membersError && <div className="alert alert-danger">Failed to load team members.</div>}
               {!membersLoading && !membersError && membersData && (
                 <>
-                  <TeamMemberTable
-                    members={membersData.data}
-                    onEdit={openEdit}
-                    onDelete={handleDelete}
-                  />
-                  {/* Pagination */}
+                  <TeamMemberTable members={membersData.data} onEdit={openEdit} onDelete={handleDelete} />
                   {membersData.meta.last_page > 1 && (
                     <div className="d-flex justify-content-center mt-3">
                       <nav>
                         <ul className="pagination">
                           <li className={`page-item ${page <= 1 ? 'disabled' : ''}`}>
-                            <button className="page-link" onClick={() => setPage(p => Math.max(p - 1, 1))}>Previous</button>
+                            <button className="page-link" onClick={() => setPage((p) => Math.max(p - 1, 1))}>
+                              Previous
+                            </button>
                           </li>
                           <li className="page-item active">
-                            <span className="page-link">Page {membersData.meta.current_page} of {membersData.meta.last_page}</span>
+                            <span className="page-link">
+                              Page {membersData.meta.current_page} of {membersData.meta.last_page}
+                            </span>
                           </li>
                           <li className={`page-item ${page >= membersData.meta.last_page ? 'disabled' : ''}`}>
-                            <button className="page-link" onClick={() => setPage(p => p + 1)}>Next</button>
+                            <button className="page-link" onClick={() => setPage((p) => p + 1)}>
+                              Next
+                            </button>
                           </li>
                         </ul>
                       </nav>
@@ -135,7 +137,6 @@ export default function AboutPage() {
         <TeamMemberFormModal
           isOpen={showModal}
           member={editingMember}
-          eligibleUsers={eligibleUsersData?.data || []}
           isLoading={editingMember ? updateMember.isPending : createMember.isPending}
           onClose={closeModal}
           onSubmit={handleTeamMemberSubmit}

@@ -15,10 +15,6 @@ class TeamMember extends Model
 
     protected $fillable = [
         'user_id',
-        'display_name',
-        'position',
-        'bio',
-        'photo',
         'sort_order',
         'is_active',
     ];

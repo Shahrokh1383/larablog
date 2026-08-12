@@ -14,13 +14,9 @@ class StoreTeamMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'display_name' => 'nullable|string|max:255',
-            'position' => 'required|string|max:255',
-            'bio' => 'nullable|string|max:2000',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'user_id'    => 'required|exists:users,id',
             'sort_order' => 'integer|min:0',
-            'is_active' => 'boolean',
+            'is_active'  => 'boolean',
         ];
     }
 }

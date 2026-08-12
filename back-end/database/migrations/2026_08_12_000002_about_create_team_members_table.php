@@ -11,10 +11,6 @@ return new class extends Migration
         Schema::create('about_team_members', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->string('display_name')->nullable();
-            $table->string('position');
-            $table->text('bio')->nullable();
-            $table->string('photo')->nullable();
             $table->integer('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

@@ -14,7 +14,7 @@ export default function TeamMemberTable({ members, onEdit, onDelete }: Props) {
           <tr>
             <th>Photo</th>
             <th>Name</th>
-            <th>Position</th>
+            <th>Expertise</th>
             <th>Active</th>
             <th>Actions</th>
           </tr>
@@ -23,16 +23,16 @@ export default function TeamMemberTable({ members, onEdit, onDelete }: Props) {
           {members.map((member) => (
             <tr key={member.id}>
               <td>
-                {member.photo ? (
-                  <img src={member.photo} alt="" width="40" height="40" className="rounded-circle" />
+                {member.user?.avatar ? (
+                  <img src={member.user.avatar} alt="" width="40" height="40" className="rounded-circle" />
                 ) : (
                   <div className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 40, height: 40 }}>
-                    {(member.display_name || member.user?.name || '?').charAt(0).toUpperCase()}
+                    {member.user?.name?.charAt(0).toUpperCase() || '?'}
                   </div>
                 )}
               </td>
-              <td>{member.display_name || member.user?.name || 'Unknown'}</td>
-              <td>{member.position}</td>
+              <td>{member.user?.name || 'Unknown'}</td>
+              <td>{member.user?.expertise || '-'}</td>
               <td>{member.is_active ? <span className="badge bg-success">Active</span> : <span className="badge bg-secondary">Inactive</span>}</td>
               <td>
                 <button className="btn btn-sm btn-outline-primary me-2" onClick={() => onEdit(member)}>Edit</button>

@@ -9,8 +9,8 @@ use Modules\About\Http\Requests\StoreTeamMemberRequest;
 use Modules\About\Http\Requests\UpdateTeamMemberRequest;
 use Modules\About\Http\Resources\TeamMemberResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class AdminTeamMemberController extends Controller
 {
@@ -25,59 +25,49 @@ class AdminTeamMemberController extends Controller
             'data' => TeamMemberResource::collection($members->items()),
             'meta' => [
                 'current_page' => $members->currentPage(),
-                'last_page' => $members->lastPage(),
-                'per_page' => $members->perPage(),
-                'total' => $members->total(),
+                'last_page'    => $members->lastPage(),
+                'per_page'     => $members->perPage(),
+                'total'        => $members->total(),
             ],
         ]);
     }
 
-    public function eligibleUsers(): JsonResponse
+    public function eligibleUsers(Request $request): JsonResponse
     {
-        $users = $this->teamService->getEligibleUsers();
+        $search  = $request->input('search');
+        $perPage = (int) $request->input('per_page', 15);
+        $users   = $this->teamService->getEligibleUsers($search, $perPage);
 
         return response()->json([
-            'data' => \Modules\Identity\Http\Resources\UserResource::collection($users),
+            'data' => \Modules\Identity\Http\Resources\UserResource::collection($users->items()),
+            'meta' => [
+                'current_page' => $users->currentPage(),
+                'last_page'    => $users->lastPage(),
+                'per_page'     => $users->perPage(),
+                'total'        => $users->total(),
+            ],
         ]);
     }
 
     public function store(StoreTeamMemberRequest $request): JsonResponse
     {
-        $dto = TeamMemberDTO::fromRequest($request->validated());
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('team-photos', 'public');
-            $dto = new TeamMemberDTO(
-                userId: $dto->userId,
-                displayName: $dto->displayName,
-                position: $dto->position,
-                bio: $dto->bio,
-                photo: $path,
-                sortOrder: $dto->sortOrder,
-                isActive: $dto->isActive,
-            );
-        }
-
+        $dto    = TeamMemberDTO::fromRequest($request->validated());
         $member = $this->teamService->create($dto);
 
         return response()->json([
             'message' => 'Team member created.',
-            'data' => new TeamMemberResource($member->load('user')),
+            'data'    => new TeamMemberResource($member->load('user')),
         ], 201);
     }
 
     public function update(UpdateTeamMemberRequest $request, TeamMember $teamMember): JsonResponse
     {
-        $data = $request->validated();
-        if ($request->hasFile('photo')) {
-            $data['photo'] = $request->file('photo')->store('team-photos', 'public');
-        }
-
-        $dto = TeamMemberDTO::fromRequest($data);
+        $dto    = TeamMemberDTO::fromRequest($request->validated());
         $member = $this->teamService->update($teamMember, $dto);
 
         return response()->json([
             'message' => 'Team member updated.',
-            'data' => new TeamMemberResource($member->load('user')),
+            'data'    => new TeamMemberResource($member->load('user')),
         ]);
     }
 
