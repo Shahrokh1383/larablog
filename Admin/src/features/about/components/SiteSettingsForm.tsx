@@ -5,15 +5,17 @@ interface Props {
   settings: SiteSettings | undefined;
   isLoading: boolean;
   isSaving: boolean;
+  isUploadingImage: boolean;
+  onUploadStoryImage: (file: File) => void;
   onSubmit: (data: Partial<SiteSettings>) => void;
 }
 
-export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubmit }: Props) {
+export default function SiteSettingsForm({ settings, isLoading, isSaving, isUploadingImage, onUploadStoryImage, onSubmit }: Props) {
   const [phone, setPhone] = useState('');
   const [email1, setEmail1] = useState('');
   const [email2, setEmail2] = useState('');
   const [visitAddress, setVisitAddress] = useState('');
-  const [storyImage, setStoryImage] = useState('');
+  const [storyImage, setStoryImage] = useState<string | null>(null);
   const [socialLinks, setSocialLinks] = useState({
     linkedin: '',
     github: '',
@@ -21,6 +23,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
     instagram: '',
     dribbble: '',
     youtube: '',
+    discord: '', // Added
   });
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
       setEmail1(settings.call_us_emails?.[0] || '');
       setEmail2(settings.call_us_emails?.[1] || '');
       setVisitAddress(settings.visit_address || '');
-      setStoryImage(settings.story_image || '');
+      setStoryImage(settings.story_image || null);
       setSocialLinks({
         linkedin: settings.social_links?.linkedin || '',
         github: settings.social_links?.github || '',
@@ -37,9 +40,21 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
         instagram: settings.social_links?.instagram || '',
         dribbble: settings.social_links?.dribbble || '',
         youtube: settings.social_links?.youtube || '',
+        discord: settings.social_links?.discord || '', // Added
       });
     }
   }, [settings]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      onUploadStoryImage(e.target.files[0]);
+    }
+  };
+
+  // Update local state when upload finishes and settings prop updates
+  useEffect(() => {
+    setStoryImage(settings?.story_image || null);
+  }, [settings?.story_image]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +63,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
       call_us_phone: phone || null,
       call_us_emails,
       visit_address: visitAddress || null,
-      story_image: storyImage || null,
+      story_image: storyImage, // Send the URL string to the update payload
       social_links: socialLinks,
     });
   };
@@ -79,12 +94,29 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
         <textarea className="form-control" rows={2} value={visitAddress} onChange={(e) => setVisitAddress(e.target.value)} />
       </div>
 
-      {/* Added Story Image Input */}
       <h5 className="mb-3">About Page</h5>
       <div className="mb-3">
-        <label className="form-label">Story Image URL</label>
-        <input type="url" className="form-control" value={storyImage} onChange={(e) => setStoryImage(e.target.value)} />
-        <small className="text-muted">If empty, a default placeholder will be used.</small>
+        <label className="form-label">Story Image</label>
+        {isUploadingImage && (
+          <div className="mb-2">
+            <div className="spinner-border spinner-border-sm text-primary" role="status">
+              <span className="visually-hidden">Uploading...</span>
+            </div>
+            <span className="ms-2 small">Uploading image...</span>
+          </div>
+        )}
+        {!isUploadingImage && storyImage && (
+          <div className="mb-2">
+            <img src={storyImage} alt="Story Preview" className="img-thumbnail" style={{ maxHeight: '150px' }} />
+          </div>
+        )}
+        <input 
+          type="file" 
+          className="form-control" 
+          accept="image/png, image/jpeg, image/jpg, image/webp"
+          onChange={handleImageChange} 
+          disabled={isUploadingImage}
+        />
       </div>
 
       <h5 className="mb-3">Social Links</h5>
@@ -102,7 +134,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
         ))}
       </div>
 
-      <button type="submit" className="btn btn-primary" disabled={isSaving}>
+      <button type="submit" className="btn btn-primary" disabled={isSaving || isUploadingImage}>
         {isSaving ? 'Saving...' : 'Save Settings'}
       </button>
     </form>

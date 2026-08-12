@@ -6,6 +6,7 @@ import {
   useCreateTeamMember,
   useUpdateTeamMember,
   useDeleteTeamMember,
+  useUploadStoryImage,
   SiteSettingsForm,
   TeamMemberTable,
   TeamMemberFormModal,
@@ -16,6 +17,7 @@ export default function AboutPage() {
   // Settings
   const { data: settingsData, isLoading: settingsLoading } = useSiteSettings();
   const updateSettings = useUpdateSiteSettings();
+  const uploadStoryImage = useUploadStoryImage();
 
   // Team members
   const [page, setPage] = useState(1);
@@ -45,14 +47,19 @@ export default function AboutPage() {
     updateSettings.mutate(data);
   };
 
+  const handleUploadStoryImage = (file: File) => {
+    uploadStoryImage.mutate(file, {
+      onSuccess: (url) => {
+        updateSettings.mutate({ story_image: url });
+      },
+    });
+  };
+
   const handleCreate = (userIds: string[]) => {
-    // Loop through selected user IDs and create team members
     userIds.forEach((userId) => {
       createMember.mutate(
         { user_id: userId, sort_order: 0, is_active: true },
-        {
-          onSuccess: () => closeModal(),
-        }
+        { onSuccess: () => closeModal() }
       );
     });
   };
@@ -88,6 +95,8 @@ export default function AboutPage() {
                 settings={settingsData?.data}
                 isLoading={settingsLoading}
                 isSaving={updateSettings.isPending}
+                isUploadingImage={uploadStoryImage.isPending}
+                onUploadStoryImage={handleUploadStoryImage}
                 onSubmit={handleSettingsSubmit}
               />
             </div>
@@ -112,7 +121,9 @@ export default function AboutPage() {
               {membersError && <div className="alert alert-danger">Failed to load team members.</div>}
               {!membersLoading && !membersError && membersData && (
                 <>
+                  {/* TeamMemberTable is now properly rendered here */}
                   <TeamMemberTable members={membersData.data} onEdit={openEdit} onDelete={handleDelete} />
+                  
                   {membersData.meta.last_page > 1 && (
                     <div className="d-flex justify-content-center mt-3">
                       <nav>
