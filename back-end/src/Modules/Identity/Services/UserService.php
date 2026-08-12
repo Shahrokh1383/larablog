@@ -7,7 +7,7 @@ use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
 use Modules\Identity\Services\Contracts\FetchesUsersByRole;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-class UserService implements UpdatesUserBasicInfo
+class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
 {
     public function getAllUsers(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {

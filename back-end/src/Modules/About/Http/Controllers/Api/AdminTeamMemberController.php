@@ -18,8 +18,6 @@ class AdminTeamMemberController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', TeamMember::class);
-
         $perPage = (int) $request->input('per_page', 10);
         $members = $this->teamService->getMembersForAdmin($perPage);
 
@@ -36,7 +34,6 @@ class AdminTeamMemberController extends Controller
 
     public function eligibleUsers(): JsonResponse
     {
-        $this->authorize('viewAny', TeamMember::class);
         $users = $this->teamService->getEligibleUsers();
 
         return response()->json([
@@ -46,10 +43,7 @@ class AdminTeamMemberController extends Controller
 
     public function store(StoreTeamMemberRequest $request): JsonResponse
     {
-        $this->authorize('create', TeamMember::class);
-
         $dto = TeamMemberDTO::fromRequest($request->validated());
-        // Handle photo upload if present
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('team-photos', 'public');
             $dto = new TeamMemberDTO(
@@ -73,8 +67,6 @@ class AdminTeamMemberController extends Controller
 
     public function update(UpdateTeamMemberRequest $request, TeamMember $teamMember): JsonResponse
     {
-        $this->authorize('update', $teamMember);
-
         $data = $request->validated();
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('team-photos', 'public');
@@ -91,7 +83,6 @@ class AdminTeamMemberController extends Controller
 
     public function destroy(TeamMember $teamMember): JsonResponse
     {
-        $this->authorize('delete', $teamMember);
         $this->teamService->delete($teamMember);
 
         return response()->json([

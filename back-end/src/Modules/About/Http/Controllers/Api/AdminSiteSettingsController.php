@@ -2,7 +2,6 @@
 
 namespace Modules\About\Http\Controllers\Api;
 
-use Modules\About\Models\SiteSetting;
 use Modules\About\Services\SettingsService;
 use Modules\About\DTOs\SiteSettingsDTO;
 use Modules\About\Http\Requests\UpdateSiteSettingsRequest;
@@ -16,8 +15,6 @@ class AdminSiteSettingsController extends Controller
 
     public function show(): JsonResponse
     {
-        $this->authorize('update', SiteSetting::class);
-
         return response()->json([
             'data' => new SiteSettingResource($this->settingsService->getSettings()),
         ]);
@@ -25,8 +22,6 @@ class AdminSiteSettingsController extends Controller
 
     public function update(UpdateSiteSettingsRequest $request): JsonResponse
     {
-        $this->authorize('update', SiteSetting::class);
-        
         $dto = SiteSettingsDTO::fromRequest($request->validated());
         $settings = $this->settingsService->updateSettings($dto);
 
