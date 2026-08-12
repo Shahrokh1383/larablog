@@ -47,7 +47,8 @@
     flex: 1;
     border: none;
     background: transparent;
-    padding: 0.75rem 0;
+    /* Fix: Added horizontal padding so text doesn't touch the icon */
+    padding: 0.75rem 0.5rem; 
     font-size: var(--fs-base);
     color: var(--clr-text);
     font-family: var(--ff-primary);
@@ -121,29 +122,22 @@
     line-height: 1.8;
 }
 
-/* Post card animations already shared in app.css, we can reuse */
-
 /* Responsive */
 @media (max-width: 767.98px) {
     .search-page-title {
         font-size: var(--fs-3xl);
     }
-    .search-page-input-group {
-        flex-direction: column;
-        background: transparent;
-        border: none;
-        padding: 0;
+    .search-page-form {
+        max-width: 100%;
     }
-    .search-page-input {
-        background: var(--clr-bg-elevated);
-        border: 2px solid var(--clr-border);
-        border-radius: var(--radius-full);
-        padding: 0.75rem 1rem;
-        width: 100%;
+    /* Fix: Maintain pill design on mobile, just optimize spacing */
+    .search-page-input-group .input-icon {
+        padding: 0 var(--spacing-sm);
     }
     .search-page-btn {
-        width: 100%;
-        justify-content: center;
-        margin-top: var(--spacing-sm);
+        padding: 0.75rem 1rem;
+    }
+    .search-page-btn span {
+        display: none; /* Hide text on very small screens to save space */
     }
 }
