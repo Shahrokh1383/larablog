@@ -45,14 +45,24 @@ export default function AboutPage() {
     updateSettings.mutate(data);
   };
 
-  const handleTeamMemberSubmit = (payload: { user_id: string; sort_order: number; is_active: boolean }) => {
+  const handleCreate = (userIds: string[]) => {
+    // Loop through selected user IDs and create team members
+    userIds.forEach((userId) => {
+      createMember.mutate(
+        { user_id: userId, sort_order: 0, is_active: true },
+        {
+          onSuccess: () => closeModal(),
+        }
+      );
+    });
+  };
+
+  const handleUpdate = (payload: { user_id: string; sort_order: number; is_active: boolean }) => {
     if (editingMember) {
       updateMember.mutate(
         { id: editingMember.id, ...payload },
         { onSuccess: () => closeModal() }
       );
-    } else {
-      createMember.mutate(payload, { onSuccess: () => closeModal() });
     }
   };
 
@@ -90,7 +100,7 @@ export default function AboutPage() {
             <div className="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 className="mb-0">Team Members</h5>
               <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                <i className="fas fa-plus me-1"></i> Add Member
+                <i className="fas fa-plus me-1"></i> Add Member(s)
               </button>
             </div>
             <div className="card-body">
@@ -139,7 +149,8 @@ export default function AboutPage() {
           member={editingMember}
           isLoading={editingMember ? updateMember.isPending : createMember.isPending}
           onClose={closeModal}
-          onSubmit={handleTeamMemberSubmit}
+          onCreate={handleCreate}
+          onUpdate={handleUpdate}
         />
       )}
     </div>
