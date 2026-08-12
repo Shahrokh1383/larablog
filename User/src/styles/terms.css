@@ -1,0 +1,110 @@
+/* ============================================================
+   LARABLOG - terms.css
+   Terms & Conditions Page Styles
+   ============================================================ */
+
+.terms-section {
+    background: var(--clr-bg);
+}
+
+.terms-header {
+    margin-bottom: var(--spacing-3xl);
+}
+
+.terms-title {
+    font-size: var(--fs-4xl);
+    font-weight: 900;
+    margin-bottom: var(--spacing-sm);
+}
+
+.terms-updated {
+    color: var(--clr-text-muted);
+    font-size: var(--fs-sm);
+}
+
+.terms-content {
+    max-width: 850px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.terms-card {
+    background: var(--clr-card-bg);
+    border: 1px solid var(--clr-border-light);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl) var(--spacing-2xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.terms-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--clr-primary-light);
+    transform: translateY(-2px);
+}
+
+.terms-card h2 {
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--clr-text);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.terms-card h2::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 28px;
+    background: var(--clr-primary);
+    border-radius: 3px;
+    margin-right: var(--spacing-sm);
+}
+
+.terms-card p {
+    color: var(--clr-text-secondary);
+    line-height: 1.9;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--fs-base);
+}
+
+.terms-card p:last-child {
+    margin-bottom: 0;
+}
+
+.terms-card a {
+    color: var(--clr-primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.terms-card a:hover {
+    color: var(--clr-primary-hover);
+}
+
+/* Animation for cards on scroll */
+.terms-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.terms-card.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .terms-title {
+        font-size: var(--fs-3xl);
+    }
+    .terms-card {
+        padding: var(--spacing-lg);
+    }
+}

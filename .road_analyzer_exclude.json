@@ -79,7 +79,6 @@
     "User\\src\\features\\comments",
     "User\\src\\features\\dashboard",
     "User\\src\\features\\reader",
-    "User\\src\\styles",
     "User\\src\\features\\posts",
     "User\\src\\features\\newsletter",
     "User\\src\\features\\home",
@@ -105,9 +104,10 @@
     "Admin\\src\\features\\users",
     "Admin\\src\\features\\profile",
     "back-end\\src\\Modules\\Identity",
-    "back-end\\src\\Modules\\Profile"
+    "back-end\\src\\Modules\\Profile",
+    "User\\src\\shared"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-12T20:00:06.863Z",
+  "lastModified": "2026-08-12T20:11:52.040Z",
   "version": 1
 }
