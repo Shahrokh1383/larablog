@@ -6,7 +6,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Search\Http\Requests\SearchRequest;
 use Modules\Search\Services\SearchService;
-use Modules\Content\Http\Resources\PostPublicResource; // Reusing existing resource for frontend sync
+use Modules\Content\Http\Resources\PostPublicResource;
+use Modules\Content\Http\Resources\CategoryPublicResource;
+use Modules\Content\Http\Resources\TagPublicResource;
+use Modules\Profile\Http\Resources\AuthorResource;
 
 class SearchController extends Controller
 {
@@ -15,10 +18,16 @@ class SearchController extends Controller
     public function index(SearchRequest $request): JsonResponse
     {
         $term = $request->validated('q');
-        $perPage = $request->integer('per_page', 10);
+        
+        $results = $this->searchService->globalSearch($term);
 
-        $posts = $this->searchService->searchPosts($term, $perPage);
-
-        return PostPublicResource::collection($posts)->response();
+        // Return unified JSON structure.
+        // Note: PostPublicResource::collection($paginator) automatically wraps pagination meta.
+        return response()->json([
+            'posts'      => PostPublicResource::collection($results['posts'])->response()->getData(true),
+            'categories' => CategoryPublicResource::collection($results['categories']),
+            'tags'       => TagPublicResource::collection($results['tags']),
+            'authors'    => AuthorResource::collection($results['authors']),
+        ]);
     }
 }
