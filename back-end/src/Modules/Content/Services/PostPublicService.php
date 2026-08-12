@@ -121,4 +121,15 @@ class PostPublicService
 
         return $posts;
     }
+
+    public function searchPosts(?string $term, int $perpage = 10): LengthAwarePaginator
+    {
+        $posts = Post::with(['category', 'tags'])
+            ->published()
+            ->search($term)
+            ->latest('published_at')
+            ->paginate($perpage);
+        $this->mapPostRelations->execute($posts);
+        return $posts;
+    }
 }

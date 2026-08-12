@@ -25,3 +25,6 @@ require base_path('src/Modules/ReaderExperience/Routes/api.php');
 // Marketing Module Routes
 require base_path('src/Modules/Marketing/Routes/api.php');
 require base_path('src/Modules/Marketing/Routes/admin.php');
+
+// Search Module Routes
+require base_path('src/Modules/Search/Routes/admin.php');

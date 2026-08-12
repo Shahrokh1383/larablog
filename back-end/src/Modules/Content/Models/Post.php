@@ -40,8 +40,10 @@ class Post extends Model
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         if ($term) {
-            return $query->where('title', 'like', "%{$term}%")
-                         ->orWhere('excerpt', 'like', "%{$term}%");
+            return $query->where(function (Builder $q) use ($term) {
+                $q->where('title', 'like', "%{$term}%")
+                  ->orWhere('excerpt', 'like', "%{$term}%");
+            });
         }
         return $query;
     }

@@ -10,5 +10,6 @@ return [
         \Modules\Notification\NotificationServiceProvider::class,
         \Modules\ReaderExperience\ReaderExperienceServiceProvider::class,
         \Modules\Marketing\MarketingServiceProvider::class,
+        Modules\Search\SearchServiceProvider::class,
     ],
 ];
