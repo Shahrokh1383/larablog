@@ -39,7 +39,12 @@ class AdminTeamMemberController extends Controller
         $perPage = (int) $request->input('per_page', 15);
         $paginator = $this->teamService->getEligibleUsers($search, $perPage);
 
-        $mapped = collect($paginator->items())->map(function ($user) {
+        // Exclude users who are already team members
+        $excludedIds = TeamMember::pluck('user_id')->toArray();
+
+        $mapped = collect($paginator->items())->reject(function ($user) use ($excludedIds) {
+            return in_array($user->id, $excludedIds);
+        })->map(function ($user) {
             $profile = DB::table('profiles')->where('user_id', $user->id)->first();
             $roles = DB::table('model_has_roles')
                 ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
@@ -66,6 +71,24 @@ class AdminTeamMemberController extends Controller
                 'total'        => $paginator->total(),
             ],
         ]);
+    }
+
+    public function bulkStore(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['required', 'exists:users,id'],
+        ]);
+
+        foreach ($validated['user_ids'] as $userId) {
+            $this->teamService->create(new TeamMemberDTO(
+                userId: $userId,
+                sortOrder: 0,
+                isActive: true
+            ));
+        }
+
+        return response()->json(['message' => 'Team members created.'], 201);
     }
 
     public function store(StoreTeamMemberRequest $request): JsonResponse

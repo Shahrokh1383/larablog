@@ -6,9 +6,10 @@ import AboutStory from './AboutStory';
 import AboutValues from './AboutValues';
 import AboutTeam from './AboutTeam';
 import AboutCTA from './AboutCTA';
+import Pagination from '@/shared/components/Pagination';
 
 export default function AboutView() {
-  const { data, isLoading, isError } = useAboutData();
+  const { data, isLoading, isError, teamPage, setTeamPage } = useAboutData();
 
   if (isLoading) {
     return (
@@ -32,9 +33,18 @@ export default function AboutView() {
   return (
     <main>
       <AboutHero />
-      <AboutStory />
+      <AboutStory storyImage={data.settings.story_image} />
       <AboutValues />
       <AboutTeam members={data.team_members} />
+      {data.team_members_pagination && data.team_members_pagination.last_page > 1 && (
+        <div className="container pb-5">
+          <Pagination
+            currentPage={data.team_members_pagination.current_page}
+            lastPage={data.team_members_pagination.last_page}
+            onPageChange={(page) => setTeamPage(page)}
+          />
+        </div>
+      )}
       <AboutCTA />
     </main>
   );

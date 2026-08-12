@@ -90,16 +90,24 @@
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\src\\Modules\\Administration",
     "back-end\\src\\Modules\\Identity",
-    "User\\src\\shared",
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\Content",
     "back-end\\database",
     "back-end\\src\\Modules\\Profile",
     "User\\src\\features\\authors",
     "User\\src\\features\\categories",
-    "User\\app\\(public)\\search"
+    "User\\app\\(public)\\search",
+    "Admin\\src\\app",
+    "Admin\\src\\pages",
+    "Admin\\src\\shared",
+    "User\\app\\(public)\\contact",
+    "User\\app\\(public)\\page.tsx",
+    "User\\app\\(public)\\layout.tsx",
+    "User\\src\\features\\search",
+    "User\\src\\features\\tags",
+    "User\\public"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-12T14:47:37.255Z",
+  "lastModified": "2026-08-12T15:44:41.367Z",
   "version": 1
 }

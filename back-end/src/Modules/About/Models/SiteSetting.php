@@ -13,6 +13,7 @@ class SiteSetting extends Model
         'call_us_emails',
         'visit_address',
         'social_links',
+        'story_image',
     ];
 
     protected function casts(): array

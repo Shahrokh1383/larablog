@@ -37,4 +37,8 @@ export const aboutApi = {
     const response = await httpClient.delete(`/admin/about/team-members/${id}`);
     return response.data;
   },
+  bulkCreateTeamMembers: async (userIds: string[]): Promise<{ message: string }> => {
+    const response = await httpClient.post('/admin/about/team-members/bulk', { user_ids: userIds });
+    return response.data;
+  },
 };

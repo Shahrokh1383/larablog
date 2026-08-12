@@ -1,8 +1,5 @@
 export interface SocialLinks {
-  twitter?: string | null;
-  github?: string | null;
-  linkedin?: string | null;
-  website?: string | null;
+  [key: string]: string | null;
 }
 
 export interface TeamMemberUser {
@@ -31,6 +28,7 @@ export interface SiteSettings {
   call_us_emails: string[] | null;
   visit_address: string | null;
   social_links: Record<string, string> | null;
+  story_image: string | null;
 }
 
 export interface AboutData {

@@ -1,13 +1,19 @@
 import CountUp from '@/features/home/components/CountUp';
 
-export default function AboutStory() {
+interface AboutStoryProps {
+  storyImage: string | null;
+}
+
+export default function AboutStory({ storyImage }: AboutStoryProps) {
+  const imageSrc = storyImage || 'https://picsum.photos/seed/aboutstory/600/400';
+
   return (
     <section className="story-section section-padding bg-light-alt">
       <div className="container">
         <div className="row align-items-center g-5">
           <div className="col-lg-6">
             <div className="story-image-wrapper">
-              <img src="https://picsum.photos/seed/aboutstory/600/400" alt="Our Story" className="story-image" />
+              <img src={imageSrc} alt="Our Story" className="story-image" />
               <div className="story-image-accent"></div>
               <div className="story-floating-card">
                 <i className="fa-sharp fa-solid fa-quote-right"></i>

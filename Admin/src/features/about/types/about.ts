@@ -10,6 +10,7 @@ export interface SiteSettings {
     dribbble?: string;
     youtube?: string;
   };
+  story_image: string | null;
 }
 
 export interface TeamMember {

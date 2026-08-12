@@ -20,6 +20,7 @@ class SettingsService
             'call_us_emails' => $dto->callUsEmails,
             'visit_address' => $dto->visitAddress,
             'social_links' => $dto->socialLinks,
+            'story_image' => $dto->storyImage,
         ]);
         return $settings->fresh();
     }

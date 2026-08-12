@@ -15,6 +15,7 @@ return new class extends Migration
             $table->json('call_us_emails')->nullable();
             $table->text('visit_address')->nullable();
             $table->json('social_links')->nullable();
+            $table->string('story_image')->nullable();
             $table->timestamps();
         });
 

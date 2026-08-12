@@ -9,6 +9,7 @@ class SiteSettingsDTO
         public readonly array $callUsEmails,
         public readonly ?string $visitAddress,
         public readonly array $socialLinks,
+        public readonly ?string $storyImage,
     ) {}
 
     public static function fromRequest(array $data): self
@@ -18,6 +19,7 @@ class SiteSettingsDTO
             callUsEmails: $data['call_us_emails'] ?? [],
             visitAddress: $data['visit_address'] ?? null,
             socialLinks: $data['social_links'] ?? [],
+            storyImage: $data['story_image'] ?? null,
         );
     }
 }

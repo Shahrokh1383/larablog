@@ -13,6 +13,7 @@ class SiteSettingResource extends JsonResource
             'call_us_emails' => $this->call_us_emails,
             'visit_address' => $this->visit_address,
             'social_links' => $this->social_links,
+            'story_image' => $this->story_image,
         ];
     }
 }

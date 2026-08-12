@@ -13,6 +13,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
   const [email1, setEmail1] = useState('');
   const [email2, setEmail2] = useState('');
   const [visitAddress, setVisitAddress] = useState('');
+  const [storyImage, setStoryImage] = useState('');
   const [socialLinks, setSocialLinks] = useState({
     linkedin: '',
     github: '',
@@ -28,6 +29,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
       setEmail1(settings.call_us_emails?.[0] || '');
       setEmail2(settings.call_us_emails?.[1] || '');
       setVisitAddress(settings.visit_address || '');
+      setStoryImage(settings.story_image || '');
       setSocialLinks({
         linkedin: settings.social_links?.linkedin || '',
         github: settings.social_links?.github || '',
@@ -46,6 +48,7 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
       call_us_phone: phone || null,
       call_us_emails,
       visit_address: visitAddress || null,
+      story_image: storyImage || null,
       social_links: socialLinks,
     });
   };
@@ -74,6 +77,14 @@ export default function SiteSettingsForm({ settings, isLoading, isSaving, onSubm
       <div className="mb-3">
         <label className="form-label">Address / Location</label>
         <textarea className="form-control" rows={2} value={visitAddress} onChange={(e) => setVisitAddress(e.target.value)} />
+      </div>
+
+      {/* Added Story Image Input */}
+      <h5 className="mb-3">About Page</h5>
+      <div className="mb-3">
+        <label className="form-label">Story Image URL</label>
+        <input type="url" className="form-control" value={storyImage} onChange={(e) => setStoryImage(e.target.value)} />
+        <small className="text-muted">If empty, a default placeholder will be used.</small>
       </div>
 
       <h5 className="mb-3">Social Links</h5>

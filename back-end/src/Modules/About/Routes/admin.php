@@ -15,4 +15,5 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('about/team-members', [AdminTeamMemberController::class, 'store']);
     Route::put('about/team-members/{team_member}', [AdminTeamMemberController::class, 'update']);
     Route::delete('about/team-members/{team_member}', [AdminTeamMemberController::class, 'destroy']);
+    Route::post('team-members/bulk', [AdminTeamMemberController::class, 'bulkStore']);
 });
