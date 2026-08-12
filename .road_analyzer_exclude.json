@@ -91,9 +91,12 @@
     "back-end\\src\\Modules\\Engagement",
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\src\\Modules\\Administration",
-    "back-end\\src\\Modules\\Identity"
+    "back-end\\src\\Modules\\Identity",
+    "User\\src\\shared",
+    "back-end\\src\\Modules\\Search",
+    "back-end\\src\\Modules\\Content"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-11T23:33:05.683Z",
+  "lastModified": "2026-08-12T13:53:16.556Z",
   "version": 1
 }
