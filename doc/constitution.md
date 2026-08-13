@@ -1,20 +1,22 @@
 # Architecture Constitution — Larablog  
-**Single Source of Truth**
+**Single Source of Truth (SSOT) — Generative Modular Architecture**
 
 > **Philosophy**  
-> This project is a **Pragmatic Modular Monolith** with Lightweight Domain-Driven Design.  
-> We strictly enforce Bounded Context boundaries while fully embracing Laravel’s Active Record nature.  
-> Eloquent Models are the Domain Entities. Business logic lives in Services and Actions.  
-> On the frontend we use a strict feature-based architecture: pages only orchestrate, hooks own all logic, components are purely presentational.  
-> No unnecessary repositories, no pure Domain entities with mappers, no over-engineering.  
-> Clean, testable, fast to develop, and strictly bounded modules on both backend and frontend.
+> Pragmatic Modular Monolith + Lightweight DDD.  
+> Eloquent Models are Domain Entities. Business logic lives in Services/Actions.  
+> Frontend: pages orchestrate, hooks own logic, components present.  
+>  
+> **Open-World Principle:** This system scales to **thousands of Bounded Contexts**.  
+> Current modules are only **Initial Seed Modules**. Every AI/developer must assume an **infinite module space** and create new contexts whenever a new business capability emerges.  
+>  
+> No unnecessary repositories. No pure Domain entities with mappers. No over-engineering.
 
 This document is the **only authoritative source** for every developer and AI.  
-Any code that violates these rules is considered incorrect and must be refactored.
+Any code that violates these rules is incorrect and must be refactored.
 
 ---
 
-## 1. Bounded Contexts (Modules)
+## 1. Bounded Contexts (Modules) & Infinite Scalability
 
 ```mermaid
 flowchart LR
@@ -26,6 +28,7 @@ flowchart LR
     MKT[Marketing<br/>Newsletter, Subscribers, Contact]:::ctx
     ABT[About<br/>Settings, Team Members]:::ctx
     ADM[Administration<br/>Cross-module admin aggregator]:::ctx
+    NEW[??? New Contexts ???<br/>Billing, Notifications, Analytics...]:::new
 
     IDN -.->|contract| SK
     CNT -.->|contract| SK
@@ -34,27 +37,29 @@ flowchart LR
     ADM -.->|contract| IDN
     ADM -.->|contract| CNT
     ADM -.->|contract| ENG
+    NEW -.->|contract| SK
     ENG -.->|event| RDX
     CNT -.->|event| MKT
     CNT -.->|event| RDX
 
     classDef kernel fill:#fef3c7,stroke:#d97706,stroke-width:2px
     classDef ctx fill:#eff6ff,stroke:#3b82f6,stroke-width:1px
+    classDef new fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
-· Every feature must belong to exactly one module.
-· Modules never import another module’s Models, Controllers, or internal classes.
-· Communication is allowed only through the two legal channels defined in Article IV.
-· Administration exists as a lightweight aggregator for admin endpoints that need data from multiple modules. It contains no business logic, only coordination of existing services.
+- **The Infinity Rule:** Every new feature belongs to exactly one module. If it does not semantically fit into an existing module with **100% alignment**, create a new Bounded Context.  
+- **Avoid God Modules:** Never force a new capability into an existing module just to avoid a new folder. Over-segmentation is cheaper than Semantic Coupling.  
+- Modules never import another module’s Models, Controllers, or internal classes.  
+- Cross-module communication is allowed only through the two legal channels defined in **Article IV**.  
+- **Administration** is a lightweight aggregator for admin endpoints needing data from multiple modules. It contains no business logic.
 
 ---
 
-2. Backend Directory Structure
+## 2. Backend Directory Structure
 
 ```text
 larablog-api/
 ├── app/                              # Framework bootstrap only
-│   └── Providers/AppServiceProvider.php
 ├── bootstrap/
 ├── config/
 │   └── modules.php                   # Registry of enabled modules
@@ -74,7 +79,7 @@ larablog-api/
     ├── Shared/                       # SHARED KERNEL (keep extremely lean)
     │   ├── Models/
     │   │   └── User.php
-    │   ├── ValueObjects/             # Only truly shared ones (see list)
+    │   ├── ValueObjects/
     │   │   ├── Slug.php
     │   │   ├── Email.php
     │   │   └── ReadingTime.php
@@ -82,115 +87,90 @@ larablog-api/
     │   │   └── HasUuid.php
     │   └── SharedServiceProvider.php
     └── Modules/
-        ├── Identity/
-        ├── Content/
-        ├── Engagement/
-        ├── ReaderExperience/
-        ├── Marketing/
-        ├── About/
-        └── Administration/          # Lightweight, coordination only
+        ├── {Context}/                # ← placeholder for ANY new module
+        ├── Identity/                 # Seed module (example)
+        ├── Content/                  # Seed module (example)
+        ├── Engagement/               # Seed module (example)
+        ├── ReaderExperience/         # Seed module (example)
+        ├── Marketing/                # Seed module (example)
+        ├── About/                    # Seed module (example)
+        └── Administration/           # Seed module (example)
 ```
 
-Shared Kernel initial inventory:
+**Shared Kernel — Initial Inventory:**  
+- Models: `User` (the only shared Eloquent model)  
+- ValueObjects: `Slug`, `Email`, `ReadingTime`  
+- Traits: `HasUuid`
 
-· Models: User (the only shared Eloquent model)
-· ValueObjects: Slug, Email, ReadingTime
-· Traits: HasUuid
+**Promotion Rule:** Add to Shared Kernel **only** if a concept is required by **three or more Bounded Contexts** and does not belong to a single domain. This requires a deliberate review.
 
-Any addition to Shared Kernel requires a deliberate review to avoid bloating it.
-
-2.1 Module Skeleton (mandatory for every module)
+### 2.1 Module Skeleton (mandatory for every new/existing module)
 
 ```text
 src/Modules/{Context}/
 ├── {Context}ServiceProvider.php
-├── Models/                           # Eloquent = Domain Entity
-├── Services/                         # Business logic & orchestration
-│   └── Contracts/                    # (optional) small interfaces for services consumed externally
-├── Actions/                          # Single-purpose, reusable steps
+├── Models/
+├── Services/
+│   └── Contracts/                    # Public service interfaces for cross-module access
+├── Actions/
 ├── DTOs/
 ├── Http/
 │   ├── Controllers/Api/
 │   ├── Requests/
 │   └── Resources/
-├── Policies/                         # Authorization lives here
+├── Policies/
 ├── Events/
 ├── Listeners/
-├── Jobs/                             # (if needed)
-├── Mail/                             # (if needed)
+├── Jobs/                             # if needed
+├── Mail/                             # if needed
 └── Routes/
-    ├── api.php                       # Public + authenticated endpoints
-    └── admin.php                     # Admin endpoints (prefix /admin)
+    ├── api.php
+    └── admin.php
 ```
 
-For modules that only aggregate data (like Administration), the skeleton can be simpler (no Models, no Events, no Policies). However, the mandatory parts (ServiceProvider, Routes, Http) must still exist.
+For aggregator modules (e.g., Administration), the skeleton may be simpler (no Models/Events/Policies), but **ServiceProvider, Routes, Http** are mandatory.
 
 ---
 
-3. Frontend Directory Structures
+## 3. Frontend Directory Structures
 
-3.1 Next.js Public Site (App Router)
+### 3.1 Next.js Public Site (App Router)
 
 ```text
 larablog-web/
 ├── app/                                      # THIN orchestrator only
 │   ├── (auth)/
-│   │   ├── login/page.tsx
-│   │   ├── register/page.tsx
-│   │   ├── forgot-password/page.tsx
-│   │   └── reset-password/page.tsx
 │   ├── (public)/
-│   │   ├── layout.tsx                        # Shell + realtime user channel
-│   │   ├── page.tsx                          # Home
-│   │   ├── post/[slug]/page.tsx
-│   │   ├── category/[slug]/page.tsx
-│   │   ├── tag/[slug]/page.tsx
-│   │   ├── author/[username]/page.tsx
-│   │   ├── about/page.tsx
-│   │   └── contact/page.tsx
 │   ├── (dashboard)/
-│   │   ├── layout.tsx
-│   │   ├── dashboard/page.tsx
-│   │   ├── dashboard/saved-posts/page.tsx
-│   │   └── dashboard/settings/page.tsx
-│   ├── layout.tsx                            # Root + Providers
+│   ├── layout.tsx
 │   └── globals.css
 ├── src/
-│   ├── features/                             # Domain modules (mirrors backend)
+│   ├── features/                             # Domain modules — mirrors backend
 │   │   ├── auth/
 │   │   ├── posts/
 │   │   ├── comments/
-│   │   ├── categories/
-│   │   ├── tags/
-│   │   ├── authors/
-│   │   ├── dashboard/
-│   │   ├── newsletter/
-│   │   ├── contact/
-│   │   └── about/
+│   │   └── {domain}/                         # ← create new feature dirs as needed
 │   ├── shared/
 │   │   ├── api/
-│   │   │   ├── httpClient.ts                 # Axios instance + interceptors
+│   │   │   ├── httpClient.ts
 │   │   │   └── endpoints.ts
 │   │   ├── lib/
-│   │   │   ├── reverb.ts                     # Echo + Reverb config
+│   │   │   ├── reverb.ts
 │   │   │   ├── seo.ts
 │   │   │   └── format.ts
 │   │   ├── hooks/
-│   │   │   ├── useDebounce.ts
-│   │   │   └── usePagination.ts
 │   │   ├── types/
-│   │   │   └── api.ts                        # ApiResponse<T>, Paginated<T>
 │   │   └── config/env.ts
 │   └── providers/
 │       ├── AppProviders.tsx
-│       ├── QueryProvider.tsx                 # React Query
+│       ├── QueryProvider.tsx
 │       ├── AuthProvider.tsx
 │       └── ThemeProvider.tsx
-├── middleware.ts                             # Auth gate for /dashboard
+├── proxy.ts                             # Auth gate for /dashboard
 └── next.config.ts
 ```
 
-3.2 React Admin Panel (Vite)
+### 3.2 React Admin Panel (Vite)
 
 ```text
 larablog-admin/
@@ -199,84 +179,68 @@ larablog-admin/
     │   ├── App.tsx
     │   ├── router.tsx
     │   └── providers.tsx
-    ├── pages/                                # Thin orchestrators
+    ├── pages/# Thin orchestrators
     │   ├── Login.tsx
     │   ├── Dashboard.tsx
-    │   ├── Posts.tsx
-    │   ├── PostEditor.tsx
-    │   ├── Categories.tsx
-    │   ├── Tags.tsx
-    │   ├── Comments.tsx
-    │   ├── Users.tsx
-    │   └── AboutTeam.tsx
+    │   └── {Page}.tsx
     ├── features/
     │   ├── auth/
     │   ├── posts/
-    │   ├── categories/
-    │   ├── tags/
-    │   ├── comments/
-    │   ├── users/
-    │   └── team/
+    │   └── {domain}/
     └── shared/
-        ├── api/httpClient.ts                 # Token from localStorage
-        ├── components/                       # AdminLayout, Sidebar, DataTable, ConfirmDialog
+        ├── api/httpClient.ts
+        ├── components/
         ├── hooks/usePermissions.ts
         └── lib/format.ts
 ```
 
-3.3 Mandatory Feature Anatomy (both Next.js and Admin)
-
-Every feature must follow this exact internal structure:
+### 3.3 Mandatory Feature Anatomy
 
 ```text
 src/features/{domain}/
 ├── api/
-│   └── {domain}Api.ts                # Pure fetch functions (no React)
+│   └── {domain}Api.ts
 ├── hooks/
-│   ├── use{Something}.ts             # All logic, React Query, state, side-effects
-│   └── use{Something}Realtime.ts     # (if needed)
-├── components/                       # Presentational only
-│   ├── {Name}.tsx
-│   └── ...
-├── context/                          # Only when cross-component state is truly needed
-│   └── {Domain}Context.tsx
+│   ├── use{Something}.ts
+│   └── use{Something}Realtime.ts
+├── components/
+├── context/
 ├── types/
-│   └── {domain}.ts
-└── index.ts                          # Public barrel (export only what other features may use)
+└── index.ts                          # Public barrel — export only what other features may use
 ```
+
+**Cross-feature imports:** Features may import only from another feature’s **public barrel** (`index.ts`). Never import another feature’s internal files (`hooks/`, `components/`, `api/` directly). Prefer composition at page level.
 
 ---
 
-4. Frontend Data Flow (Mandatory)
+## 4. Frontend Data Flow (Mandatory)
 
 ```mermaid
 flowchart TD
-    PG[app/.../page.tsx<br/>Orchestrator only] --> HK[features/x/hooks/useX.ts]
-    HK --> API[features/x/api/xApi.ts]
-    API --> HTTP[shared/api/httpClient.ts]
+    PG[page.tsx] --> HK[useX.ts]
+    HK --> API[xApi.ts]
+    API --> HTTP[httpClient.ts]
     HTTP --> BE[Laravel API]
-    HK --> CMP[features/x/components/X.tsx<br/>Presentational]
+    HK --> CMP[Component]
     PG --> CMP
-    HK --> CTX[features/x/context/XContext.tsx<br/>optional]
-    RV[shared/lib/reverb.ts] --> HRT[useXRealtime.ts]
+    HK --> CTX[Context]
+    RV[reverb.ts] --> HRT[useXRealtime.ts]
     HRT --> CTX
 ```
 
-Rules:
-
-· A page never imports httpClient, never calls fetch, never holds business state.
-· A component never imports hooks that fetch data or httpClient. It only receives props and emits events.
-· All data fetching, caching, mutations, optimistic updates and realtime subscriptions live inside hooks.
+- Page never imports `httpClient`, never calls `fetch`, never holds business state.  
+- Component never imports data-fetching hooks or `httpClient`. Props in, events out.  
+- All fetching/caching/mutations/optimistic updates/realtime live in hooks.
 
 ---
 
-5. Layer Dependency Flow (Backend)
+## 5. Layer Dependency Flow (Backend)
 
 ```mermaid
 flowchart TD
-    REQ[HTTP Request] --> CTL[Controller<br/>FormRequest → Service → Resource]
-    CTL --> SVC[Service<br/>Orchestration + Transactions + Business Rules]
-    SVC --> ACT[Action<br/>Atomic business step]
+    REQ[HTTP Request] --> CTL[Controller]
+    CTL --> SVC[Service]
+    SVC --> ACT[Action]
     SVC --> DTO[DTO]
     SVC --> MDL[Eloquent Model]
     SVC --> EVT[Domain Event]
@@ -286,54 +250,56 @@ flowchart TD
 
 ---
 
-6. Constitution — Non-Negotiable Rules
+## 6. Constitution — Non-Negotiable Rules
 
-Article I — Thin Controllers
+### Article 0 — Open-World Scalability
+Before coding a new requirement, ask: *“Does this introduce new Ubiquitous Language or a distinct lifecycle?”*  
+If **YES**, create a new Bounded Context (backend module + frontend feature). Creating `src/Modules/{NewContext}` is a standard, lightweight operation.
 
-Controllers do only three things:
+### Article I — Thin Controllers
+Controllers only:
+1. Receive already-validated `FormRequest`
+2. Call exactly one Service method (passing DTO/validated data)
+3. Return API Resource or JSON
 
-1. Receive already-validated FormRequest
-2. Call exactly one Service method (passing DTO or validated data)
-3. Return an API Resource or JSON response
+Forbidden: business logic, `DB::`, direct Eloquent queries, transactions.
 
-Forbidden: any business logic, DB::, direct Eloquent queries, transactions.
+### Article II — Pragmatic DDD
+- Eloquent Models are Domain Entities.
+- Services talk directly to Eloquent Models.
+- Prefer Local Scopes over query duplication.
+- No Repository interfaces by default.
+- DTOs for write operations with ≥2 meaningful params.
+- Extract Action when logic is reused or Service grows.
 
-Article II — Pragmatic DDD
+### Article III — Strict Module Boundaries
+- Never import another module’s **Model, Controller, or internal class**.
+- Allowed: importing from `Shared\`.
+- Cross-module synchronous access is allowed **only through public Service Contracts** (see Article IV).
+- Enforced by Pest Architecture tests.
 
-· Eloquent Models are the Domain Entities.
-· Services talk directly to Eloquent Models.
-· Prefer Local Scopes on Models.
-· Do not create Repository interfaces by default.
-· Create DTOs for any write operation that has ≥ 2 meaningful parameters.
-· Extract an Action when logic is reused or a Service method grows complex.
+### Article IV — Cross-Module Communication
 
-Article III — Strict Module Boundaries
+| Type | When | How |
+| :--- | :--- | :--- |
+| **Synchronous (Read)** | Need data from another module in same request | Inject the module’s **public Service interface** from `Services/Contracts/`. If no interface exists, create one before crossing boundaries. |
+| **Asynchronous (Write/Side-effect)** | React after something happened | Dispatch a Domain Event. Other modules listen. |
 
-· Never import another module’s Model, Controller, or internal class.
-· Allowed: importing from Shared\.
-· Enforced by Pest Architecture tests that fail the build on violation.
+**Never** import another module’s concrete Service, Model, Controller, or any internal class. The interface is the only legal synchronous path.
 
-Article IV — Cross-Module Communication
+### Article V — Frontend Layering (Strict)
 
-Type When How
-Synchronous (Read) Need data from another module in the same request Inject the other module’s public Service (preferably via a small interface defined in that module’s Services/Contracts/ to document the contract)
-Asynchronous (Write / Side-effect) React after something happened Dispatch a Domain Event. Other modules listen.
+| Layer | Responsibility | Forbidden |
+| :--- | :--- | :--- |
+| `app/` or `pages/` | Compose hooks + presentational components | fetch, business if, React Query, non-UI state |
+| `features/*/hooks` | All business logic, API calls, React Query, realtime | Returning JSX |
+| `features/*/components` | Pure presentation (props in, events out) | useQuery, useMutation, httpClient, business conditions |
+| `features/*/context` | Shared state within same feature | Direct API calls |
+| `shared/` | Generic utilities | Importing anything from `features/` |
 
-Note: Even without an interface, you must never access another module’s Model directly. Using the public Service is the only allowed synchronous path.
-
-Article V — Frontend Layering (Strict)
-
-Layer Responsibility Forbidden
-app/ or pages/ Compose hooks + presentational components Any fetch, business if, React Query, state that is not pure UI
-features/*/hooks All business logic, API calls, React Query, realtime, transformations Returning JSX
-features/*/components Pure presentation (props in, events out) useQuery, useMutation, httpClient, business conditions
-features/*/context Shared state across components of the same feature Direct API calls
-shared/ Generic utilities Importing anything from features/
-
-Article VI — React Query Rules (Mandatory)
-
-· Every server state must go through React Query.
-· Query keys must be structured and exported from the feature:
+### Article VI — React Query Rules
+- Every server state goes through React Query.
+- Query keys must be structured and exported from the feature:
   ```ts
   export const postKeys = {
     all: ['posts'] as const,
@@ -343,160 +309,150 @@ Article VI — React Query Rules (Mandatory)
     detail: (slug: string) => [...postKeys.details(), slug] as const,
   };
   ```
-· Mutations must invalidate the correct query keys.
-· Prefer optimistic updates for save/unsave, like/unlike, etc.
-· Never call httpClient directly inside a component or page.
+- Mutations must invalidate correct query keys.
+- Prefer optimistic updates for save/unsave, like/unlike, etc.
+- Never call `httpClient` directly inside a component or page.
 
-Article VII — Authentication & Realtime
+### Article VII — Authentication & Realtime
+- Public Next.js: Sanctum cookie-based (`withCredentials: true`). Auth state in `AuthProvider` + `useAuth`.
+- Admin: Sanctum token in localStorage + Axios interceptor.
+- Realtime (Reverb): Config only in `shared/lib/reverb.ts`. Subscriptions only inside feature hooks. Always cleanup in `useEffect` return.
+- Auth gate (`proxy.ts`) protects `/dashboard` routes.
 
-· Public Next.js: Sanctum cookie-based (withCredentials: true).
-    Auth state lives in AuthProvider + useAuth hook.
-· Admin: Sanctum token in localStorage + Axios interceptor.
-· Realtime (Reverb):
-  · Configuration only in shared/lib/reverb.ts.
-  · Subscriptions only inside feature hooks (useCommentRealtime, etc.).
-  · Always clean up subscriptions in useEffect return.
-· Middleware protects /dashboard routes.
+### Article VIII — Error Handling & Loading States
 
-Article VIII — Error Handling & Loading States (Frontend & Backend)
+**Frontend:**  
+- Hooks return: `{ data, isLoading, isError, error, … }`
+- Components receive `isLoading`/`isError` and render skeletons/error UI.
+- Toast notifications triggered only from hooks.
 
-Frontend:
+**Backend:**  
+- Services throw module-specific `DomainException` (or custom exception implementing shared interface) when business rule violated.  
+- Controllers do **not** catch these exceptions.  
+- Global ExceptionHandler converts them into JSON responses.  
+- DomainException should define its HTTP status: **default mapping** — 422 business rule violation, 404 not found, 403 authorization.
 
-· Hooks must return a consistent shape:
-  ```ts
-  { data, isLoading, isError, error, … }
-  ```
-· Components receive isLoading / isError as props and render skeletons or error UI.
-· Global error boundary exists in root layout.
-· Toast notifications are triggered only from hooks (never from presentational components).
+### Article IX — SEO (Next.js only)
+- Every public page exports `generateMetadata`.
+- Use helpers from `shared/lib/seo.ts`.
+- JSON-LD structured data for posts and authors is mandatory.
 
-Backend:
+### Article X — Authentication & Authorization (Backend)
+- Public: Sanctum cookie SPA. Admin: Sanctum token.
+- Authorization: Spatie + Policies. Policies live inside each module.
 
-· Services throw a module-specific DomainException (or a custom exception implementing a shared DomainExceptionInterface) when a business rule is violated.
-· Controllers do not catch these exceptions.
-· The global ExceptionHandler converts them into appropriate JSON responses with proper HTTP status codes.
-· Infrastructure/technical exceptions (e.g., database failures) are handled by the same handler; services should not need to worry about them.
+### Article XI — Database
+- Migrations flat in `database/migrations/`.
+- Filename: `YYYY_MM_DD_HHMMSS_{module}_{description}.php`
+- If module count grows large, `loadMigrationsFrom()` in module ServiceProvider is permitted.
 
-Article IX — SEO (Next.js only)
+### Article XII — Naming Conventions
 
-· Every public page must export generateMetadata.
-· Use helpers from shared/lib/seo.ts.
-· Structured data (JSON-LD) for posts and authors is mandatory.
+| Element | Convention | Example |
+| :--- | :--- | :--- |
+| Module | `Modules\{Context}` | `Modules\Content` |
+| Model | Singular | `Post` |
+| Service | `{Aggregate}Service` | `PostService` |
+| Action | `{Verb}{Aggregate}Action` | `PublishPostAction` |
+| DTO | `{Aggregate}{Purpose}DTO` | `PostCreateDTO` |
+| Event | Past tense | `PostPublished` |
+| FormRequest | `{Verb}{Aggregate}Request` | `StorePostRequest` |
+| Resource | `{Aggregate}Resource` | `PostResource` |
+| Policy | `{Aggregate}Policy` | `PostPolicy` |
+| Frontend Hook | `use{Something}` | `usePostList` |
+| Frontend API file | `{domain}Api.ts` | `postsApi.ts` |
 
-Article X — Authentication & Authorization (Backend)
+### Article XIII — File Size & Complexity
+- Prefer ≤ 180–200 lines.
+- Service grows → extract Actions.
+- Component grows → split.
+- Page contains logic → move to hook.
 
-· Public: Sanctum cookie SPA.
-· Admin: Sanctum token.
-· Authorization: Spatie + Policies (Policies live inside each module).
-
-Article XI — Database
-
-· Migrations stay flat in database/migrations/.
-· Filename: YYYY_MM_DD_HHMMSS_{module}_{description}.php
-· Alternative: If the number of modules grows large, consider using loadMigrationsFrom() in each module’s ServiceProvider and keeping migrations inside the module. Until then, flat with prefix is the default.
-
-Article XII — Naming Conventions
-
-Element Convention Example
-Module Modules\{Context} Modules\Content
-Model Singular Post
-Service {Aggregate}Service PostService
-Action {Verb}{Aggregate}Action PublishPostAction
-DTO {Aggregate}{Purpose}DTO PostCreateDTO
-Event Past tense PostPublished
-FormRequest {Verb}{Aggregate}Request StorePostRequest
-Resource {Aggregate}Resource PostResource
-Policy {Aggregate}Policy PostPolicy
-Frontend Hook use{Something} usePostList
-Frontend API file {domain}Api.ts postsApi.ts
-
-Article XIII — File Size & Complexity (Soft Rule)
-
-· Prefer ≤ 180–200 lines.
-· Service grows → extract Actions.
-· Component grows → split.
-· Page contains logic → move to hook.
-
-Article XIV — Testing Strategy
-
-1. Architecture tests (Pest) – boundaries. Must run first in CI (milliseconds). Example:
-   ```php
-   // tests/Architecture/BoundaryTest.php
-   test('no module may import another modules model')
-       ->expect('Modules\\Content')
-       ->not->toUse('Modules\\Engagement\\Models')
-       ->and('Modules\\Engagement')
-       ->not->toUse('Modules\\Content\\Models');
-   ```
-2. Feature tests – HTTP → DB. Use RefreshDatabase.
-3. Service tests – Use RefreshDatabase to confirm integration with Eloquent. Run with php artisan test --parallel for speed.
-4. Unit tests – pure functions, ValueObjects, Actions (can run without Laravel boot for speed).
-5. Frontend tests – React Testing Library for hooks and critical components + Playwright for key user journeys.
+### Article XIV — Testing Strategy
+1. **Architecture tests (Pest)** — boundaries, run first in CI.
+2. **Feature tests** — HTTP → DB, `RefreshDatabase`.
+3. **Service tests** — `RefreshDatabase`, integration with Eloquent.
+4. **Unit tests** — pure functions, ValueObjects, Actions.
+5. **Frontend tests** — React Testing Library for hooks/components + Playwright for key journeys.
 
 ---
 
-7. Phase → Module Mapping
+## 7. Current Roadmap (Seed Modules Only)
 
-Phase Primary Module(s) Notes
-1 Identity Auth, roles, OAuth
-2 Content CRUD Posts, Categories, Tags
-3 Content + Identity Public read APIs
-4 Engagement Comments + Reverb
-5 ReaderExperience Saved posts, dashboard
-6 Marketing Newsletter, contact
-7 Content Enhancements
-8 About, Administration Settings, Team, Admin dashboard aggregation
+*This roadmap covers only the initial Seed Modules. Future phases will generate entirely new Bounded Contexts.*
+
+| Phase | Primary Module(s) | Notes |
+| :--- | :--- | :--- |
+| 1 | Identity | Auth, roles, OAuth |
+| 2 | Content | CRUD Posts, Categories, Tags |
+| 3 | Content + Identity | Public read APIs |
+| 4 | Engagement | Comments + Reverb |
+| 5 | ReaderExperience | Saved posts, dashboard |
+| 6 | Marketing | Newsletter, contact |
+| 7 | Content Enhancements | Rich editors, media |
+| 8 | About, Administration | Settings, Team, Admin aggregation |
 
 ---
 
-8. Developer & AI Playbook
+## 8. Developer & AI Playbook
 
-When a new requirement arrives:
+### Domain Discovery Algorithm
 
-1. Does it belong to an existing Bounded Context?
-   · Yes → extend that module.
-   · No → create a new module following the exact skeleton.
-2. Decision table:
+1. **Evaluate Context:** Does this requirement introduce new Ubiquitous Language or a distinct lifecycle?  
+   - **Yes → Create a new Bounded Context** (backend module + frontend feature).  
+   - **No (100% semantic fit) → Extend existing module.**
 
-Requirement Create Location Communication
-New entity Model + Migration + Service + Controller + Resource + Routes + Policy New or existing module Events or Service calls
-New field on existing entity Migration + update Model + Resource + DTO Existing module None
-New endpoint Controller method + Service method + Route Existing module Existing channels
-New business rule Action or Service method Existing module None
-Reaction to another module Listener Your module Domain Event
-New admin aggregation Add lightweight endpoint in Administration module (calls Services from other modules) Modules/Administration Service injection only
-New frontend page / feature Page (orchestrator) + Hook + Components + api file features/{domain} httpClient via hooks
+2. **Decision Table:**
 
-Concrete example – adding Bookmarks (full stack):
+| Requirement | Create | Location | Communication |
+| :--- | :--- | :--- | :--- |
+| **New domain capability** | **NEW Module** | `src/Modules/{NewContext}` + `features/{new_domain}` | Events or Service calls |
+| New entity in existing domain | Model + Migration + Service + Controller + Resource + Routes + Policy | Existing module | Events or Service calls |
+| New field on existing entity | Migration + update Model + Resource + DTO | Existing module | None |
+| New endpoint | Controller method + Service method + Route | Existing module | Existing channels |
+| New business rule | Action or Service method | Existing module | None |
+| Reaction to another module | Listener | Your module | Domain Event |
+| New admin aggregation | Lightweight endpoint | `Modules/Administration` | Service injection only |
+| New frontend page | Page + Hook + Components + api file | `features/{domain}` | `httpClient` via hooks |
 
-Backend
+### New Module Creation Checklist (Backend)
 
-1. New module src/Modules/Bookmarks/ with full skeleton.
-2. Migration with correct prefix.
-3. Register PSR-4 + ServiceProvider.
-4. Needs User → Shared\Models\User.
-5. Needs Post → inject Content\Services\PostService (prefer interface if exists), never import Model.
+1. Create `src/Modules/{NewContext}/` following the **Module Skeleton**.
+2. Register PSR-4 namespace in `composer.json`.
+3. Create `{NewContext}ServiceProvider.php`.
+4. **Register module in `config/modules.php`.**
+5. Create migrations with correct prefix.
+6. Define public Service contracts in `Services/Contracts/` if cross-module synchronous access is needed.
+7. Write Pest architecture tests for boundaries.
 
-Frontend
+### Concrete Example — Bookmarks (New Bounded Context)
 
-1. Create src/features/bookmarks/ with the mandatory anatomy.
-2. bookmarksApi.ts → pure functions.
-3. useBookmarks.ts + useToggleBookmark.ts (React Query + optimistic).
-4. Presentational BookmarkButton.tsx.
-5. Page under dashboard only composes the hook + button.
+**Backend**  
+1. Discover new context: “Bookmarks” has its own lifecycle → create `src/Modules/Bookmarks/`.  
+2. Add migration, model, service, controller, resource, policy, routes.  
+3. Register PSR-4 + ServiceProvider + `config/modules.php`.  
+4. Needs User → `Shared\Models\User`.  
+5. Needs Post → inject `Content\Services\Contracts\PostServiceInterface`, never import Model.
+
+**Frontend**  
+1. Create `src/features/bookmarks/` with mandatory anatomy.  
+2. `bookmarksApi.ts` → pure functions.  
+3. `useBookmarks.ts` + `useToggleBookmark.ts` (React Query + optimistic).  
+4. Presentational `BookmarkButton.tsx`.  
+5. Compose in page.  
 6. Write tests.
 
 ---
 
-9. Concrete Frontend Example (Reference Implementation)
+## 9. Concrete Frontend Example
 
-app/(public)/post/[slug]/page.tsx (≈ 25–35 lines)
+`app/(public)/post/[slug]/page.tsx` (≈ 25–35 lines)
 
 ```tsx
 export default function PostPage({ params }: { params: { slug: string } }) {
   const { data: post, isLoading, isError } = usePost(params.slug);
   const { data: comments } = useComments(post?.id);
-  useCommentRealtime(post?.id);          // side-effect only
+  useCommentRealtime(post?.id);
   const { toggle, isSaved } = useSavePost(post?.id);
 
   if (isLoading) return <PostSkeleton />;
@@ -514,7 +470,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 }
 ```
 
-features/posts/hooks/usePost.ts
+`features/posts/hooks/usePost.ts`
 
 ```ts
 export function usePost(slug: string) {
@@ -526,19 +482,24 @@ export function usePost(slug: string) {
 }
 ```
 
-This pattern is mandatory for every page.
+This pattern is mandatory for every page, regardless of Bounded Context.
 
-10. Golden Rules (Memorize)
+---
 
-1. Do not fight Laravel. Use Eloquent, FormRequests, and Policies as first-class tools.
-2. No over-engineering. Only add abstractions that solve a real, current problem.
-3. Boundaries are sacred. Never reach into another module’s internals.
-4. Controllers stay dumb. Services stay smart.
-5. Frontend pages only compose. Hooks own logic. Components only present.
-6. All server state goes through React Query.
-7. When in doubt, ask: “Which Bounded Context owns this business rule?”
+## 10. Golden Rules
 
-This document is the Single Source of Truth for both Backend and Frontend.
+1. **Do not fight Laravel.** Use Eloquent, FormRequests, Policies.
+2. **No over-engineering.** Only add abstractions that solve a real, current problem.
+3. **Boundaries are sacred.** Never reach into another module’s internals.
+4. **Controllers stay dumb. Services stay smart.**
+5. **Frontend pages only compose. Hooks own logic. Components only present.**
+6. **All server state goes through React Query.**
+7. **When in doubt, create a new Bounded Context.** Over-segmentation is cheaper and safer than Semantic Coupling / God Modules.
+8. **Seed modules are examples, not constraints.** The module space is infinite.
+
+---
+
+This document is the **Single Source of Truth** for backend and frontend.  
 Any deviation is technical debt and must be corrected.
 
-Keep it strict. Keep it pragmatic. Ship clean, consistent code.
+Keep it strict. Keep it pragmatic. Scale infinitely. Ship clean, consistent code.
