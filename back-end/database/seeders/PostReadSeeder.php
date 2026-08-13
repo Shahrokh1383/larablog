@@ -26,6 +26,17 @@ class PostReadSeeder extends Seeder
 
         $postReads = [];
 
+        // NEW: Guarantee every published post has at least 1 read
+        foreach ($postIds as $postId) {
+            $postReads[] = [
+                'id'       => (string) Str::orderedUuid(),
+                'user_id'  => $userIds[array_rand($userIds)],
+                'post_id'  => $postId,
+                'read_at'  => fake()->dateTimeBetween('-1 month')->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        // Generate the remaining random reads
         for ($i = 0; $i < self::READS_COUNT; $i++) {
             $postReads[] = [
                 'id'       => (string) Str::orderedUuid(),

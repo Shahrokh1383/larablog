@@ -18,9 +18,9 @@ class ContentSeeder extends Seeder
     private const POST_CHUNK_SIZE = 500;
     private const PIVOT_CHUNK_SIZE = 2000;
     
-    // NEW: Enforce 10 to 20 posts per author/editor
+    // UPDATED: Enforce 10 to 40 posts per author/editor
     private const MIN_POSTS_PER_USER = 10;
-    private const MAX_POSTS_PER_USER = 20;
+    private const MAX_POSTS_PER_USER = 40;
 
     public function run(): void
     {
@@ -38,7 +38,7 @@ class ContentSeeder extends Seeder
             return;
         }
 
-        $this->command?->info('Generating post data (10-20 posts per author/editor)...');
+        $this->command?->info('Generating post data (10-40 posts per author/editor)...');
         $posts = $this->generatePostData($users, $categories);
 
         $this->command?->info('Inserting posts in chunks...');
@@ -59,7 +59,7 @@ class ContentSeeder extends Seeder
         $now = now()->toDateTimeString();
         $categoryIds = $categories->pluck('id')->all();
 
-        // Iterate over each user to guarantee the 10-20 post rule
+        // Iterate over each user to guarantee the 10-40 post rule
         foreach ($users as $user) {
             $postCountForUser = rand(self::MIN_POSTS_PER_USER, self::MAX_POSTS_PER_USER);
             
@@ -79,7 +79,8 @@ class ContentSeeder extends Seeder
                         ? fake()->dateTimeBetween('-1 year')->format('Y-m-d H:i:s')
                         : null,
                     'reading_time'   => rand(1, 15),
-                    'views'          => rand(0, 5000),
+                    // UPDATED: Ensure minimum 10 views so no author has 0 views
+                    'views'          => rand(10, 5000),
                     'user_id'        => $user->id,
                     'category_id'    => rand(1, 10) > 2
                         ? $categoryIds[array_rand($categoryIds)]
