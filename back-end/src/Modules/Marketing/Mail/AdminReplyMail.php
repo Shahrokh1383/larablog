@@ -24,7 +24,7 @@ class AdminReplyMail extends Mailable
         return new Envelope(
             subject: 'Re: ' . $this->originalMessage->subject,
             from: new Address(
-                config('mail.from.address', 'support@larablog.com'), 
+                config('mail.from.address', 'SupportLarablog@gmail.com'), 
                 config('mail.from.name', 'LaraBlog Support')
             ),
         );

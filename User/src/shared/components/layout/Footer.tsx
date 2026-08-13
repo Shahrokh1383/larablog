@@ -2,9 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import type { AboutData } from '@/features/about';
 
-export default function Footer() {
+interface FooterProps {
+  settings?: AboutData['settings'];
+}
+
+export default function Footer({ settings }: FooterProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const currentYear = new Date().getFullYear();
 
   const toggleVisibility = () => {
     if (window.scrollY > 300) setIsVisible(true);
@@ -19,6 +25,20 @@ export default function Footer() {
     window.addEventListener('scroll', toggleVisibility);
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
+
+  const phone = settings?.call_us_phone;
+  const emails = settings?.call_us_emails || [];
+  const address = settings?.visit_address;
+  const links = settings?.social_links || {};
+
+  const socialConfig = [
+    { key: 'twitter', icon: 'fa-x-twitter', label: 'Twitter' },
+    { key: 'linkedin', icon: 'fa-linkedin-in', label: 'LinkedIn' },
+    { key: 'github', icon: 'fa-github', label: 'GitHub' },
+    { key: 'youtube', icon: 'fa-youtube', label: 'YouTube' },
+    { key: 'discord', icon: 'fa-discord', label: 'Discord' },
+    { key: 'instagram', icon: 'fa-instagram', label: 'Instagram' },
+  ];
 
   return (
     <>
@@ -37,11 +57,22 @@ export default function Footer() {
                     We are committed to quality content and exceptional user experience.
                   </p>
                   <div className="footer-social">
-                    <a href="#" className="social-link" aria-label="Twitter"><i className="fa-brands fa-x-twitter"></i></a>
-                    <a href="#" className="social-link" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
-                    <a href="#" className="social-link" aria-label="GitHub"><i className="fa-brands fa-github"></i></a>
-                    <a href="#" className="social-link" aria-label="YouTube"><i className="fa-brands fa-youtube"></i></a>
-                    <a href="#" className="social-link" aria-label="Discord"><i className="fa-brands fa-discord"></i></a>
+                    {socialConfig.map(({ key, icon, label }) => {
+                      const href = links[key as keyof typeof links];
+                      if (!href) return null;
+                      return (
+                        <a 
+                          key={key} 
+                          href={href} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="social-link" 
+                          aria-label={label}
+                        >
+                          <i className={`fa-brands ${icon}`}></i>
+                        </a>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -61,15 +92,23 @@ export default function Footer() {
                 <ul className="footer-contact">
                   <li>
                     <i className="fa-sharp fa-solid fa-location-dot"></i>
-                    <span>123 Innovation Drive, Tech City, CA 94043</span>
+                    <span>{address || 'Address not available'}</span>
                   </li>
                   <li>
                     <i className="fa-sharp fa-solid fa-envelope"></i>
-                    <a href="mailto:LaraBlog@gmail.com">LaraBlog@gmail.com</a>
+                    {emails.length > 0 ? (
+                      <span style={{ display: 'flex', flexDirection: 'column' }}>
+                        {emails.map((email, i) => (
+                          <a key={i} href={`mailto:${email}`}>{email}</a>
+                        ))}
+                      </span>
+                    ) : (
+                      <span>Email not available</span>
+                    )}
                   </li>
                   <li>
                     <i className="fa-sharp fa-solid fa-phone"></i>
-                    <a href="tel:+1234567890">+1 (234) 567-890</a>
+                    {phone ? <a href={`tel:${phone}`}>{phone}</a> : <span>Phone not available</span>}
                   </li>
                 </ul>
               </div>
@@ -81,7 +120,7 @@ export default function Footer() {
           <div className="container">
             <div className="footer-bottom-content">
               <p className="footer-copyright">
-                © 2024 <span>LaraBlog</span>. All rights reserved.
+                © {currentYear} <span>LaraBlog</span>. All rights reserved.
               </p>
               <div className="footer-bottom-links">
                 <a href="/privacy">Privacy Policy</a>

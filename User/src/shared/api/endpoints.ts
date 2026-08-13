@@ -17,4 +17,7 @@ export const endpoints = {
     popularTags: '/tags/popular',
     tagPosts: (slug: string) => `/tags/${slug}/posts`,
   },
+  about: {
+    index: '/about',
+  },
 };

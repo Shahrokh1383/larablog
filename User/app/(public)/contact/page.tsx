@@ -8,6 +8,7 @@ import FaqAccordion from '@/features/contact/components/FaqAccordion';
 import { useSubmitContact } from '@/features/contact/hooks/useSubmitContact';
 import { useFaqAccordion } from '@/features/contact/hooks/useFaqAccordion';
 import { useScrollReveal } from '@/features/contact/hooks/useScrollReveal';
+import { useAboutData } from '@/features/about';
 import type { FaqItem } from '@/features/contact/types/contact';
 import '@/styles/contact.css';
 
@@ -33,6 +34,7 @@ const faqItems: FaqItem[] = [
 export default function ContactPage() {
   const contactFormState = useSubmitContact();
   const { activeIndex, toggle } = useFaqAccordion();
+  const { data } = useAboutData();
   
   // Triggers the IntersectionObserver for scroll animations
   useScrollReveal();
@@ -40,7 +42,7 @@ export default function ContactPage() {
   return (
     <main>
       <ContactHero />
-      <ContactInfoCards />
+      <ContactInfoCards settings={data?.settings} />
       
       <section className="contact-form-section section-padding bg-light-alt">
         <div className="container">
@@ -49,7 +51,7 @@ export default function ContactPage() {
               <ContactForm {...contactFormState} />
             </div>
             <div className="col-lg-5">
-              <ContactMap />
+              <ContactMap socialLinks={data?.settings?.social_links} />
             </div>
           </div>
         </div>

@@ -1,4 +1,21 @@
-export default function ContactMap() {
+import type { AboutData } from '@/features/about';
+
+interface ContactMapProps {
+  socialLinks?: AboutData['settings']['social_links'];
+}
+
+export default function ContactMap({ socialLinks }: ContactMapProps) {
+  const links = socialLinks || {};
+  
+  const socialConfig = [
+    { key: 'twitter', icon: 'fa-x-twitter', label: 'Twitter' },
+    { key: 'linkedin', icon: 'fa-linkedin-in', label: 'LinkedIn' },
+    { key: 'github', icon: 'fa-github', label: 'GitHub' },
+    { key: 'instagram', icon: 'fa-instagram', label: 'Instagram' },
+    { key: 'youtube', icon: 'fa-youtube', label: 'YouTube' },
+    { key: 'discord', icon: 'fa-discord', label: 'Discord' },
+  ];
+
   return (
     <div className="contact-map-wrapper">
       <div className="map-placeholder">
@@ -16,10 +33,23 @@ export default function ContactMap() {
           <li><span>Sunday</span> <span>Closed</span></li>
         </ul>
         <div className="social-links-inline">
-          <a href="#" className="social-link" aria-label="Twitter"><i className="fa-brands fa-x-twitter"></i></a>
-          <a href="#" className="social-link" aria-label="LinkedIn"><i className="fa-brands fa-linkedin-in"></i></a>
-          <a href="#" className="social-link" aria-label="GitHub"><i className="fa-brands fa-github"></i></a>
-          <a href="#" className="social-link" aria-label="Instagram"><i className="fa-brands fa-instagram"></i></a>
+          {socialConfig.map(({ key, icon, label }) => {
+            const href = links[key as keyof typeof links];
+            if (!href) return null;
+            
+            return (
+              <a 
+                key={key} 
+                href={href} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="social-link" 
+                aria-label={label}
+              >
+                <i className={`fa-brands ${icon}`}></i>
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>
