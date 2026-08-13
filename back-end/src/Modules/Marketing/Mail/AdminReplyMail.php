@@ -7,7 +7,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class AdminReplyMail extends Mailable
@@ -23,10 +22,6 @@ class AdminReplyMail extends Mailable
     {
         return new Envelope(
             subject: 'Re: ' . $this->originalMessage->subject,
-            from: new Address(
-                config('mail.from.address', 'SupportLarablog@gmail.com'), 
-                config('mail.from.name', 'LaraBlog Support')
-            ),
         );
     }
 

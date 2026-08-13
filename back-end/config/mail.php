@@ -115,4 +115,19 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Address (For receiving contact forms)
+    |--------------------------------------------------------------------------
+    |
+    | This address is used to route incoming contact form submissions
+    | from the public site to the administration team.
+    |
+    */
+
+    'admin' => [
+        'address' => env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS', 'admin@example.com')),
+        'name' => env('MAIL_ADMIN_NAME', env('MAIL_FROM_NAME', 'LaraBlog Admin')),
+    ],
+
 ];

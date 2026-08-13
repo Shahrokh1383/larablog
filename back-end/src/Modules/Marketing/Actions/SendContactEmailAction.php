@@ -19,8 +19,8 @@ class SendContactEmailAction
             'message' => $dto->message,
         ]);
 
-        // Send email to admin (queued for performance)
-        Mail::to(config('mail.admin_address', 'LaraBlog@gmail.com'))
+        // Send email to admin via config mapped to .env
+        Mail::to(config('mail.admin.address'))
             ->queue(new ContactFormMail($message));
 
         return $message;
