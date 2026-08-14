@@ -20,12 +20,11 @@ class OAuthService
         $this->validateProvider($provider);
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($provider);
-        
-        // Add ->stateless() to prevent the session dependency in API routes
+
         return $driver->stateless()->redirect();
     }
 
-    public function callback(OAuthCallbackDTO $dto): array
+    public function callback(OAuthCallbackDTO $dto): \Modules\Identity\Models\User
     {
         $this->validateProvider($dto->provider);
 
@@ -42,9 +41,8 @@ class OAuthService
         $user = $this->findOrCreate->execute($socialUser, $dto->provider);
 
         Auth::login($user);
-        $token = $user->createToken('auth-token')->plainTextToken;
 
-        return ['user' => $user, 'token' => $token];
+        return $user;
     }
 
     protected function validateProvider(string $provider): void

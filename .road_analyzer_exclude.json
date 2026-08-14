@@ -100,16 +100,17 @@
     "back-end\\config",
     "User\\src\\features\\contact",
     "User\\src\\features\\about",
-    "back-end\\database",
     "back-end\\src\\Modules\\Marketing",
     "back-end\\src\\Modules\\Notification",
     "User\\public",
     "User\\app\\(public)\\privacy",
     "User\\app\\(public)\\about",
     "User\\app\\(public)\\terms",
-    "User\\src\\features\\notifications"
+    "User\\src\\features\\notifications",
+    "back-end\\src\\Modules\\Profile",
+    "back-end\\database\\seeders"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-14T15:29:18.177Z",
+  "lastModified": "2026-08-14T17:07:56.017Z",
   "version": 1
 }

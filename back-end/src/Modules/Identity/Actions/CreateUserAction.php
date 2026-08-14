@@ -2,7 +2,7 @@
 
 namespace Modules\Identity\Actions;
 
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
 use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\Models\User;
 
@@ -14,11 +14,31 @@ class CreateUserAction
 
     public function execute(UserRegisterDTO $dto): User
     {
-        return User::create([
-            'name'     => $dto->name,
-            'username' => $this->generateUsername->execute($dto->email),
-            'email'    => $dto->email,
-            'password' => Hash::make($dto->password),
-        ]);
+        $attempt = 0;
+
+        do {
+            $username = $this->generateUsername->execute($dto->email, $attempt);
+
+            try {
+                return User::create([
+                    'name'     => $dto->name,
+                    'username' => $username,
+                    'email'    => $dto->email,
+                    'password' => $dto->password,
+                ]);
+            } catch (QueryException $e) {
+                if ($attempt >= 9 || ! $this->isDuplicateEntry($e)) {
+                    throw $e;
+                }
+                $attempt++;
+            }
+        } while (true);
+    }
+
+    private function isDuplicateEntry(QueryException $e): bool
+    {
+        $code = $e->errorInfo[1] ?? null;
+        // MySQL: 1062, PostgreSQL: 23505, SQLite: 19
+        return in_array($code, [1062, 23505, 19], true);
     }
 }

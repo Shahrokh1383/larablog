@@ -3,21 +3,23 @@
 namespace Modules\Identity\Actions;
 
 use Illuminate\Support\Str;
-use Modules\Identity\Models\User;
 
 class GenerateUniqueUsernameAction
 {
-    public function execute(string $email): string
+    /**
+     * Generate a username from an email address.
+     *
+     * @param string $email
+     * @param int $attempt 0 = base, >0 = base . attempt
+     */
+    public function execute(string $email, int $attempt = 0): string
     {
         $baseUsername = Str::before($email, '@');
-        $username = $baseUsername;
-        $counter = 1;
 
-        while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . $counter;
-            $counter++;
+        if ($attempt === 0) {
+            return $baseUsername;
         }
 
-        return $username;
+        return $baseUsername . $attempt;
     }
 }

@@ -25,11 +25,10 @@ class OAuthController extends Controller
             state: $request->input('state')
         );
 
-        $result = $this->oauthService->callback($dto);
+        $this->oauthService->callback($dto);
 
-        $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
-        
-        // Redirect to frontend with token
-        return redirect()->to("{$frontendUrl}/oauth-callback?token={$result['token']}");
+        $frontendUrl = config('app.frontend_url');
+
+        return redirect()->to("{$frontendUrl}/oauth-callback");
     }
 }

@@ -35,7 +35,9 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
 
     public function updateName(string $userId, string $name): void
     {
-        User::where('id', $userId)->update(['name' => $name]);
+        $user = User::findOrFail($userId);
+        $user->name = $name;
+        $user->save();
     }
 
     public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage, array $excludedIds = []): LengthAwarePaginator
