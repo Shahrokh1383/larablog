@@ -8,6 +8,6 @@ class InvalidVerificationLinkException extends HttpException
 {
     public function __construct(string $message = 'Invalid or expired verification link.')
     {
-        parent::__construct(403, $message);
+        parent::__construct(404, $message);
     }
 }

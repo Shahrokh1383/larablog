@@ -2,11 +2,11 @@
 
 namespace Modules\About\Policies;
 
-use Modules\Identity\Models\User;
+use Shared\Contracts\HasRolesContract;
 
 class SiteSettingPolicy
 {
-    public function before(User $authUser): ?bool
+    public function before(HasRolesContract $authUser): ?bool
     {
         if ($authUser->hasRole('admin')) {
             return true;
@@ -14,7 +14,7 @@ class SiteSettingPolicy
         return null;
     }
 
-    public function update(User $authUser): bool
+    public function update(HasRolesContract $authUser): bool
     {
         return false; // Only admin passes through before()
     }

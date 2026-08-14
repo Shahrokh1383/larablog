@@ -2,12 +2,12 @@
 
 namespace Modules\About\Policies;
 
-use Modules\Identity\Models\User;
 use Modules\About\Models\TeamMember;
+use Shared\Contracts\HasRolesContract;
 
 class TeamMemberPolicy
 {
-    public function before(User $authUser): ?bool
+    public function before(HasRolesContract $authUser): ?bool
     {
         if ($authUser->hasRole('admin')) {
             return true;
@@ -15,9 +15,9 @@ class TeamMemberPolicy
         return null;
     }
 
-    public function viewAny(User $authUser): bool { return false; }
-    public function view(User $authUser, TeamMember $member): bool { return false; }
-    public function create(User $authUser): bool { return false; }
-    public function update(User $authUser, TeamMember $member): bool { return false; }
-    public function delete(User $authUser, TeamMember $member): bool { return false; }
+    public function viewAny(HasRolesContract $authUser): bool { return false; }
+    public function view(HasRolesContract $authUser, TeamMember $member): bool { return false; }
+    public function create(HasRolesContract $authUser): bool { return false; }
+    public function update(HasRolesContract $authUser, TeamMember $member): bool { return false; }
+    public function delete(HasRolesContract $authUser, TeamMember $member): bool { return false; }
 }

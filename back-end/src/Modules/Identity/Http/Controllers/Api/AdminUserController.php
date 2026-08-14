@@ -50,4 +50,15 @@ class AdminUserController extends Controller
             'message' => 'Password updated successfully.',
         ]);
     }
+
+    public function destroy(User $user): JsonResponse
+    {
+        $this->authorize('delete', $user);
+
+        $this->userService->deleteAccount($user->id);
+
+        return response()->json([
+            'message' => 'User deleted successfully.',
+        ]);
+    }
 }

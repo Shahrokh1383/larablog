@@ -2,10 +2,10 @@
 
 namespace Modules\Identity\Http\Controllers\Api;
 
+use Modules\Identity\Http\Requests\OAuthCallbackRequest;
 use Modules\Identity\Services\OAuthService;
 use Modules\Identity\DTOs\OAuthCallbackDTO;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class OAuthController extends Controller
@@ -17,12 +17,12 @@ class OAuthController extends Controller
         return $this->oauthService->redirect($provider);
     }
 
-    public function callback(Request $request, string $provider): RedirectResponse
+    public function callback(OAuthCallbackRequest $request, string $provider): RedirectResponse
     {
         $dto = new OAuthCallbackDTO(
             provider: $provider,
-            code: $request->input('code'),
-            state: $request->input('state')
+            code: $request->validated('code'),
+            state: $request->validated('state'),
         );
 
         $this->oauthService->callback($dto);

@@ -6,6 +6,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Identity\Events\UserDeleted;
 use Modules\Identity\Events\UserNameUpdated;
+use Modules\Identity\Events\UserPasswordUpdated;
+use Modules\Identity\Events\UserRoleUpdated;
 use Modules\Identity\Models\User;
 use Modules\Identity\Services\Contracts\DeletesUserAccount;
 use Modules\Identity\Services\Contracts\FetchesUsersByRole;
@@ -18,8 +20,8 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
     {
         return User::with('roles')
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                $query->where('name', 'like', "{$search}%")
+                      ->orWhere('email', 'like', "{$search}%");
             })
             ->latest()
             ->paginate($perPage);
@@ -29,13 +31,25 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
     {
         $user->syncRoles([$role]);
         $user->touch();
-        return $user->load('roles');
+        $user->load('roles');
+
+        DB::afterCommit(function () use ($user, $role) {
+            event(new UserRoleUpdated($user, $role));
+        });
+
+        return $user;
     }
 
     public function updatePassword(User $user, string $password): User
     {
-        $user->update(['password' => $password]);
-        $user->tokens()->delete(); // Revoke all existing tokens
+        DB::transaction(function () use ($user, $password) {
+            $user->update(['password' => $password]);
+            $user->tokens()->delete();
+
+            DB::afterCommit(function () use ($user) {
+                event(new UserPasswordUpdated($user));
+            });
+        });
 
         return $user;
     }
@@ -45,7 +59,6 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
         $user->name = $name;
         $user->save();
 
-        // Dispatch event only after the surrounding transaction commits.
         DB::afterCommit(function () use ($user) {
             event(new UserNameUpdated($user));
         });
@@ -55,13 +68,13 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
     {
         $user = User::findOrFail($userId);
 
-        // Revoke all Sanctum tokens before hard-deleting the user.
-        $user->tokens()->delete();
-        $user->delete();
+        DB::transaction(function () use ($user) {
+            $user->tokens()->delete();
+            $user->delete();
 
-        // Dispatch event only after the transaction commits.
-        DB::afterCommit(function () use ($user) {
-            event(new UserDeleted($user));
+            DB::afterCommit(function () use ($user) {
+                event(new UserDeleted($user->id));
+            });
         });
     }
 
@@ -76,8 +89,8 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
             })
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                    $q->where('name', 'like', "{$search}%")
+                      ->orWhere('email', 'like', "{$search}%");
                 });
             })
             ->latest('updated_at')

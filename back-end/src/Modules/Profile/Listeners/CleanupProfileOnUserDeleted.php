@@ -9,6 +9,6 @@ class CleanupProfileOnUserDeleted
 {
     public function handle(UserDeleted $event): void
     {
-        Profile::where('user_id', $event->user->id)->delete();
+        Profile::where('user_id', $event->userId)->delete();
     }
 }

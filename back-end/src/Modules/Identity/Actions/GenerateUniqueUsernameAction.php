@@ -14,12 +14,13 @@ class GenerateUniqueUsernameAction
      */
     public function execute(string $email, int $attempt = 0): string
     {
-        $baseUsername = Str::before($email, '@');
+        $baseUsername = Str::lower(Str::before($email, '@'));
+        $baseUsername = preg_replace('/[^a-z0-9]/', '', $baseUsername);
 
-        if ($attempt === 0) {
-            return $baseUsername;
+        if ($baseUsername === '') {
+            $baseUsername = 'user';
         }
 
-        return $baseUsername . $attempt;
+        return $attempt === 0 ? $baseUsername : $baseUsername . $attempt;
     }
 }
