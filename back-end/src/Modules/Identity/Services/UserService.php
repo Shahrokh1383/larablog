@@ -29,8 +29,11 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
 
     public function updateRole(User $user, string $role): User
     {
-        $user->syncRoles([$role]);
-        $user->touch();
+        DB::transaction(function () use ($user, $role) {
+            $user->syncRoles([$role]);
+            $user->touch();
+        });
+
         $user->load('roles');
 
         DB::afterCommit(function () use ($user, $role) {

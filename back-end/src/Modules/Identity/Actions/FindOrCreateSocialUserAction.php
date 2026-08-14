@@ -4,6 +4,7 @@ namespace Modules\Identity\Actions;
 
 use Illuminate\Support\Str;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\Models\User;
 
 class FindOrCreateSocialUserAction
@@ -21,11 +22,13 @@ class FindOrCreateSocialUserAction
                 ?? $socialUser->getNickname()
                 ?? $socialUser->getEmail();
 
-            $user = $this->createUser->execute([
-                'name'     => $name,
-                'email'    => $socialUser->getEmail(),
-                'password' => Str::random(32),
-            ]);
+            $createDto = new UserRegisterDTO(
+                name: $name,
+                email: $socialUser->getEmail(),
+                password: Str::random(32),
+            );
+
+            $user = $this->createUser->execute($createDto);
 
             $user->assignRole('user');
             $user->markEmailAsVerified();

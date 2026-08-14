@@ -107,9 +107,10 @@
     "User\\app\\(public)\\terms",
     "User\\src\\features\\notifications",
     "back-end\\database\\seeders",
-    "back-end\\src\\Modules\\About"
+    "back-end\\src\\Modules\\About",
+    "back-end\\src\\Modules\\Profile"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-14T19:25:30.372Z",
+  "lastModified": "2026-08-14T20:34:08.623Z",
   "version": 1
 }

@@ -2,7 +2,6 @@
 
 namespace Modules\Identity\Services;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -16,10 +15,10 @@ use Modules\Identity\Models\User;
 class AuthService
 {
     /**
-     * Valid bcrypt hash used to mitigate user enumeration timing attacks.
-     * The hash itself is not secret; its purpose is to equalise response time.
+     * Valid bcrypt hash for a dummy password.
+     * Used to mitigate timing attacks when user is not found.
      */
-    private const DUMMY_HASH = '$2y$12$abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+    private const DUMMY_HASH = '$2y$12$Eze4Zc.fQXJ0vQ7ZsXvLjO5X6T7m9YzN3z5Z8o2b3o4o5o6o7o8o9o';
 
     public function __construct(
         protected CreateUserAction $createUser,
@@ -85,21 +84,14 @@ class AuthService
 
         if ($token instanceof PersonalAccessToken) {
             $token->delete();
-            return;
         }
-
-        Auth::guard('web')->logout();
     }
 
-    public function verifyEmail(Request $request): array
+    public function verifyEmail(string $id, string $hash): array
     {
-        if (! $request->hasValidSignature()) {
-            throw new InvalidVerificationLinkException();
-        }
+        $user = User::findOrFail($id);
 
-        $user = User::findOrFail($request->route('id'));
-
-        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+        if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
             throw new InvalidVerificationLinkException();
         }
 

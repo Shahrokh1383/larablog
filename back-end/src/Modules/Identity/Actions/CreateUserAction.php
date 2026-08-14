@@ -13,10 +13,6 @@ class CreateUserAction
 
     public function execute(UserRegisterDTO $dto): User
     {
-        return $this->createUser->execute([
-            'name'     => $dto->name,
-            'email'    => $dto->email,
-            'password' => $dto->password,
-        ]);
+        return $this->createUser->execute($dto);
     }
 }

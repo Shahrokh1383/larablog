@@ -4,7 +4,6 @@ namespace Modules\Identity\Http\Controllers\Api;
 
 use Modules\Identity\Http\Requests\RegisterUserRequest;
 use Modules\Identity\Http\Requests\LoginUserRequest;
-use Modules\Identity\Http\Requests\VerifyEmailRequest;
 use Modules\Identity\Http\Resources\UserResource;
 use Modules\Identity\Services\AuthService;
 use Modules\Identity\DTOs\UserRegisterDTO;
@@ -76,9 +75,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out']);
     }
 
-    public function verifyEmail(VerifyEmailRequest $request): JsonResponse
+    public function verifyEmail(Request $request): JsonResponse
     {
-        $result = $this->authService->verifyEmail($request);
+        $result = $this->authService->verifyEmail(
+            $request->route('id'),
+            $request->route('hash')
+        );
 
         return response()->json([
             'message' => $result['message'],

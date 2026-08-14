@@ -3,6 +3,7 @@
 namespace Modules\Identity\Actions;
 
 use Illuminate\Database\QueryException;
+use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\Models\User;
 
 class CreateUserWithUniqueUsernameAction
@@ -11,18 +12,18 @@ class CreateUserWithUniqueUsernameAction
         protected GenerateUniqueUsernameAction $generateUsername,
     ) {}
 
-    public function execute(array $attributes): User
+    public function execute(UserRegisterDTO $dto): User
     {
         $attempt = 0;
 
         do {
-            $username = $this->generateUsername->execute($attributes['email'], $attempt);
+            $username = $this->generateUsername->execute($dto->email, $attempt);
 
             try {
                 return User::create([
-                    'name'     => $attributes['name'],
-                    'email'    => $attributes['email'],
-                    'password' => $attributes['password'],
+                    'name'     => $dto->name,
+                    'email'    => $dto->email,
+                    'password' => $dto->password,
                     'username' => $username,
                 ]);
             } catch (QueryException $e) {
