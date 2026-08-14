@@ -15,7 +15,22 @@ class UserPolicy
             return true;
         }
         
-        return null; // Fall through to the specific method
+        return null;
+    }
+
+    public function viewAny(User $authUser): bool
+    {
+        return $authUser->hasRole(['admin', 'editor', 'author']);
+    }
+
+    public function updateRole(User $authUser, User $user): bool
+    {
+        return $authUser->hasRole('admin');
+    }
+
+    public function updatePassword(User $authUser, User $user): bool
+    {
+        return $authUser->hasRole('admin');
     }
 
     public function update(User $authUser, User $user): bool

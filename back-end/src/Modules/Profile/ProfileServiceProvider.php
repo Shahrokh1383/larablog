@@ -2,7 +2,10 @@
 
 namespace Modules\Profile;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Modules\Identity\Events\UserDeleted;
+use Modules\Profile\Listeners\CleanupProfileOnUserDeleted;
 use Modules\Profile\Services\ProfileService;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
@@ -17,8 +20,7 @@ class ProfileServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Routes are strictly loaded via the main routes/api.php file 
-        // to ensure they correctly inherit the /api prefix and middleware group.
-        // This prevents route duplication and prefix mismatches.
+        // Clean up profile data when a user is deleted by the Identity module.
+        Event::listen(UserDeleted::class, CleanupProfileOnUserDeleted::class);
     }
 }

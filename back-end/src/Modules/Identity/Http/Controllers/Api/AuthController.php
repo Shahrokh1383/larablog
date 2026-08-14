@@ -11,7 +11,6 @@ use Modules\Identity\DTOs\UserLoginDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -19,7 +18,14 @@ class AuthController extends Controller
 
     public function register(RegisterUserRequest $request): JsonResponse
     {
-        $dto = new UserRegisterDTO(...$request->validated());
+        $validated = $request->validated();
+
+        $dto = new UserRegisterDTO(
+            name: $validated['name'],
+            email: $validated['email'],
+            password: $validated['password'],
+        );
+
         $result = $this->authService->register($dto);
 
         return response()->json([
@@ -57,9 +63,14 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        $this->authService->logout(Auth::user());
+        $this->authService->logout($request->user());
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json(['message' => 'Logged out']);
     }

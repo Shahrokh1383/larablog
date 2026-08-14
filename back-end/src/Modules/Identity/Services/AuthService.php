@@ -2,19 +2,25 @@
 
 namespace Modules\Identity\Services;
 
-use Modules\Identity\DTOs\UserRegisterDTO;
-use Modules\Identity\DTOs\UserLoginDTO;
-use Modules\Identity\Actions\CreateUserAction;
-use Modules\Identity\Models\User;
-use Modules\Identity\Exceptions\InvalidVerificationLinkException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
+use Modules\Identity\Actions\CreateUserAction;
+use Modules\Identity\DTOs\UserLoginDTO;
+use Modules\Identity\DTOs\UserRegisterDTO;
+use Modules\Identity\Exceptions\InvalidVerificationLinkException;
+use Modules\Identity\Models\User;
 
 class AuthService
 {
+    /**
+     * Valid bcrypt hash used to mitigate user enumeration timing attacks.
+     * The hash itself is not secret; its purpose is to equalise response time.
+     */
+    private const DUMMY_HASH = '$2y$12$abcdefghijklmnopqrstuvABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+
     public function __construct(
         protected CreateUserAction $createUser,
     ) {}
@@ -30,35 +36,38 @@ class AuthService
 
     public function login(UserLoginDTO $dto): array
     {
-        if (! Auth::attempt([
-            'email'    => $dto->email,
-            'password' => $dto->password,
-        ], $dto->remember)) {
+        $user = User::where('email', $dto->email)->first();
+        $hash = $user?->password ?? self::DUMMY_HASH;
+
+        if (! $user || ! Hash::check($dto->password, $hash)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        /** @var User $user */
-        $user = Auth::user();
+        Auth::login($user, $dto->remember);
 
         return ['user' => $user->load('roles')];
     }
 
-    /**
-     * Admin login (token-based, no session).
-     */
     public function adminLogin(UserLoginDTO $dto): array
     {
         $user = User::where('email', $dto->email)->first();
+        $hash = $user?->password ?? self::DUMMY_HASH;
 
-        if (! $user || ! Hash::check($dto->password, $user->password)) {
+        if (! $user || ! Hash::check($dto->password, $hash)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        $token = $user->createToken('admin-auth-token')->plainTextToken;
+        if (! $user->hasRole(['admin', 'editor', 'author'])) {
+            throw ValidationException::withMessages([
+                'email' => ['You do not have permission to access the admin panel.'],
+            ]);
+        }
+
+        $token = $user->createToken('admin-auth-token', ['admin-access'])->plainTextToken;
 
         return [
             'user'  => $user->load('roles'),
@@ -66,8 +75,12 @@ class AuthService
         ];
     }
 
-    public function logout(User $user): void
+    public function logout(?User $user): void
     {
+        if (! $user) {
+            return;
+        }
+
         $token = $user->currentAccessToken();
 
         if ($token instanceof PersonalAccessToken) {
@@ -78,11 +91,6 @@ class AuthService
         Auth::guard('web')->logout();
     }
 
-    /**
-     * Verify user's email from signed URL.
-     *
-     * @return array{message: string, user?: User}
-     */
     public function verifyEmail(Request $request): array
     {
         if (! $request->hasValidSignature()) {

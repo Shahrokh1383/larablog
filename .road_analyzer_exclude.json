@@ -94,7 +94,6 @@
     "User\\src\\features\\privacy",
     "User\\src\\features\\terms",
     "User\\src\\styles",
-    "back-end\\src\\Modules\\About",
     "back-end\\config\\broadcasting.php",
     "back-end\\config\\reverb.php",
     "back-end\\config",
@@ -107,10 +106,10 @@
     "User\\app\\(public)\\about",
     "User\\app\\(public)\\terms",
     "User\\src\\features\\notifications",
-    "back-end\\src\\Modules\\Profile",
-    "back-end\\database\\seeders"
+    "back-end\\database\\seeders",
+    "back-end\\src\\Modules\\About"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-14T17:07:56.017Z",
+  "lastModified": "2026-08-14T18:41:10.957Z",
   "version": 1
 }

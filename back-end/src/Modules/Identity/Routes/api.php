@@ -26,9 +26,11 @@ Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware('signed')
     ->name('verification.verify');
 
-// OAuth (not throttled here; provider-specific)
-Route::get('oauth/{provider}/redirect', [OAuthController::class, 'redirect']);
-Route::get('oauth/{provider}/callback', [OAuthController::class, 'callback']);
+// OAuth requires session middleware for Socialite state validation.
+Route::middleware('web')->group(function () {
+    Route::get('oauth/{provider}/redirect', [OAuthController::class, 'redirect']);
+    Route::get('oauth/{provider}/callback', [OAuthController::class, 'callback']);
+});
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {

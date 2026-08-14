@@ -2,7 +2,9 @@
 
 namespace Modules\Identity\Services\Contracts;
 
+use Shared\Models\User;
+
 interface UpdatesUserBasicInfo
 {
-    public function updateName(string $userId, string $name): void;
+    public function updateName(User $user, string $name): void;
 }

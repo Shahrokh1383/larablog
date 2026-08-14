@@ -2,19 +2,21 @@
 
 namespace Modules\Profile\Services;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Modules\Identity\Services\Contracts\DeletesUserAccount;
 use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
 use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Models\Profile;
-use Modules\Profile\Services\Contracts\ProfileServiceInterface;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Modules\Profile\Services\Contracts\ProfileServiceInterface;
 use Shared\Models\User;
 
 class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 {
     public function __construct(
-        private UpdatesUserBasicInfo $identityService
+        private UpdatesUserBasicInfo $identityService,
+        private DeletesUserAccount $userDeletionService,
     ) {}
 
     public function getByUserId(string $userId): ?Profile
@@ -35,10 +37,11 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function updateProfile(string $userId, UpdateProfileDTO $dto): Profile
     {
         return DB::transaction(function () use ($userId, $dto) {
-            $this->identityService->updateName($userId, $dto->name);
+            $user = User::findOrFail($userId);
+            $this->identityService->updateName($user, $dto->name);
 
             $profile = Profile::firstOrCreate(['user_id' => $userId]);
-            
+
             $profile->update([
                 'avatar'              => $dto->avatar,
                 'bio'                 => $dto->bio,
@@ -93,8 +96,11 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function deleteAccount(string $userId): void
     {
         DB::transaction(function () use ($userId) {
+            // Delete profile data first.
             Profile::where('user_id', $userId)->delete();
-            User::where('id', $userId)->delete();
+
+            // Delegate user deletion to the Identity bounded context.
+            $this->userDeletionService->deleteAccount($userId);
         });
     }
 }

@@ -16,7 +16,7 @@ class PasswordResetController extends Controller
 
     public function forgot(ForgotPasswordRequest $request): JsonResponse
     {
-        $dto = new ForgotPasswordDTO(...$request->validated());
+        $dto = new ForgotPasswordDTO(email: $request->validated('email'));
         $message = $this->service->sendResetLink($dto);
 
         return response()->json(['message' => $message]);
@@ -24,7 +24,14 @@ class PasswordResetController extends Controller
 
     public function reset(ResetPasswordRequest $request): JsonResponse
     {
-        $dto = new ResetPasswordDTO(...$request->validated());
+        $validated = $request->validated();
+
+        $dto = new ResetPasswordDTO(
+            token: $validated['token'],
+            email: $validated['email'],
+            password: $validated['password'],
+        );
+
         $message = $this->service->reset($dto);
 
         return response()->json(['message' => $message]);

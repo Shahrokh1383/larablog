@@ -21,7 +21,7 @@ class OAuthService
         /** @var AbstractProvider $driver */
         $driver = Socialite::driver($provider);
 
-        return $driver->stateless()->redirect();
+        return $driver->redirect();
     }
 
     public function callback(OAuthCallbackDTO $dto): \Modules\Identity\Models\User
@@ -31,7 +31,7 @@ class OAuthService
         try {
             /** @var AbstractProvider $driver */
             $driver = Socialite::driver($dto->provider);
-            $socialUser = $driver->stateless()->user();
+            $socialUser = $driver->user();
         } catch (\Exception $e) {
             throw ValidationException::withMessages([
                 'provider' => ['OAuth callback failed.'],

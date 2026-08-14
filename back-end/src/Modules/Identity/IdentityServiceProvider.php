@@ -2,13 +2,14 @@
 
 namespace Modules\Identity;
 
-use Illuminate\Support\ServiceProvider;
-use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
-use Modules\Identity\Services\Contracts\FetchesUsersByRole;
-use Modules\Identity\Services\UserService;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 use Modules\Identity\Models\User;
 use Modules\Identity\Policies\UserPolicy;
+use Modules\Identity\Services\Contracts\DeletesUserAccount;
+use Modules\Identity\Services\Contracts\FetchesUsersByRole;
+use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
+use Modules\Identity\Services\UserService;
 
 class IdentityServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class IdentityServiceProvider extends ServiceProvider
     {
         $this->app->bind(UpdatesUserBasicInfo::class, UserService::class);
         $this->app->bind(FetchesUsersByRole::class, UserService::class);
+        $this->app->bind(DeletesUserAccount::class, UserService::class);
     }
 
     public function boot(): void

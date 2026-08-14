@@ -2,12 +2,17 @@
 
 namespace Modules\Identity\Services;
 
-use Modules\Identity\Models\User;
-use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
-use Modules\Identity\Services\Contracts\FetchesUsersByRole;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Modules\Identity\Events\UserDeleted;
+use Modules\Identity\Events\UserNameUpdated;
+use Modules\Identity\Models\User;
+use Modules\Identity\Services\Contracts\DeletesUserAccount;
+use Modules\Identity\Services\Contracts\FetchesUsersByRole;
+use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
+use Shared\Models\User as SharedUser;
 
-class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
+class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUserAccount
 {
     public function getAllUsers(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
@@ -30,14 +35,34 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole
     public function updatePassword(User $user, string $password): User
     {
         $user->update(['password' => $password]);
+        $user->tokens()->delete(); // Revoke all existing tokens
+
         return $user;
     }
 
-    public function updateName(string $userId, string $name): void
+    public function updateName(SharedUser $user, string $name): void
     {
-        $user = User::findOrFail($userId);
         $user->name = $name;
         $user->save();
+
+        // Dispatch event only after the surrounding transaction commits.
+        DB::afterCommit(function () use ($user) {
+            event(new UserNameUpdated($user));
+        });
+    }
+
+    public function deleteAccount(string $userId): void
+    {
+        $user = User::findOrFail($userId);
+
+        // Revoke all Sanctum tokens before hard-deleting the user.
+        $user->tokens()->delete();
+        $user->delete();
+
+        // Dispatch event only after the transaction commits.
+        DB::afterCommit(function () use ($user) {
+            event(new UserDeleted($user));
+        });
     }
 
     public function getPaginatedUsersWithRoles(array $roles, ?string $search, int $perPage, array $excludedIds = []): LengthAwarePaginator

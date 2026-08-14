@@ -32,6 +32,7 @@ class PasswordResetService
         ], function ($user, $password) {
             $user->password = $password;
             $user->save();
+            $user->tokens()->delete(); // Revoke all existing tokens
         });
 
         if ($status !== Password::PASSWORD_RESET) {
