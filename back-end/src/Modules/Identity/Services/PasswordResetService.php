@@ -2,10 +2,10 @@
 
 namespace Modules\Identity\Services;
 
+use Illuminate\Support\Facades\Password;
 use Modules\Identity\DTOs\ForgotPasswordDTO;
 use Modules\Identity\DTOs\ResetPasswordDTO;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
+use Modules\Identity\Exceptions\PasswordResetFailedException;
 
 class PasswordResetService
 {
@@ -14,9 +14,7 @@ class PasswordResetService
         $status = Password::sendResetLink(['email' => $dto->email]);
 
         if ($status !== Password::RESET_LINK_SENT) {
-            throw ValidationException::withMessages([
-                'email' => [__($status)],
-            ]);
+            throw new PasswordResetFailedException(__($status));
         }
 
         return __($status);
@@ -36,9 +34,7 @@ class PasswordResetService
         });
 
         if ($status !== Password::PASSWORD_RESET) {
-            throw ValidationException::withMessages([
-                'email' => [__($status)],
-            ]);
+            throw new PasswordResetFailedException(__($status));
         }
 
         return __($status);

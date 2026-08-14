@@ -2,11 +2,11 @@
 
 namespace Modules\Identity\Http\Controllers\Api;
 
-use Modules\Identity\Http\Requests\OAuthCallbackRequest;
-use Modules\Identity\Services\OAuthService;
-use Modules\Identity\DTOs\OAuthCallbackDTO;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
+use Modules\Identity\DTOs\OAuthCallbackDTO;
+use Modules\Identity\Http\Requests\OAuthCallbackRequest;
+use Modules\Identity\Services\OAuthService;
 
 class OAuthController extends Controller
 {
@@ -25,12 +25,8 @@ class OAuthController extends Controller
             state: $request->validated('state'),
         );
 
-        try {
-            $this->oauthService->callback($dto);
-        } catch (\Exception $e) {
-            $frontendUrl = config('app.frontend_url');
-            return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
-        }
+        $this->oauthService->callback($dto);
+
         $frontendUrl = config('app.frontend_url');
 
         return redirect()->to("{$frontendUrl}/oauth-callback");

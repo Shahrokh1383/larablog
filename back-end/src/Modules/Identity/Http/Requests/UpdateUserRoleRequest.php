@@ -3,18 +3,19 @@
 namespace Modules\Identity\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRoleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Authorized by route middleware and policy
+        return true; // Authorized by policy
     }
 
     public function rules(): array
     {
         return [
-            'role' => ['required', 'string', 'in:admin,editor,author,user'],
+            'role' => ['required', 'string', Rule::in(config('permissions.roles'))],
         ];
     }
 }

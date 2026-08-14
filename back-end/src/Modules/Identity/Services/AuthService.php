@@ -4,11 +4,12 @@ namespace Modules\Identity\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Identity\Actions\CreateUserAction;
 use Modules\Identity\DTOs\UserLoginDTO;
 use Modules\Identity\DTOs\UserRegisterDTO;
+use Modules\Identity\Exceptions\AdminAccessDeniedException;
+use Modules\Identity\Exceptions\InvalidCredentialsException;
 use Modules\Identity\Exceptions\InvalidVerificationLinkException;
 use Modules\Identity\Models\User;
 
@@ -43,9 +44,7 @@ class AuthService
         $isValid = ($user !== null) && $passwordValid;
 
         if (! $isValid) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            throw new InvalidCredentialsException();
         }
 
         Auth::login($user, $dto->remember);
@@ -63,15 +62,11 @@ class AuthService
         $isValid = ($user !== null) && $passwordValid;
 
         if (! $isValid) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            throw new InvalidCredentialsException();
         }
 
-        if (! $user->hasRole(['admin', 'editor', 'author'])) {
-            throw ValidationException::withMessages([
-                'email' => ['You do not have permission to access the admin panel.'],
-            ]);
+        if (! $user->hasRole(config('permissions.admin_roles'))) {
+            throw new AdminAccessDeniedException();
         }
 
         $token = $user->createToken('admin-auth-token', ['admin-access'])->plainTextToken;
