@@ -57,8 +57,6 @@
     "User\\tsconfig.json",
     "back-end\\config\\sanctum.php",
     "Admin\\src\\features\\categories",
-    "back-end\\src\\Modules\\Notification",
-    "User\\src\\features\\notifications",
     "User\\app\\(public)\\authors",
     "User\\app\\(public)\\author",
     "back-end\\database\\factories",
@@ -98,7 +96,6 @@
     "User\\public",
     "Admin\\src\\features\\users",
     "Admin\\src\\features\\profile",
-    "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Profile",
     "User\\src\\features\\privacy",
     "User\\src\\features\\terms",
@@ -106,9 +103,13 @@
     "back-end\\src\\Modules\\About",
     "back-end\\config\\broadcasting.php",
     "back-end\\config\\reverb.php",
-    "back-end\\config"
+    "back-end\\config",
+    "User\\src\\features\\contact",
+    "User\\src\\features\\about",
+    "back-end\\database",
+    "back-end\\src\\Modules\\Marketing"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-13T23:18:29.256Z",
+  "lastModified": "2026-08-14T15:17:58.879Z",
   "version": 1
 }

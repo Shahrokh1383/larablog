@@ -26,4 +26,17 @@ class UserNotificationBroadcast implements ShouldBroadcastNow
     {
         return 'notification';
     }
+
+    /**
+     * Return only the notification payload to the frontend.
+     *
+     * Without this, Laravel broadcasts the whole event object:
+     * { userId, notificationData: {...} }
+     *
+     * The frontend expects the notification object itself.
+     */
+    public function broadcastWith(): array
+    {
+        return $this->notificationData;
+    }
 }
