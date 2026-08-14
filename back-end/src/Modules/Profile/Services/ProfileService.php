@@ -57,18 +57,23 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
             return [];
         }
 
-        $profiles = Profile::whereIn('user_id', $userIds)->get();
-
-        return $profiles->mapWithKeys(function (Profile $profile) {
-            return [
-                $profile->user_id => [
-                    'avatar'       => $profile->avatar,
-                    'bio'          => $profile->bio,
-                    'expertise'    => $profile->expertise,
-                    'social_links' => $profile->social_links ?? [],
-                ]
-            ];
-        })->all();
+        return Profile::with('user')
+            ->whereIn('user_id', $userIds)
+            ->get()
+            ->mapWithKeys(function (Profile $profile) {
+                return [
+                    $profile->user_id => [
+                        'id'           => $profile->user_id,
+                        'name'         => $profile->user->name ?? null,
+                        'username'     => $profile->user->username ?? null,
+                        'avatar'       => $profile->avatar,
+                        'bio'          => $profile->bio,
+                        'expertise'    => $profile->expertise,
+                        'social_links' => $profile->social_links ?? [],
+                    ]
+                ];
+            })
+            ->all();
     }
 
     public function getAllPublicProfiles(?string $search = null, int $perPage = 12): LengthAwarePaginator
