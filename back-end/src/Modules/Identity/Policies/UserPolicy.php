@@ -20,7 +20,7 @@ class UserPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return $authUser->hasRole(['admin', 'editor', 'author']);
+        return $authUser->hasRole('admin');
     }
 
     public function updateRole(User $authUser, User $user): bool

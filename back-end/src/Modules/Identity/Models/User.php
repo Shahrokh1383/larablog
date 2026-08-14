@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Database\Factories\Modules\Identity\UserFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Identity\Models\SocialAccount;
 
 class User extends BaseUser implements MustVerifyEmail
 {
@@ -19,8 +21,6 @@ class User extends BaseUser implements MustVerifyEmail
         'email',
         'password',
         'username',
-        'avatar',
-        'bio',
     ];
 
     protected $hidden = [
@@ -49,6 +49,11 @@ class User extends BaseUser implements MustVerifyEmail
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new \Modules\Identity\Notifications\ResetPasswordNotification($token));
+    }
+
+    public function socialAccounts(): HasMany
+    {
+        return $this->hasMany(SocialAccount::class);
     }
 
     /**

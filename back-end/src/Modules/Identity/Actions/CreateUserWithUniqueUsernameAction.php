@@ -37,9 +37,7 @@ class CreateUserWithUniqueUsernameAction
 
     private function isDuplicateEntry(QueryException $e): bool
     {
-        $code = $e->errorInfo[1] ?? null;
-
-        // MySQL: 1062, PostgreSQL: 23505, SQLite: 19
-        return in_array($code, [1062, 23505, 19], true);
+        // SQLSTATE 23000 = integrity constraint violation (unique, primary key, etc.)
+        return ($e->errorInfo[0] ?? '') === '23000';
     }
 }

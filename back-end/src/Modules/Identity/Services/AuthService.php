@@ -38,7 +38,11 @@ class AuthService
         $user = User::where('email', $dto->email)->first();
         $hash = $user?->password ?? self::DUMMY_HASH;
 
-        if (! $user || ! Hash::check($dto->password, $hash)) {
+        // Always execute Hash::check to prevent timing-based email enumeration
+        $passwordValid = Hash::check($dto->password, $hash);
+        $isValid = ($user !== null) && $passwordValid;
+
+        if (! $isValid) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -54,7 +58,11 @@ class AuthService
         $user = User::where('email', $dto->email)->first();
         $hash = $user?->password ?? self::DUMMY_HASH;
 
-        if (! $user || ! Hash::check($dto->password, $hash)) {
+        // Always execute Hash::check to prevent timing-based email enumeration
+        $passwordValid = Hash::check($dto->password, $hash);
+        $isValid = ($user !== null) && $passwordValid;
+
+        if (! $isValid) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
