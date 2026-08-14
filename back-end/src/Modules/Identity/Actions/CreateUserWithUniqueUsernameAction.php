@@ -27,7 +27,7 @@ class CreateUserWithUniqueUsernameAction
                     'username' => $username,
                 ]);
             } catch (QueryException $e) {
-                if ($attempt >= 9 || ! $this->isDuplicateEntry($e)) {
+                if ($attempt >= 9 || ! $this->isDuplicateUsernameEntry($e)) {
                     throw $e;
                 }
                 $attempt++;
@@ -35,9 +35,15 @@ class CreateUserWithUniqueUsernameAction
         } while (true);
     }
 
-    private function isDuplicateEntry(QueryException $e): bool
+    private function isDuplicateUsernameEntry(QueryException $e): bool
     {
-        // SQLSTATE 23000 = integrity constraint violation (unique, primary key, etc.)
-        return ($e->errorInfo[0] ?? '') === '23000';
+        if (($e->errorInfo[0] ?? '') !== '23000') {
+            return false;
+        }
+
+        $message = $e->getMessage();
+
+        return str_contains($message, 'users_username_unique')
+            || str_contains($message, 'users_username');
     }
 }

@@ -25,8 +25,12 @@ class OAuthController extends Controller
             state: $request->validated('state'),
         );
 
-        $this->oauthService->callback($dto);
-
+        try {
+            $this->oauthService->callback($dto);
+        } catch (\Exception $e) {
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
+        }
         $frontendUrl = config('app.frontend_url');
 
         return redirect()->to("{$frontendUrl}/oauth-callback");

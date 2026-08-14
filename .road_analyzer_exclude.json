@@ -79,7 +79,6 @@
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\src\\Modules\\Administration",
     "back-end\\src\\Modules\\Search",
-    "back-end\\src\\Modules\\Content",
     "User\\src\\features\\categories",
     "User\\app\\(public)\\search",
     "Admin\\src\\app",
@@ -108,9 +107,11 @@
     "User\\src\\features\\notifications",
     "back-end\\database\\seeders",
     "back-end\\src\\Modules\\About",
-    "back-end\\src\\Modules\\Profile"
+    "back-end\\src\\Modules\\Profile",
+    "back-end\\database",
+    "back-end\\src\\Modules\\Content"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-14T21:11:42.831Z",
+  "lastModified": "2026-08-14T22:55:37.082Z",
   "version": 1
 }
