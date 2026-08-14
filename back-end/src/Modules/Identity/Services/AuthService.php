@@ -3,9 +3,10 @@
 namespace Modules\Identity\Services;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
-use Modules\Identity\Actions\CreateUserAction;
+use Modules\Identity\Actions\CreateUserWithUniqueUsernameAction;
 use Modules\Identity\DTOs\UserLoginDTO;
 use Modules\Identity\DTOs\UserRegisterDTO;
 use Modules\Identity\Exceptions\AdminAccessDeniedException;
@@ -22,13 +23,18 @@ class AuthService
     private const DUMMY_HASH = '$2y$12$Eze4Zc.fQXJ0vQ7ZsXvLjO5X6T7m9YzN3z5Z8o2b3o4o5o6o7o8o9o';
 
     public function __construct(
-        protected CreateUserAction $createUser,
+        protected CreateUserWithUniqueUsernameAction $createUser,
     ) {}
 
     public function register(UserRegisterDTO $dto): array
     {
-        $user = $this->createUser->execute($dto);
-        $user->assignRole('user');
+        $user = DB::transaction(function () use ($dto) {
+            $user = $this->createUser->execute($dto);
+            $user->assignRole('user');
+
+            return $user;
+        });
+
         $user->sendEmailVerificationNotification();
 
         return ['user' => $user->load('roles')];
@@ -87,6 +93,13 @@ class AuthService
 
         if ($token instanceof PersonalAccessToken) {
             $token->delete();
+        }
+
+        Auth::logout();
+
+        if (request()->hasSession()) {
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
         }
     }
 

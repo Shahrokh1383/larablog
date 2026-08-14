@@ -14,7 +14,7 @@ class UserPolicy
         if ($authUser->hasRole('admin')) {
             return true;
         }
-        
+
         return null;
     }
 
@@ -40,6 +40,6 @@ class UserPolicy
 
     public function delete(User $authUser, User $user): bool
     {
-        return $authUser->id === $user->id;
+        return $authUser->hasRole('admin');
     }
 }

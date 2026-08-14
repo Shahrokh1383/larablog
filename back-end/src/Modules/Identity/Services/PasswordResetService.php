@@ -3,15 +3,14 @@
 namespace Modules\Identity\Services;
 
 use Illuminate\Support\Facades\Password;
-use Modules\Identity\DTOs\ForgotPasswordDTO;
 use Modules\Identity\DTOs\ResetPasswordDTO;
 use Modules\Identity\Exceptions\PasswordResetFailedException;
 
 class PasswordResetService
 {
-    public function sendResetLink(ForgotPasswordDTO $dto): string
+    public function sendResetLink(string $email): string
     {
-        $status = Password::sendResetLink(['email' => $dto->email]);
+        $status = Password::sendResetLink(['email' => $email]);
 
         if ($status !== Password::RESET_LINK_SENT) {
             throw new PasswordResetFailedException(__($status));
@@ -30,7 +29,7 @@ class PasswordResetService
         ], function ($user, $password) {
             $user->password = $password;
             $user->save();
-            $user->tokens()->delete(); // Revoke all existing tokens
+            $user->tokens()->delete();
         });
 
         if ($status !== Password::PASSWORD_RESET) {

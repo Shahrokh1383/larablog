@@ -67,11 +67,6 @@ class AuthController extends Controller
     {
         $this->authService->logout($request->user());
 
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
-
         return response()->json(['message' => 'Logged out']);
     }
 

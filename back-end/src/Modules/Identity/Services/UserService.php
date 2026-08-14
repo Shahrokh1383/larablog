@@ -59,11 +59,12 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
 
     public function updateName(SharedUser $user, string $name): void
     {
-        $user->name = $name;
-        $user->save();
+        $identityUser = User::findOrFail($user->id);
+        $identityUser->name = $name;
+        $identityUser->save();
 
-        DB::afterCommit(function () use ($user) {
-            event(new UserNameUpdated($user));
+        DB::afterCommit(function () use ($identityUser) {
+            event(new UserNameUpdated($identityUser));
         });
     }
 
