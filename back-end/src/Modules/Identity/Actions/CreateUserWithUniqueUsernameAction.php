@@ -29,37 +29,20 @@ class CreateUserWithUniqueUsernameAction
                     'username' => $username,
                 ]);
             } catch (UniqueConstraintViolationException $e) {
-                if ($this->isUsernameConstraint($e)) {
-                    if ($attempt >= 9) {
-                        throw new UsernameGenerationFailedException();
-                    }
-                    $attempt++;
-                    continue;
-                }
-
-                if ($this->isEmailConstraint($e)) {
+                // Definitively check if the email already exists.
+                // This avoids fragile string parsing of database error messages.
+                if (User::where('email', $dto->email)->exists()) {
                     throw new EmailAlreadyRegisteredException();
                 }
 
-                // Unknown unique constraint – rethrow
-                throw $e;
+                // If the email is not the cause, it must be the username constraint.
+                // Retry with a new generated username.
+                if ($attempt >= 9) {
+                    throw new UsernameGenerationFailedException();
+                }
+
+                $attempt++;
             }
         } while (true);
-    }
-
-    private function isUsernameConstraint(UniqueConstraintViolationException $e): bool
-    {
-        $message = $e->getMessage();
-
-        return str_contains($message, 'users_username_unique')
-            || str_contains($message, 'users_username');
-    }
-
-    private function isEmailConstraint(UniqueConstraintViolationException $e): bool
-    {
-        $message = $e->getMessage();
-
-        return str_contains($message, 'users_email_unique')
-            || str_contains($message, 'users_email');
     }
 }
