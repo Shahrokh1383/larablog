@@ -1,20 +1,17 @@
-import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-
-interface LaravelValidationError {
-  message: string;
-  errors?: Record<string, string[]>;
-}
+import { AxiosError } from 'axios';
+import { authApi, authKeys } from '../api/authApi';
+import type { AuthResponse, RegisterCredentials, LaravelValidationError } from '../types/auth';
 
 export function useRegister() {
-  const { register } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  return useMutation<any, AxiosError<LaravelValidationError>, { name: string; email: string; password: string; password_confirmation: string }>({
-    mutationFn: (credentials) => register(credentials),
-    onSuccess: () => {
+  return useMutation<AuthResponse, AxiosError<LaravelValidationError>, RegisterCredentials>({
+    mutationFn: (credentials) => authApi.register(credentials),
+    onSuccess: (data) => {
+      queryClient.setQueryData(authKeys.user(), data.user);
       router.push('/verify-email');
     },
   });

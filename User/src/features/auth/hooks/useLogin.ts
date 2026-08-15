@@ -1,21 +1,18 @@
-import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-
-interface LaravelValidationError {
-  message: string;
-  errors?: Record<string, string[]>;
-}
+import { AxiosError } from 'axios';
+import { authApi, authKeys } from '../api/authApi';
+import type { AuthResponse, LoginCredentials, LaravelValidationError } from '../types/auth';
 
 export function useLogin() {
-  const { login } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  return useMutation<any, AxiosError<LaravelValidationError>, { email: string; password: string; remember?: boolean }>({
-    mutationFn: (credentials) => login(credentials),
-    onSuccess: () => {
-      router.push('/'); 
+  return useMutation<AuthResponse, AxiosError<LaravelValidationError>, LoginCredentials>({
+    mutationFn: (credentials) => authApi.login(credentials),
+    onSuccess: (data) => {
+      queryClient.setQueryData(authKeys.user(), data.user);
+      router.push('/');
     },
   });
 }

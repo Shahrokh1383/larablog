@@ -107,14 +107,12 @@
     "back-end\\src\\Modules\\About",
     "back-end\\src\\Modules\\Profile",
     "back-end\\database",
-    "back-end\\src\\Modules\\Content",
     "User\\app\\(public)",
-    "User\\src\\features\\authors",
-    "User\\src\\shared"
+    "User\\src\\features\\authors"
   ],
   "globalPatterns": [
     "Exceptions"
   ],
-  "lastModified": "2026-08-15T03:47:25.923Z",
+  "lastModified": "2026-08-15T04:32:33.256Z",
   "version": 1
 }

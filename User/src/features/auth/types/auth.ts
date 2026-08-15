@@ -2,9 +2,11 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  username: string;
+  roles: string[];
+  created_at: string;
   avatar?: string;
   bio?: string;
-  created_at: string;
 }
 
 export interface LoginCredentials {
@@ -33,5 +35,11 @@ export interface ResetPasswordData {
 
 export interface AuthResponse {
   user: User;
-  token: string;
+  token?: string;
+}
+
+// Added for strict type safety across the module
+export interface LaravelValidationError {
+  message: string;
+  errors: Record<string, string[]>;
 }
