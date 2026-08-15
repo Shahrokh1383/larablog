@@ -18,6 +18,13 @@ class FindOrCreateSocialUserAction
     public function execute(SocialiteUser $socialUser, string $provider): User
     {
         $socialId = $socialUser->getId();
+        $email = $socialUser->getEmail();
+
+        if (empty($email)) {
+            throw ValidationException::withMessages([
+                'email' => ['Your OAuth provider did not return an email address. Please register using your email or link your account via profile settings.'],
+            ]);
+        }
 
         // 1. Try to find an existing social account for this provider + provider_id
         $socialAccount = SocialAccount::where('provider', $provider)
@@ -29,7 +36,7 @@ class FindOrCreateSocialUserAction
         }
 
         // 2. Try to find a user with the same email
-        $existingUser = User::where('email', $socialUser->getEmail())->first();
+        $existingUser = User::where('email', $email)->first();
 
         if ($existingUser) {
             // If the user was originally created via OAuth (password is null),
@@ -51,11 +58,11 @@ class FindOrCreateSocialUserAction
         // 3. Create a new OAuth-only user
         $name = $socialUser->getName()
             ?? $socialUser->getNickname()
-            ?? $socialUser->getEmail();
+            ?? $email;
 
         $createDto = new UserRegisterDTO(
             name: $name,
-            email: $socialUser->getEmail(),
+            email: $email,
             password: null,
         );
 

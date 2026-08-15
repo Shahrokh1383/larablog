@@ -32,6 +32,7 @@ class PasswordResetService
             $user->password = $password;
             $user->save();
             $user->tokens()->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
 
             DB::afterCommit(function () use ($user) {
                 event(new UserPasswordUpdated($user));

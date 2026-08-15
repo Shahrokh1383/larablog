@@ -75,7 +75,7 @@ class AuthService
             throw new AdminAccessDeniedException();
         }
 
-        $token = $user->createToken('admin-auth-token', ['admin-access'])->plainTextToken;
+        $token = $user->createToken('admin-auth-token')->plainTextToken;
 
         return [
             'user'  => $user->load('roles'),

@@ -20,8 +20,10 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
     {
         return User::with('roles')
             ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "{$search}%")
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "{$search}%")
                       ->orWhere('email', 'like', "{$search}%");
+                });
             })
             ->latest()
             ->paginate($perPage);
@@ -48,6 +50,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
         DB::transaction(function () use ($user, $password) {
             $user->update(['password' => $password]);
             $user->tokens()->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
 
             DB::afterCommit(function () use ($user) {
                 event(new UserPasswordUpdated($user));
@@ -74,6 +77,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
 
         DB::transaction(function () use ($user) {
             $user->tokens()->delete();
+            DB::table('sessions')->where('user_id', $user->id)->delete();
             $user->delete();
 
             DB::afterCommit(function () use ($user) {
@@ -98,7 +102,15 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
                 });
             })
             ->latest('updated_at')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->through(function ($user) {
+                return [
+                    'id'    => $user->id,
+                    'name'  => $user->name,
+                    'email' => $user->email,
+                    'roles' => $user->roles->pluck('name')->toArray(),
+                ];
+            });
     }
 
     public function getUsersWithRolesMap(array $userIds): array
