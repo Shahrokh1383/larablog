@@ -26,11 +26,14 @@ export function useVerifyEmail() {
 
   const mutation = useMutation<VerifyResponse, AxiosError<{ message: string }>, VerifyPayload>({
     mutationFn: ({ id, hash, params }) => authApi.verifyEmail(id, hash, params),
-    onSuccess: (data) => {
-      if (data.user) {
-        queryClient.setQueryData(authKeys.user(), data.user);
-      }
-      setTimeout(() => router.push('/dashboard'), 2000);
+    onSuccess: async () => {
+      // Fetch authenticated user from server to clear any previous 401/error state
+      await queryClient.fetchQuery({
+        queryKey: authKeys.user(),
+        queryFn: authApi.getUser,
+      });
+
+      router.replace('/dashboard');
     },
   });
 
