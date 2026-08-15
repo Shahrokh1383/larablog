@@ -2,8 +2,10 @@
 
 namespace Modules\Identity\Actions;
 
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Modules\Identity\DTOs\UserRegisterDTO;
+use Modules\Identity\Exceptions\EmailAlreadyRegisteredException;
+use Modules\Identity\Exceptions\UsernameGenerationFailedException;
 use Modules\Identity\Models\User;
 
 class CreateUserWithUniqueUsernameAction
@@ -26,24 +28,38 @@ class CreateUserWithUniqueUsernameAction
                     'password' => $dto->password,
                     'username' => $username,
                 ]);
-            } catch (QueryException $e) {
-                if ($attempt >= 9 || ! $this->isDuplicateUsernameEntry($e)) {
-                    throw $e;
+            } catch (UniqueConstraintViolationException $e) {
+                if ($this->isUsernameConstraint($e)) {
+                    if ($attempt >= 9) {
+                        throw new UsernameGenerationFailedException();
+                    }
+                    $attempt++;
+                    continue;
                 }
-                $attempt++;
+
+                if ($this->isEmailConstraint($e)) {
+                    throw new EmailAlreadyRegisteredException();
+                }
+
+                // Unknown unique constraint – rethrow
+                throw $e;
             }
         } while (true);
     }
 
-    private function isDuplicateUsernameEntry(QueryException $e): bool
+    private function isUsernameConstraint(UniqueConstraintViolationException $e): bool
     {
-        if (($e->errorInfo[0] ?? '') !== '23000') {
-            return false;
-        }
-
         $message = $e->getMessage();
 
         return str_contains($message, 'users_username_unique')
             || str_contains($message, 'users_username');
+    }
+
+    private function isEmailConstraint(UniqueConstraintViolationException $e): bool
+    {
+        $message = $e->getMessage();
+
+        return str_contains($message, 'users_email_unique')
+            || str_contains($message, 'users_email');
     }
 }

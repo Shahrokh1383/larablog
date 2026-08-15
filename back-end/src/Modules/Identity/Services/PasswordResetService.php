@@ -4,12 +4,17 @@ namespace Modules\Identity\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
+use Modules\Identity\Actions\RevokeUserSessionsAction;
 use Modules\Identity\DTOs\ResetPasswordDTO;
 use Modules\Identity\Events\UserPasswordUpdated;
 use Modules\Identity\Exceptions\PasswordResetFailedException;
 
 class PasswordResetService
 {
+    public function __construct(
+        protected RevokeUserSessionsAction $revokeSessions,
+    ) {}
+
     public function sendResetLink(string $email): string
     {
         $status = Password::sendResetLink(['email' => $email]);
@@ -32,7 +37,7 @@ class PasswordResetService
             $user->password = $password;
             $user->save();
             $user->tokens()->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
+            $this->revokeSessions->execute($user);
 
             DB::afterCommit(function () use ($user) {
                 event(new UserPasswordUpdated($user));

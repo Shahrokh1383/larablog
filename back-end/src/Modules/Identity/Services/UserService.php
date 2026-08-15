@@ -4,6 +4,7 @@ namespace Modules\Identity\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Modules\Identity\Actions\RevokeUserSessionsAction;
 use Modules\Identity\Events\UserDeleted;
 use Modules\Identity\Events\UserNameUpdated;
 use Modules\Identity\Events\UserPasswordUpdated;
@@ -16,6 +17,10 @@ use Shared\Models\User as SharedUser;
 
 class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUserAccount
 {
+    public function __construct(
+        protected RevokeUserSessionsAction $revokeSessions,
+    ) {}
+
     public function getAllUsers(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
         return User::with('roles')
@@ -50,7 +55,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
         DB::transaction(function () use ($user, $password) {
             $user->update(['password' => $password]);
             $user->tokens()->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
+            $this->revokeSessions->execute($user);
 
             DB::afterCommit(function () use ($user) {
                 event(new UserPasswordUpdated($user));
@@ -77,7 +82,7 @@ class UserService implements UpdatesUserBasicInfo, FetchesUsersByRole, DeletesUs
 
         DB::transaction(function () use ($user) {
             $user->tokens()->delete();
-            DB::table('sessions')->where('user_id', $user->id)->delete();
+            $this->revokeSessions->execute($user);
             $user->delete();
 
             DB::afterCommit(function () use ($user) {
