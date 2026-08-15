@@ -103,6 +103,14 @@ class AuthService
         }
     }
 
+    /**
+     * Retrieve the authenticated user with roles loaded.
+     */
+    public function getAuthenticatedUser(User $user): User
+    {
+        return $user->load('roles');
+    }
+
     public function verifyEmail(string $id, string $hash): array
     {
         $user = User::findOrFail($id);

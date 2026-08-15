@@ -56,7 +56,7 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
-        $user = $request->user()->load('roles');
+        $user = $this->authService->getAuthenticatedUser($request->user());
 
         return response()->json([
             'user' => new UserResource($user),

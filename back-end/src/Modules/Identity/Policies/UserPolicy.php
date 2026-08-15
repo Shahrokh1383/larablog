@@ -11,7 +11,7 @@ class UserPolicy
      */
     public function before(User $authUser, string $ability): ?bool
     {
-        if ($authUser->hasRole('admin')) {
+        if ($authUser->hasRole(config('permissions.admin_roles'))) {
             return true;
         }
 
@@ -20,17 +20,17 @@ class UserPolicy
 
     public function viewAny(User $authUser): bool
     {
-        return $authUser->hasRole('admin');
+        return $authUser->hasRole(config('permissions.admin_roles'));
     }
 
     public function updateRole(User $authUser, User $user): bool
     {
-        return $authUser->hasRole('admin');
+        return $authUser->hasRole(config('permissions.admin_roles'));
     }
 
     public function updatePassword(User $authUser, User $user): bool
     {
-        return $authUser->hasRole('admin');
+        return $authUser->hasRole(config('permissions.admin_roles'));
     }
 
     public function update(User $authUser, User $user): bool
@@ -40,6 +40,6 @@ class UserPolicy
 
     public function delete(User $authUser, User $user): bool
     {
-        return $authUser->hasRole('admin');
+        return $authUser->hasRole(config('permissions.admin_roles'));
     }
 }

@@ -20,6 +20,6 @@ class RevokeUserSessionsAction
             return;
         }
 
-        DB::table('sessions')->where('user_id', $user->id)->delete();
+        DB::table(config('session.table', 'sessions'))->where('user_id', $user->id)->delete();
     }
 }

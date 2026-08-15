@@ -60,9 +60,7 @@
     "User\\app\\(public)\\authors",
     "back-end\\database\\factories",
     "User\\proxy.ts",
-    "User\\src\\features\\auth",
     "User\\src\\features\\profile",
-    "User\\app\\(auth)",
     "User\\app\\(dashboard)",
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\comments",
@@ -109,9 +107,14 @@
     "back-end\\src\\Modules\\About",
     "back-end\\src\\Modules\\Profile",
     "back-end\\database",
-    "back-end\\src\\Modules\\Content"
+    "back-end\\src\\Modules\\Content",
+    "User\\app\\(public)",
+    "User\\src\\features\\authors",
+    "User\\src\\shared"
   ],
-  "globalPatterns": [],
-  "lastModified": "2026-08-14T23:54:26.384Z",
+  "globalPatterns": [
+    "Exceptions"
+  ],
+  "lastModified": "2026-08-15T03:47:25.923Z",
   "version": 1
 }

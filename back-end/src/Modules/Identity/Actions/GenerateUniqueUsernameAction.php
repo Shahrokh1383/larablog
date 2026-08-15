@@ -21,8 +21,10 @@ class GenerateUniqueUsernameAction
             $baseUsername = 'user';
         }
 
-        $finalUsername = $attempt === 0 ? $baseUsername : $baseUsername . $attempt;
+        $suffix = $attempt === 0 ? '' : (string) $attempt;
+        $maxBaseLength = 40 - strlen($suffix);
+        $truncatedBase = substr($baseUsername, 0, $maxBaseLength);
 
-        return substr($finalUsername, 0, 40);
+        return $truncatedBase . $suffix;
     }
 }
