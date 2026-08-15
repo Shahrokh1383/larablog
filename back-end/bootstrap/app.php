@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Modules\Identity\Exceptions\OAuthCallbackFailedException;
 use Modules\Identity\Exceptions\UnsupportedOAuthProviderException;
 
@@ -30,16 +31,32 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Redirect OAuth errors to the SPA with error flag
         $exceptions->renderable(function (OAuthCallbackFailedException $e, Request $request) {
-            if ($request->is('oauth/*/callback')) {
+            if ($request->is(['oauth/*/callback', 'api/oauth/*/callback'])) {
                 $frontendUrl = config('app.frontend_url');
                 return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
             }
         });
 
         $exceptions->renderable(function (UnsupportedOAuthProviderException $e, Request $request) {
-            if ($request->is('oauth/*/callback') || $request->is('oauth/*/redirect')) {
+            if ($request->is([
+                'oauth/*/callback',
+                'api/oauth/*/callback',
+                'oauth/*/redirect',
+                'api/oauth/*/redirect',
+            ])) {
                 $frontendUrl = config('app.frontend_url');
                 return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
+            }
+        });
+
+        // Handle validation errors from OAuth callback without leaking JSON/HTML
+        $exceptions->renderable(function (ValidationException $e, Request $request) {
+            if ($request->is(['oauth/*/callback', 'api/oauth/*/callback'])) {
+                $frontendUrl = config('app.frontend_url');
+                $message = collect($e->errors())->flatten()->implode(' ');
+                $message = $message ?: 'OAuth validation failed.';
+
+                return redirect()->to("{$frontendUrl}/oauth-callback?error=" . urlencode($message));
             }
         });
     })->create();

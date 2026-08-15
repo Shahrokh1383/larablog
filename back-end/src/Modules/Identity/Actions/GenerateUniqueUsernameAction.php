@@ -21,8 +21,8 @@ class GenerateUniqueUsernameAction
             $baseUsername = 'user';
         }
 
-        $baseUsername = substr($baseUsername, 0, 40);
+        $finalUsername = $attempt === 0 ? $baseUsername : $baseUsername . $attempt;
 
-        return $attempt === 0 ? $baseUsername : $baseUsername . $attempt;
+        return substr($finalUsername, 0, 40);
     }
 }

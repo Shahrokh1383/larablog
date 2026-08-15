@@ -17,13 +17,9 @@ class PasswordResetService
 
     public function sendResetLink(string $email): string
     {
-        $status = Password::sendResetLink(['email' => $email]);
+        Password::sendResetLink(['email' => $email]);
 
-        if ($status !== Password::RESET_LINK_SENT) {
-            throw new PasswordResetFailedException(__($status));
-        }
-
-        return __($status);
+        return 'If the email address is registered, a password reset link has been sent.';
     }
 
     public function reset(ResetPasswordDTO $dto): string
