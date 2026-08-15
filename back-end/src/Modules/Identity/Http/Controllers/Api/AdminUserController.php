@@ -10,10 +10,13 @@ use Modules\Identity\Http\Requests\UpdateUserPasswordRequest;
 use Modules\Identity\Http\Requests\IndexUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AdminUserController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(protected UserService $userService) {}
 
     public function index(IndexUserRequest $request): AnonymousResourceCollection
