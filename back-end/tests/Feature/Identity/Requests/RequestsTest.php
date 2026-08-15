@@ -21,7 +21,7 @@ it('IndexUserRequest has correct rules', function () {
     expect($request->authorize())->toBeTrue();
     expect($request->rules())->toBe([
         'per_page' => ['sometimes', 'integer', 'min:1', 'max:50'],
-        'search'   => ['sometimes', 'string', 'max:255'],
+        'search'   => ['nullable', 'string', 'max:255'],
     ]);
 });
 
