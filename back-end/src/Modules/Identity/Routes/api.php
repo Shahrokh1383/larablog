@@ -28,7 +28,7 @@ Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
 
 // OAuth requires session middleware for Socialite state validation.
 Route::get('oauth/{provider}/redirect', [OAuthController::class, 'redirect']);
-Route::post('oauth/{provider}/callback', [OAuthController::class, 'authenticate']);
+Route::get('oauth/{provider}/callback', [OAuthController::class, 'callback']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
