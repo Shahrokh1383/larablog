@@ -3,8 +3,8 @@ import type { LoginCredentials, LoginResponse, AuthUser } from '../types/auth';
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const response = await httpClient.post('/login', credentials);
-    return response.data; // { user, token }
+    const response = await httpClient.post<LoginResponse>('/admin/login', credentials);
+    return response.data;
   },
 
   logout: async (): Promise<void> => {
@@ -13,6 +13,6 @@ export const authApi = {
 
   getUser: async (): Promise<AuthUser> => {
     const response = await httpClient.get<{ user: AuthUser }>('/user');
-    return response.data.user; // the API returns { user: UserResource }
+    return response.data.user;
   },
 };

@@ -2,14 +2,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminLogin, useAdminAuth } from '@/features/auth';
 import LoginForm from '@/features/auth/components/LoginForm';
-import { AxiosError } from 'axios';
-
-interface LoginErrorResponse {
-  errors?: {
-    email?: string[];
-  };
-  message?: string;
-}
 
 export default function LoginPage() {
   const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
@@ -22,10 +14,9 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, authLoading, navigate]);
 
-  const serverError =
-    (error as AxiosError<LoginErrorResponse>)?.response?.data?.errors?.email?.[0] ||
-    (error as AxiosError<LoginErrorResponse>)?.response?.data?.message ||
-    null;
+  // Type-safe error extraction thanks to strict useMutation generics
+  const validationErrors = error?.response?.data?.errors;
+  const serverError = validationErrors?.email?.[0] || error?.response?.data?.message || null;
 
   if (authLoading) {
     return (

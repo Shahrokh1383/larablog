@@ -2,10 +2,11 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  avatar: string | null;
-  bio: string | null;
+  username: string;
   roles: string[];
   created_at: string;
+  avatar?: string | null;
+  bio?: string | null;
 }
 
 export interface LoginCredentials {
@@ -17,4 +18,9 @@ export interface LoginCredentials {
 export interface LoginResponse {
   user: AuthUser;
   token: string;
+}
+
+export interface LaravelValidationError {
+  message: string;
+  errors: Record<string, string[]>;
 }
