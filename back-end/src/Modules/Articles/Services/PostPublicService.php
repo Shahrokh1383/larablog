@@ -1,12 +1,13 @@
 <?php
 
-namespace Modules\Content\Services;
+namespace Modules\Articles\Services;
 
-use Modules\Content\Models\Post;
+use Modules\Articles\Models\Post;
 use Modules\Content\Models\Category;
 use Modules\Content\Models\Tag;
-use Modules\Content\Actions\MapPostRelationsAction;
+use Modules\Articles\Actions\MapPostRelationsAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 class PostPublicService
 {
     public function __construct(
@@ -129,7 +130,9 @@ class PostPublicService
             ->search($term)
             ->latest('published_at')
             ->paginate($perpage);
+            
         $this->mapPostRelations->execute($posts);
+        
         return $posts;
     }
 }

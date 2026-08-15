@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\Actions;
+namespace Modules\Articles\Actions;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

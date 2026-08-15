@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\DTOs;
+namespace Modules\Articles\DTOs;
 
 final class PostUpdateDTO
 {

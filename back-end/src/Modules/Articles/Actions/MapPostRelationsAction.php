@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Content\Actions;
+namespace Modules\Articles\Actions;
 
-use Modules\Content\Models\Post;
+use Modules\Articles\Models\Post;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;

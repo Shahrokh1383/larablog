@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\Http\Resources;
+namespace Modules\Articles\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -26,8 +26,17 @@ class PostResource extends JsonResource
                 'id'   => $this->user->id,
                 'name' => $this->user->name,
             ],
-            'category'       => new CategoryResource($this->whenLoaded('category')),
-            'tags'           => TagResource::collection($this->whenLoaded('tags')),
+            // Preventing Cross-Module Resource Imports (Article III)
+            'category'       => $this->whenLoaded('category', fn($c) => [
+                'id'   => $c->id,
+                'name' => $c->name,
+                'slug' => $c->slug,
+            ]),
+            'tags'           => $this->whenLoaded('tags', fn($tags) => $tags->map(fn($t) => [
+                'id'   => $t->id,
+                'name' => $t->name,
+                'slug' => $t->slug,
+            ])),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
         ];

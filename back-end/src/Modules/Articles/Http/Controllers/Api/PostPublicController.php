@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Content\Http\Controllers\Api;
+namespace Modules\Articles\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Content\Services\PostPublicService;
-use Modules\Content\Http\Resources\PostPublicResource;
+use Modules\Articles\Services\PostPublicService;
+use Modules\Articles\Http\Resources\PostPublicResource;
 use Illuminate\Routing\Controller;
 
 class PostPublicController extends Controller

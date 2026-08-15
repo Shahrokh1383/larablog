@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Content\Services\Contracts;
+namespace Modules\Articles\Services\Contracts;
 
-use Modules\Content\Models\Post;
+use Modules\Articles\Models\Post;
 
 interface PostAdminServiceInterface
 {

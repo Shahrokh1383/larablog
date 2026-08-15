@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Content\Services;
+namespace Modules\Articles\Services;
 
-use Modules\Content\Models\Post;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Models\Post;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Carbon\Carbon;
 
 class PostInfoService implements PostInfoContract
@@ -34,7 +34,6 @@ class PostInfoService implements PostInfoContract
     {
         if (empty($postIds)) return [];
 
-        // Select only required columns. Prevents hydrating the heavy `body` text column.
         $posts = Post::select(['id', 'title', 'slug', 'featured_image', 'reading_time', 'user_id'])
             ->whereIn('id', $postIds)
             ->get();
@@ -55,19 +54,15 @@ class PostInfoService implements PostInfoContract
 
     public function getTotalReadingTimeByIds($postIds): int
     {
-        // STRICT short-circuit: If the array is empty (new user), return 0 instantly.
-        // Do NOT hit the database. This prevents the 60s timeout.
         if (is_array($postIds) && empty($postIds)) {
             return 0;
         }
 
-        // DB level SUM. Supports Closures and Builders for backward compatibility.
         return (int) Post::whereIn('id', $postIds)->sum('reading_time');
     }
 
     public function getTopPostsOfWeek(int $limit = 5): array
     {
-        // Uses the new `idx_published_date_views` index
         return Post::published()
             ->where('published_at', '>=', Carbon::now()->subWeek())
             ->orderByDesc('views')

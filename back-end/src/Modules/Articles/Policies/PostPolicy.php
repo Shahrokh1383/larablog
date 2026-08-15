@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Content\Policies;
+namespace Modules\Articles\Policies;
 
 use Shared\Contracts\HasRolesContract;
-use Modules\Content\Models\Post;
+use Modules\Articles\Models\Post;
 
 class PostPolicy
 {

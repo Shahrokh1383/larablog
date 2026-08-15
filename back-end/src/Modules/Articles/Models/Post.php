@@ -1,19 +1,19 @@
 <?php
 
-namespace Modules\Content\Models;
+namespace Modules\Articles\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Shared\Traits\HasUuid;
 use Shared\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Database\Factories\Modules\Content\PostFactory;
+use Database\Factories\Modules\Articles\PostFactory;
 
 class Post extends Model
 {
     use HasUuid, HasFactory;
 
-    protected $table = 'content_posts';
+    protected $table = 'content_posts'; // Kept for DB pragmatism
 
     protected $fillable = [
         'title', 'slug', 'body', 'excerpt', 'featured_image',
@@ -60,12 +60,14 @@ class Post extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        // Respecting Article III: No cross-module Model imports
+        return $this->belongsTo(\Modules\Content\Models\Category::class);
     }
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'content_post_tag', 'post_id', 'tag_id');
+        // Respecting Article III: No cross-module Model imports
+        return $this->belongsToMany(\Modules\Content\Models\Tag::class, 'content_post_tag', 'post_id', 'tag_id');
     }
 
     protected static function newFactory(): PostFactory

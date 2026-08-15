@@ -1,17 +1,20 @@
 <?php
 
-namespace Modules\Content\Services;
+namespace Modules\Articles\Services;
 
-use Modules\Content\Models\Post;
-use Modules\Content\Actions\GenerateSlugAction;
-use Modules\Content\Actions\CalculateReadingTimeAction;
-use Modules\Content\Actions\AssignTagsToPostAction;
-use Modules\Content\DTOs\PostCreateDTO;
-use Modules\Content\DTOs\PostUpdateDTO;
+use Modules\Articles\Models\Post;
+use Modules\Articles\Actions\GenerateSlugAction;
+use Modules\Articles\Actions\CalculateReadingTimeAction;
+use Modules\Articles\Actions\AssignTagsToPostAction;
+use Modules\Articles\Actions\UploadImageAction;
+use Modules\Articles\Actions\DeleteImageAction;
+use Modules\Articles\DTOs\PostCreateDTO;
+use Modules\Articles\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
-use Modules\Content\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\UploadedFile;
 
 class PostService implements PostAdminServiceInterface
 {
@@ -19,13 +22,15 @@ class PostService implements PostAdminServiceInterface
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
         private AssignTagsToPostAction $assignTagsToPostAction,
+        private UploadImageAction $uploadImageAction,
+        private DeleteImageAction $deleteImageAction,
     ) {}
 
     public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1, ?bool $isEditorPick = null): LengthAwarePaginator
     {
         return Post::with(['user', 'category', 'tags'])
             ->when($user && $user->hasRole('author'), function ($query) use ($user) {
-            $query->where('user_id', $user->id);
+                $query->where('user_id', $user->id);
             })
             ->when($search, function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
@@ -34,8 +39,8 @@ class PostService implements PostAdminServiceInterface
             ->when($isEditorPick !== null, function ($query) use ($isEditorPick) {
                 $query->where('is_editors_pick', $isEditorPick);
             })
-        ->latest()
-        ->paginate($perPage, ['*'], 'page', $page);
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page);
     }
 
     public function create(PostCreateDTO $dto): Post
@@ -74,41 +79,32 @@ class PostService implements PostAdminServiceInterface
 
     public function update(Post $post, PostUpdateDTO $dto): Post
     {
-        $data = [];
+        // KISS/DRY Approach: Filter out null values dynamically
+        $data = array_filter([
+            'title' => $dto->title,
+            'body' => $dto->body,
+            'excerpt' => $dto->excerpt,
+            'featured_image' => $dto->featuredImage,
+            'is_published' => $dto->isPublished,
+            'is_editors_pick' => $dto->isEditorsPick,
+            'category_id' => $dto->categoryId,
+        ], fn ($value) => !is_null($value));
 
-        if ($dto->title !== null) {
-            $data['title'] = $dto->title;
-            if ($dto->title !== $post->title) {
-                $slug = $this->generateSlugAction->execute($dto->title, Post::class, $post->id);
-                $data['slug'] = $slug;
-            }
+        // Regenerate slug if title changed
+        if ($dto->title !== null && $dto->title !== $post->title) {
+            $data['slug'] = $this->generateSlugAction->execute($dto->title, Post::class, $post->id);
         }
 
+        // Recalculate reading time if body changed
         if ($dto->body !== null) {
-            $data['body'] = $dto->body;
             $data['reading_time'] = $this->calculateReadingTimeAction->execute($dto->body);
         }
 
-        foreach (['excerpt', 'featured_image', 'category_id'] as $field) {
-            $camelKey = lcfirst(str_replace('_', '', ucwords($field, '_')));
-            if ($dto->{$camelKey} !== null) {
-                $data[$field] = $dto->{$camelKey};
-            }
-        }
-
-        if ($dto->isPublished !== null) {
-            $data['is_published'] = $dto->isPublished;
-            if ($dto->isPublished && $post->published_at === null) {
-                $data['published_at'] = $dto->publishedAt ?? now();
-            }
-        }
-
-        if ($dto->publishedAt !== null) {
+        // Handle publication dates
+        if (isset($data['is_published']) && $data['is_published'] && $post->published_at === null) {
+            $data['published_at'] = $dto->publishedAt ?? now();
+        } elseif ($dto->publishedAt !== null) {
             $data['published_at'] = $dto->publishedAt;
-        }
-
-        if ($dto->isEditorsPick !== null) {
-            $data['is_editors_pick'] = $dto->isEditorsPick;
         }
 
         DB::transaction(function () use ($post, $data, $dto) {
@@ -130,5 +126,16 @@ class PostService implements PostAdminServiceInterface
     public function find(string $id): ?Post
     {
         return Post::find($id);
+    }
+
+    // Fixing Article I Violation: Moving logic from Controller to Service
+    public function uploadImage(UploadedFile $file): string
+    {
+        return $this->uploadImageAction->execute($file);
+    }
+
+    public function deleteImage(string $url): bool
+    {
+        return $this->deleteImageAction->execute($url);
     }
 }

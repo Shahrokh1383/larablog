@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\Http\Resources;
+namespace Modules\Articles\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,8 +22,16 @@ class PostPublicResource extends JsonResource
             'is_saved'       => $this->is_saved ?? false,
             'published_at'   => $this->published_at,
             'is_editors_pick'=> $this->is_editors_pick,
-            'category'       => new CategoryResource($this->whenLoaded('category')),
-            'tags'           => TagResource::collection($this->whenLoaded('tags')),
+            'category'       => $this->whenLoaded('category', fn($c) => [
+                'id'   => $c->id,
+                'name' => $c->name,
+                'slug' => $c->slug,
+            ]),
+            'tags'           => $this->whenLoaded('tags', fn($tags) => $tags->map(fn($t) => [
+                'id'   => $t->id,
+                'name' => $t->name,
+                'slug' => $t->slug,
+            ])),
             'author'         => $this->when(isset($this->author), $this->author),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
