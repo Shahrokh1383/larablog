@@ -3,20 +3,25 @@ import type { AdminUser, UpdateRolePayload, UpdatePasswordPayload } from '../typ
 import type { PaginatedResponse } from '@/shared/types/api';
 
 export const usersApi = {
-  getAll: async (page = 1, search = ''): Promise<PaginatedResponse<AdminUser>> => {
-    const response = await httpClient.get('/admin/users', { 
-      params: { page, search } 
+  getAll: async (page = 1, search = '', perPage = 15): Promise<PaginatedResponse<AdminUser>> => {
+    const response = await httpClient.get('/admin/users', {
+      params: { page, search, per_page: perPage },
     });
-    return response.data; 
+    return response.data;
   },
 
-  updateRole: async (userId: string, payload: UpdateRolePayload): Promise<{ message: string, user: AdminUser }> => {
+  updateRole: async (userId: string, payload: UpdateRolePayload): Promise<{ message: string; user: AdminUser }> => {
     const response = await httpClient.put(`/admin/users/${userId}/role`, payload);
     return response.data;
   },
 
   updatePassword: async (userId: string, payload: UpdatePasswordPayload): Promise<{ message: string }> => {
     const response = await httpClient.put(`/admin/users/${userId}/password`, payload);
+    return response.data;
+  },
+
+  deleteUser: async (userId: string): Promise<{ message: string }> => {
+    const response = await httpClient.delete(`/admin/users/${userId}`);
     return response.data;
   },
 };

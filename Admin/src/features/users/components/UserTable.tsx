@@ -4,9 +4,10 @@ interface UserTableProps {
   users: AdminUser[];
   onEditRole: (user: AdminUser) => void;
   onEditPassword: (user: AdminUser) => void;
+  onDelete: (user: AdminUser) => void;
 }
 
-export default function UserTable({ users, onEditRole, onEditPassword }: UserTableProps) {
+export default function UserTable({ users, onEditRole, onEditPassword, onDelete }: UserTableProps) {
   return (
     <div className="table-responsive">
       <table className="table table-hover align-middle">
@@ -14,6 +15,7 @@ export default function UserTable({ users, onEditRole, onEditPassword }: UserTab
           <tr>
             <th>User</th>
             <th>Email</th>
+            <th>Username</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
@@ -23,26 +25,38 @@ export default function UserTable({ users, onEditRole, onEditPassword }: UserTab
             <tr key={user.id}>
               <td>
                 <div className="d-flex align-items-center">
-                  {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} className="rounded-circle me-2" width="40" height="40" />
-                  ) : (
-                    <div className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: 40, height: 40 }}>
-                      {user.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <div 
+                    className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                    style={{ width: 40, height: 40, fontSize: '16px', fontWeight: 600 }}
+                  >
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
                   {user.name}
                 </div>
               </td>
               <td>{user.email}</td>
+              <td>{user.username || '—'}</td>
               <td>
                 <span className="badge bg-primary">{user.roles[0] || 'N/A'}</span>
               </td>
               <td>
-                <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => onEditRole(user)}>
+                <button 
+                  className="btn btn-sm btn-outline-secondary me-2" 
+                  onClick={() => onEditRole(user)}
+                >
                   <i className="fas fa-user-tag me-1"></i> Role
                 </button>
-                <button className="btn btn-sm btn-outline-warning" onClick={() => onEditPassword(user)}>
+                <button 
+                  className="btn btn-sm btn-outline-warning me-2" 
+                  onClick={() => onEditPassword(user)}
+                >
                   <i className="fas fa-key me-1"></i> Password
+                </button>
+                <button 
+                  className="btn btn-sm btn-outline-danger" 
+                  onClick={() => onDelete(user)}
+                >
+                  <i className="fas fa-trash me-1"></i> Delete
                 </button>
               </td>
             </tr>

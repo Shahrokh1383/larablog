@@ -1,3 +1,4 @@
+export { aboutKeys } from './hooks/useEligibleUsers';
 export { useSiteSettings } from './hooks/useSiteSettings';
 export { useUpdateSiteSettings } from './hooks/useUpdateSiteSettings';
 export { useTeamMembers } from './hooks/useTeamMembers';

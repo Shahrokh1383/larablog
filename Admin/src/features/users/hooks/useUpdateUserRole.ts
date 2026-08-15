@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../api/usersApi';
 import type { UpdateRolePayload } from '../types/user';
 import { userKeys } from './useUsers';
-import { aboutKeys } from '@/features/about/hooks/useEligibleUsers';
+import { aboutKeys } from '@/features/about';
 
 export function useUpdateUserRole() {
   const queryClient = useQueryClient();

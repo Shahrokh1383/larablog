@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
-import { useUsers, useUpdateUserRole, useUpdateUserPassword, UserTable, EditUserRoleModal, EditUserPasswordModal } from '@/features/users';
-import type { AdminUser, UpdateRolePayload, UpdatePasswordPayload } from '@/features/users/types/user';
+import { 
+  useUsers, 
+  useUpdateUserRole, 
+  useUpdateUserPassword, 
+  useDeleteUser,
+  UserTable, 
+  EditUserRoleModal, 
+  EditUserPasswordModal 
+} from '@/features/users';
+import type { AdminUser, UpdateRolePayload, UpdatePasswordPayload } from '@/features/users';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Debounce search to avoid spamming API on every keystroke (500ms delay)
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // Reset to page 1 whenever the search term changes
@@ -22,19 +29,28 @@ export default function UsersPage() {
 
   const roleMutation = useUpdateUserRole();
   const passwordMutation = useUpdateUserPassword();
+  const deleteMutation = useDeleteUser();
 
   const handleUpdateRole = (payload: UpdateRolePayload) => {
     if (!editingRoleUser) return;
-    roleMutation.mutate({ userId: editingRoleUser.id, payload }, {
-      onSuccess: () => setEditingRoleUser(null),
-    });
+    roleMutation.mutate(
+      { userId: editingRoleUser.id, payload },
+      { onSuccess: () => setEditingRoleUser(null) }
+    );
   };
 
   const handleUpdatePassword = (payload: UpdatePasswordPayload) => {
     if (!editingPasswordUser) return;
-    passwordMutation.mutate({ userId: editingPasswordUser.id, payload }, {
-      onSuccess: () => setEditingPasswordUser(null),
-    });
+    passwordMutation.mutate(
+      { userId: editingPasswordUser.id, payload },
+      { onSuccess: () => setEditingPasswordUser(null) }
+    );
+  };
+
+  const handleDelete = (user: AdminUser) => {
+    if (window.confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
+      deleteMutation.mutate(user.id);
+    }
   };
 
   return (
@@ -66,7 +82,8 @@ export default function UsersPage() {
             <UserTable 
               users={data.data} 
               onEditRole={setEditingRoleUser} 
-              onEditPassword={setEditingPasswordUser} 
+              onEditPassword={setEditingPasswordUser}
+              onDelete={handleDelete}
             />
           )}
           

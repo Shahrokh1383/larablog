@@ -2,8 +2,7 @@ export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  avatar: string | null;
-  bio: string | null;
+  username: string;
   roles: string[];
   created_at: string;
 }

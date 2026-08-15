@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../api/usersApi';
-import type { UpdatePasswordPayload } from '../types/user';
 import { userKeys } from './useUsers';
 
-export function useUpdateUserPassword() {
+export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, payload }: { userId: string; payload: UpdatePasswordPayload }) =>
-      usersApi.updatePassword(userId, payload),
+    mutationFn: (userId: string) => usersApi.deleteUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
