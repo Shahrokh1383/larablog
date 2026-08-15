@@ -2,8 +2,10 @@
 
 namespace Modules\Identity\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Modules\Identity\DTOs\ResetPasswordDTO;
+use Modules\Identity\Events\UserPasswordUpdated;
 use Modules\Identity\Exceptions\PasswordResetFailedException;
 
 class PasswordResetService
@@ -30,6 +32,10 @@ class PasswordResetService
             $user->password = $password;
             $user->save();
             $user->tokens()->delete();
+
+            DB::afterCommit(function () use ($user) {
+                event(new UserPasswordUpdated($user));
+            });
         });
 
         if ($status !== Password::PASSWORD_RESET) {
