@@ -85,7 +85,6 @@
     "User\\app\\(public)\\layout.tsx",
     "User\\src\\features\\search",
     "User\\src\\features\\tags",
-    "Admin\\src\\features\\users",
     "Admin\\src\\features\\profile",
     "User\\src\\features\\privacy",
     "User\\src\\features\\terms",
@@ -111,9 +110,10 @@
     "Admin\\src\\features\\about",
     "back-end\\src\\Modules\\Content",
     "User\\src\\features\\posts",
-    "User\\src\\shared"
+    "User\\src\\shared",
+    "Admin\\src\\features\\auth"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-15T16:56:53.267Z",
+  "lastModified": "2026-08-15T17:36:45.490Z",
   "version": 1
 }

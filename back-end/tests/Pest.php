@@ -1,23 +1,19 @@
 <?php
 
-use Tests\Support\SmtpSinkService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
 
 pest()->extend(Tests\TestCase::class)
-    ->in('Feature');
+    ->use(RefreshDatabase::class)
+    ->in('Feature')
+    ->beforeEach(function () {
+        // Seed roles needed by the application
+        Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        Role::create(['name' => 'editor', 'guard_name' => 'web']);
+        Role::create(['name' => 'author', 'guard_name' => 'web']);
+        Role::create(['name' => 'user', 'guard_name' => 'web']);
+    });
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
-
-/**
- * Returns true if the SMTP sink server is reachable.
- */
-function smtpReachable(): bool
-{
-    try {
-        (new SmtpSinkService)->getAllEmails();
-        return true;
-    } catch (\Exception $e) {
-        return false;
-    }
-}
