@@ -14,8 +14,7 @@ class OAuthCallbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code'  => ['required', 'string'],
-            'state' => ['sometimes', 'nullable', 'string'],
+            'code' => ['required', 'string'],
         ];
     }
 }

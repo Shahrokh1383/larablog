@@ -5,7 +5,8 @@ type OAuthProvider = 'github' | 'google' | 'facebook';
 
 export function useOAuthRedirect() {
   const redirectToProvider = (provider: OAuthProvider) => {
-    window.location.href = `${env.apiBaseUrl}${endpoints.auth.oauthRedirect(provider)}`;
+    const baseUrl = env.oauthApiBaseUrl.replace(/\/$/, '');
+    window.location.href = `${baseUrl}${endpoints.auth.oauthRedirect(provider)}`;
   };
 
   return { redirectToProvider };

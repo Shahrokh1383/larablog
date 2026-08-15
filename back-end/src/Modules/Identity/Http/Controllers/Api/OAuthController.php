@@ -2,11 +2,12 @@
 
 namespace Modules\Identity\Http\Controllers\Api;
 
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\RedirectResponse as IlluminateRedirectResponse;
 use Illuminate\Routing\Controller;
 use Modules\Identity\DTOs\OAuthCallbackDTO;
 use Modules\Identity\Http\Requests\OAuthCallbackRequest;
 use Modules\Identity\Services\OAuthService;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class OAuthController extends Controller
 {
@@ -17,12 +18,11 @@ class OAuthController extends Controller
         return $this->oauthService->redirect($provider);
     }
 
-    public function callback(OAuthCallbackRequest $request, string $provider): RedirectResponse
+    public function callback(OAuthCallbackRequest $request, string $provider): IlluminateRedirectResponse
     {
         $dto = new OAuthCallbackDTO(
             provider: $provider,
             code: $request->validated('code'),
-            state: $request->validated('state'),
         );
 
         $this->oauthService->callback($dto);

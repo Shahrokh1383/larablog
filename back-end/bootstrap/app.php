@@ -5,8 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Modules\Identity\Exceptions\OAuthCallbackFailedException;
-use Modules\Identity\Exceptions\UnsupportedOAuthProviderException;
+use Shared\Exceptions\DomainException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,21 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
             return $request->is('api/*') || $request->is('broadcasting/*') || $request->expectsJson();
         });
 
-        // Redirect OAuth errors to the SPA with error flag
-        $exceptions->renderable(function (OAuthCallbackFailedException $e, Request $request) {
+        // Redirect OAuth callback domain exceptions to the SPA with a generic error flag
+        $exceptions->renderable(function (DomainException $e, Request $request) {
             if ($request->is(['oauth/*/callback', 'api/oauth/*/callback'])) {
-                $frontendUrl = config('app.frontend_url');
-                return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
-            }
-        });
-
-        $exceptions->renderable(function (UnsupportedOAuthProviderException $e, Request $request) {
-            if ($request->is([
-                'oauth/*/callback',
-                'api/oauth/*/callback',
-                'oauth/*/redirect',
-                'api/oauth/*/redirect',
-            ])) {
                 $frontendUrl = config('app.frontend_url');
                 return redirect()->to("{$frontendUrl}/oauth-callback?error=oauth_failed");
             }

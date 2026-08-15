@@ -4,9 +4,8 @@ namespace Modules\Identity\Actions;
 
 use Illuminate\Database\UniqueConstraintViolationException;
 use Modules\Identity\DTOs\UserRegisterDTO;
-use Modules\Identity\Exceptions\EmailAlreadyRegisteredException;
-use Modules\Identity\Exceptions\UsernameGenerationFailedException;
 use Modules\Identity\Models\User;
+use Shared\Exceptions\DomainException;
 
 class CreateUserWithUniqueUsernameAction
 {
@@ -32,13 +31,13 @@ class CreateUserWithUniqueUsernameAction
                 // Definitively check if the email already exists.
                 // This avoids fragile string parsing of database error messages.
                 if (User::where('email', $dto->email)->exists()) {
-                    throw new EmailAlreadyRegisteredException();
+                    throw new DomainException('The email address is already registered.', 422);
                 }
 
                 // If the email is not the cause, it must be the username constraint.
                 // Retry with a new generated username.
                 if ($attempt >= 9) {
-                    throw new UsernameGenerationFailedException();
+                    throw new DomainException('Could not generate a unique username. Please try again.', 422);
                 }
 
                 $attempt++;

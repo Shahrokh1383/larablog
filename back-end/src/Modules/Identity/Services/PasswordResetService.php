@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Password;
 use Modules\Identity\Actions\RevokeUserSessionsAction;
 use Modules\Identity\DTOs\ResetPasswordDTO;
 use Modules\Identity\Events\UserPasswordUpdated;
-use Modules\Identity\Exceptions\PasswordResetFailedException;
+use Shared\Exceptions\DomainException;
 
 class PasswordResetService
 {
@@ -41,7 +41,7 @@ class PasswordResetService
         });
 
         if ($status !== Password::PASSWORD_RESET) {
-            throw new PasswordResetFailedException(__($status));
+            throw new DomainException(__($status), 422);
         }
 
         return __($status);

@@ -9,10 +9,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 use Modules\Identity\Actions\CreateUserWithUniqueUsernameAction;
 use Modules\Identity\DTOs\UserLoginDTO;
 use Modules\Identity\DTOs\UserRegisterDTO;
-use Modules\Identity\Exceptions\AdminAccessDeniedException;
-use Modules\Identity\Exceptions\InvalidCredentialsException;
-use Modules\Identity\Exceptions\InvalidVerificationLinkException;
 use Modules\Identity\Models\User;
+use Shared\Exceptions\DomainException;
 
 class AuthService
 {
@@ -50,7 +48,7 @@ class AuthService
         $isValid = ($user !== null) && $passwordValid;
 
         if (! $isValid) {
-            throw new InvalidCredentialsException();
+            throw new DomainException('The provided credentials are incorrect.', 422);
         }
 
         Auth::login($user, $dto->remember);
@@ -68,11 +66,11 @@ class AuthService
         $isValid = ($user !== null) && $passwordValid;
 
         if (! $isValid) {
-            throw new InvalidCredentialsException();
+            throw new DomainException('The provided credentials are incorrect.', 422);
         }
 
         if (! $user->hasRole(config('permissions.admin_roles'))) {
-            throw new AdminAccessDeniedException();
+            throw new DomainException('You do not have permission to access the admin panel.', 403);
         }
 
         $token = $user->createToken('admin-auth-token')->plainTextToken;
@@ -116,7 +114,7 @@ class AuthService
         $user = User::findOrFail($id);
 
         if (! hash_equals($hash, sha1($user->getEmailForVerification()))) {
-            throw new InvalidVerificationLinkException();
+            throw new DomainException('Invalid or expired verification link.', 404);
         }
 
         if ($user->hasVerifiedEmail()) {
