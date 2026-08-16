@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Content\Services;
+namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Articles\Models\Post;
 use Modules\Taxonomy\Models\Tag;
-use Modules\Content\Services\Contracts\ContentStatsContract;
+use Modules\Taxonomy\Services\Contracts\ContentStatsContract;
 
 class ContentStatsService implements ContentStatsContract
 {

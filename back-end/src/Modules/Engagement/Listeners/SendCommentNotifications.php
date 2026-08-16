@@ -6,7 +6,7 @@ use Modules\Engagement\Events\CommentCreated;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\Notifications\NewCommentOnPost;
 use Modules\Engagement\Notifications\NewReplyToComment;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Shared\Models\User;
 
 class SendCommentNotifications

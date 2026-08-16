@@ -63,8 +63,6 @@
     "Admin\\src\\features\\comments",
     "Admin\\src\\features\\marketing",
     "User\\src\\features\\home",
-    "back-end\\src\\Modules\\Engagement",
-    "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\src\\Modules\\Administration",
     "back-end\\src\\Modules\\Search",
     "User\\app\\(public)\\search",
@@ -104,16 +102,18 @@
     "back-end\\src\\Modules\\Identity",
     "Admin\\src\\features\\users",
     "back-end\\src\\Modules\\Home",
-    "back-end\\src\\Modules\\Articles",
     "User\\src\\features\\reader",
     "User\\src\\features\\newsletter",
     "User\\src\\features\\dashboard",
     "User\\src\\features\\posts",
     "User\\app\\(public)\\post",
     "User\\app\\(public)\\author",
-    "Admin\\src\\features\\posts"
+    "Admin\\src\\features\\posts",
+    "back-end\\src\\Modules\\Taxonomy",
+    "back-end\\src\\Modules\\Articles",
+    "back-end\\src\\Modules\\Engagement"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-16T20:31:35.431Z",
+  "lastModified": "2026-08-16T21:22:57.573Z",
   "version": 1
 }

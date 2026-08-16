@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\Services\Contracts;
+namespace Modules\Taxonomy\Services\Contracts;
 
 interface ContentStatsContract
 {

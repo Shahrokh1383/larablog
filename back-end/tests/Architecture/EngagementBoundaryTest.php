@@ -1,9 +1,9 @@
 <?php
 
-test('engagement module does not import content models')
+test('engagement module does not import articles models')
     ->expect('Modules\Engagement')
-    ->not->toUse('Modules\Content\Models');
+    ->not->toUse('Modules\Articles\Models');
 
-test('content module does not import engagement models')
-    ->expect('Modules\Content')
+test('articles module does not import engagement models')
+    ->expect('Modules\Articles')
     ->not->toUse('Modules\Engagement\Models');

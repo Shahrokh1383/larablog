@@ -2,7 +2,7 @@
 
 namespace Modules\Administration\Services;
 
-use Modules\Content\Services\Contracts\ContentStatsContract;
+use Modules\Taxonomy\Services\Contracts\ContentStatsContract;
 
 class DashboardService
 {
