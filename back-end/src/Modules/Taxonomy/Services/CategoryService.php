@@ -3,8 +3,7 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
-use Modules\Taxonomy\DTOs\CategoryCreateDTO;
-use Modules\Taxonomy\Actions\GenerateSlugAction;
+use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CategoryService
@@ -20,12 +19,12 @@ class CategoryService
             ->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function create(CategoryCreateDTO $dto): Category
+    public function create(string $name): Category
     {
-        $slug = $this->generateSlugAction->execute($dto->name, Category::class);
+        $slug = $this->generateSlugAction->execute($name, Category::class);
 
         return Category::create([
-            'name' => $dto->name,
+            'name' => $name,
             'slug' => $slug,
         ]);
     }

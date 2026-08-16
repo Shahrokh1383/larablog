@@ -7,7 +7,6 @@ use Modules\Taxonomy\Services\TagService;
 use Modules\Taxonomy\Http\Requests\StoreTagRequest;
 use Modules\Taxonomy\Http\Requests\UpdateTagRequest;
 use Modules\Taxonomy\Http\Resources\TagResource;
-use Modules\Taxonomy\DTOs\TagCreateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -34,10 +33,8 @@ class TagController extends Controller
 
     public function store(StoreTagRequest $request): TagResource
     {
-        $dto = new TagCreateDTO(name: $request->validated('name'));
-
         return new TagResource(
-            $this->tagService->create($dto)
+            $this->tagService->create($request->validated('name'))
         );
     }
 

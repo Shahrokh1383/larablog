@@ -7,7 +7,6 @@ use Modules\Taxonomy\Services\CategoryService;
 use Modules\Taxonomy\Http\Requests\StoreCategoryRequest;
 use Modules\Taxonomy\Http\Requests\UpdateCategoryRequest;
 use Modules\Taxonomy\Http\Resources\CategoryResource;
-use Modules\Taxonomy\DTOs\CategoryCreateDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -34,10 +33,8 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request): CategoryResource
     {
-        $dto = new CategoryCreateDTO(name: $request->validated('name'));
-
         return new CategoryResource(
-            $this->categoryService->create($dto)
+            $this->categoryService->create($request->validated('name'))
         );
     }
 

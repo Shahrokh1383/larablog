@@ -1,61 +1,29 @@
 import { useState } from 'react';
-import { useTags, useTagMutations, TagDataTable, TagFormModal } from '@/features/tags';
-import type { Tag, TagFormData } from '@/features/tags';
-import { AxiosError } from 'axios';
+import {
+  useTags,
+  useTagManager,
+  TagDataTable,
+} from '@/features/tags';
+import EntityFormModal from '@/shared/components/EntityFormModal';
 
 export default function TagsPage() {
   const [page, setPage] = useState(1);
   const { data: paginatedResponse, isLoading, isError } = useTags({ page });
-  const { createTag, updateTag, deleteTag } = useTagMutations();
+  
+  const {
+    showModal,
+    editingTag,
+    serverError,
+    isLoading: isMutating,
+    openCreate,
+    openEdit,
+    handleDelete,
+    handleSubmit,
+    closeModal,
+  } = useTagManager();
 
   const tags = paginatedResponse?.data ?? [];
   const meta = paginatedResponse?.meta;
-
-  const [showModal, setShowModal] = useState(false);
-  const [editingTag, setEditingTag] = useState<Tag | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const openCreate = () => {
-    setEditingTag(null);
-    setServerError(null);
-    setShowModal(true);
-  };
-
-  const openEdit = (tag: Tag) => {
-    setEditingTag(tag);
-    setServerError(null);
-    setShowModal(true);
-  };
-
-  const handleDelete = (tag: Tag) => {
-    if (window.confirm(`Delete tag "${tag.name}"?`)) {
-      deleteTag.mutate(tag.id);
-    }
-  };
-
-  const handleSubmit = (data: TagFormData) => {
-    setServerError(null);
-    if (editingTag) {
-      updateTag.mutate(
-        { id: editingTag.id, data },
-        {
-          onSuccess: () => setShowModal(false),
-          onError: (err) => {
-            const axiosErr = err as AxiosError<{ message: string }>;
-            setServerError(axiosErr.response?.data?.message ?? 'Update failed');
-          },
-        }
-      );
-    } else {
-      createTag.mutate(data, {
-        onSuccess: () => setShowModal(false),
-        onError: (err) => {
-          const axiosErr = err as AxiosError<{ message: string }>;
-          setServerError(axiosErr.response?.data?.message ?? 'Create failed');
-        },
-      });
-    }
-  };
 
   return (
     <div className="container py-4">
@@ -108,14 +76,15 @@ export default function TagsPage() {
         </div>
       </div>
 
-      <TagFormModal
+      <EntityFormModal
         show={showModal}
         title={editingTag ? 'Edit Tag' : 'Create Tag'}
         initialName={editingTag?.name ?? ''}
         onSubmit={handleSubmit}
-        isLoading={createTag.isPending || updateTag.isPending}
+        isLoading={isMutating}
         serverError={serverError}
-        onClose={() => setShowModal(false)}
+        onClose={closeModal}
+        entityIcon="tags"
       />
     </div>
   );

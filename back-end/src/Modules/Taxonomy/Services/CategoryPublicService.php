@@ -13,10 +13,10 @@ class CategoryPublicService implements CategoryPublicServiceInterface
     {
         return Category::search($search)
             ->withCount([
-                'posts as posts_count' => fn($q) => $q->published(),
-                'posts as authors_count' => fn($q) => $q->published()->select(DB::raw('count(distinct user_id)'))
+                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true),
+                'posts as authors_count' => fn($q) => $q->where('content_posts.is_published', true)->select(DB::raw('count(distinct user_id)'))
             ])
-            ->with(['posts' => fn($q) => $q->published()->latest('published_at')->take(4)])
+            ->with(['posts' => fn($q) => $q->where('content_posts.is_published', true)->latest('published_at')->take(4)])
             ->paginate($perPage);
     }
 
@@ -24,8 +24,8 @@ class CategoryPublicService implements CategoryPublicServiceInterface
     {
         return Category::where('slug', $slug)
             ->withCount([
-                'posts as posts_count' => fn($q) => $q->published(),
-                'posts as authors_count' => fn($q) => $q->published()->select(DB::raw('count(distinct user_id)'))
+                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true),
+                'posts as authors_count' => fn($q) => $q->where('content_posts.is_published', true)->select(DB::raw('count(distinct user_id)'))
             ])
             ->firstOrFail();
     }
@@ -38,7 +38,7 @@ class CategoryPublicService implements CategoryPublicServiceInterface
     public function getPopularCategories(int $limit): array
     {
         return Category::withCount([
-                'posts as posts_count' => fn($q) => $q->published()
+                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true)
             ])
             ->orderByDesc('posts_count')
             ->take($limit)

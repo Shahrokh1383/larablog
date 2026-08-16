@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Content\Actions;
+namespace Shared\Actions;
 
 use Shared\ValueObjects\Slug;
 use Illuminate\Database\Eloquent\Model;

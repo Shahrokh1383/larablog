@@ -12,14 +12,14 @@ class TagPublicService implements TagPublicServiceInterface
     public function getPublicTags(?string $search = null, int $perPage = 12): LengthAwarePaginator
     {
         return Tag::search($search)
-            ->withCount(['posts as posts_count' => fn($q) => $q->published()])
+            ->withCount(['posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true)])
             ->paginate($perPage);
     }
 
     public function getPopularTags(int $limit = 10): Collection
     {
-        return Tag::withSum(['posts as total_views' => fn($q) => $q->published()], 'views')
-            ->withCount(['posts as posts_count' => fn($q) => $q->published()])
+        return Tag::withSum(['posts as total_views' => fn($q) => $q->where('content_posts.is_published', true)], 'views')
+            ->withCount(['posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true)])
             ->orderByDesc('total_views')
             ->take($limit)
             ->get();
@@ -28,7 +28,7 @@ class TagPublicService implements TagPublicServiceInterface
     public function getPublicTagBySlug(string $slug): Tag
     {
         return Tag::where('slug', $slug)
-            ->withCount(['posts as posts_count' => fn($q) => $q->published()])
+            ->withCount(['posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true)])
             ->firstOrFail();
     }
 

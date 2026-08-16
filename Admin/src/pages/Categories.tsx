@@ -1,66 +1,29 @@
 import { useState } from 'react';
 import {
   useCategories,
-  useCategoryMutations,
+  useCategoryManager,
   CategoryDataTable,
-  CategoryFormModal,
 } from '@/features/categories';
-import type { Category, CategoryFormData } from '@/features/categories';
-import { AxiosError } from 'axios';
+import EntityFormModal from '@/shared/components/EntityFormModal';
 
 export default function CategoriesPage() {
   const [page, setPage] = useState(1);
   const { data: paginatedResponse, isLoading, isError } = useCategories({ page });
-  const { createCategory, updateCategory, deleteCategory } = useCategoryMutations();
+  
+  const {
+    showModal,
+    editingCategory,
+    serverError,
+    isLoading: isMutating,
+    openCreate,
+    openEdit,
+    handleDelete,
+    handleSubmit,
+    closeModal,
+  } = useCategoryManager();
 
   const categories = paginatedResponse?.data ?? [];
   const meta = paginatedResponse?.meta;
-
-  const [showModal, setShowModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const openCreate = () => {
-    setEditingCategory(null);
-    setServerError(null);
-    setShowModal(true);
-  };
-
-  const openEdit = (cat: Category) => {
-    setEditingCategory(cat);
-    setServerError(null);
-    setShowModal(true);
-  };
-
-  const handleDelete = (cat: Category) => {
-    if (window.confirm(`Delete category "${cat.name}"?`)) {
-      deleteCategory.mutate(cat.id);
-    }
-  };
-
-  const handleSubmit = (formData: CategoryFormData) => {
-    setServerError(null);
-    if (editingCategory) {
-      updateCategory.mutate(
-        { id: editingCategory.id, data: formData },
-        {
-          onSuccess: () => setShowModal(false),
-          onError: (err) => {
-            const axiosErr = err as AxiosError<{ message: string }>;
-            setServerError(axiosErr.response?.data?.message ?? 'Update failed');
-          },
-        }
-      );
-    } else {
-      createCategory.mutate(formData, {
-        onSuccess: () => setShowModal(false),
-        onError: (err) => {
-          const axiosErr = err as AxiosError<{ message: string }>;
-          setServerError(axiosErr.response?.data?.message ?? 'Create failed');
-        },
-      });
-    }
-  };
 
   return (
     <div className="container py-4">
@@ -113,14 +76,15 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <CategoryFormModal
+      <EntityFormModal
         show={showModal}
         title={editingCategory ? 'Edit Category' : 'Create Category'}
         initialName={editingCategory?.name ?? ''}
         onSubmit={handleSubmit}
-        isLoading={createCategory.isPending || updateCategory.isPending}
+        isLoading={isMutating}
         serverError={serverError}
-        onClose={() => setShowModal(false)}
+        onClose={closeModal}
+        entityIcon="folder"
       />
     </div>
   );

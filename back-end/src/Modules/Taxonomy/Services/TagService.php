@@ -3,7 +3,6 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
-use Modules\Taxonomy\DTOs\TagCreateDTO;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -20,12 +19,12 @@ class TagService
             ->paginate($perPage, ['*'], 'page', $page);
     }
 
-    public function create(TagCreateDTO $dto): Tag
+    public function create(string $name): Tag
     {
-        $slug = $this->generateSlugAction->execute($dto->name, Tag::class);
+        $slug = $this->generateSlugAction->execute($name, Tag::class);
 
         return Tag::create([
-            'name' => $dto->name,
+            'name' => $name,
             'slug' => $slug,
         ]);
     }

@@ -3,7 +3,7 @@
 namespace Modules\Articles\Services;
 
 use Modules\Articles\Models\Post;
-use Modules\Articles\Actions\GenerateSlugAction;
+use Shared\Actions\GenerateSlugAction;
 use Modules\Articles\Actions\CalculateReadingTimeAction;
 use Modules\Articles\Actions\AssignTagsToPostAction;
 use Modules\Articles\Actions\UploadImageAction;

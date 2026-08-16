@@ -48,7 +48,6 @@
     "back-end\\tests",
     "back-end\\src\\Shared",
     "Admin\\src\\features\\dashboard",
-    "Admin\\src\\features\\tags",
     "User\\src\\providers",
     "User\\package.json",
     "User\\next.config.mjs",
@@ -56,7 +55,6 @@
     "User\\jsconfig.json",
     "User\\tsconfig.json",
     "back-end\\config\\sanctum.php",
-    "Admin\\src\\features\\categories",
     "User\\app\\(public)\\authors",
     "back-end\\database\\factories",
     "User\\proxy.ts",
@@ -112,9 +110,10 @@
     "User\\src\\features\\dashboard",
     "User\\src\\features\\posts",
     "User\\app\\(public)\\post",
-    "User\\app\\(public)\\author"
+    "User\\app\\(public)\\author",
+    "Admin\\src\\features\\posts"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-16T19:44:20.530Z",
+  "lastModified": "2026-08-16T20:31:35.431Z",
   "version": 1
 }
