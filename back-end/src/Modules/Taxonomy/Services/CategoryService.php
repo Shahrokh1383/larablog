@@ -4,7 +4,7 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\DTOs\CategoryCreateDTO;
-use Shared\Actions\GenerateSlugAction;
+use Modules\Taxonomy\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CategoryService

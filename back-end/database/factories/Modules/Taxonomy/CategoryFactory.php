@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\Modules\Content;
+namespace Database\Factories\Modules\Taxonomy;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Content\Models\Category;
+use Modules\Taxonomy\Models\Category;
 use Illuminate\Support\Str;
 
 class CategoryFactory extends Factory

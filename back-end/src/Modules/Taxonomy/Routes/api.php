@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Content\Http\Controllers\Api\CategoryPublicController;
-use Modules\Content\Http\Controllers\Api\TagPublicController;
-use Modules\Content\Http\Controllers\Api\HomePublicController;
+use Modules\Taxonomy\Http\Controllers\Api\CategoryPublicController;
+use Modules\Taxonomy\Http\Controllers\Api\TagPublicController;
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryPublicController::class, 'index']);
@@ -15,5 +14,3 @@ Route::prefix('tags')->group(function () {
     Route::get('/popular', [TagPublicController::class, 'popular']);
     Route::get('{slug}/posts', [TagPublicController::class, 'posts']);
 });
-
-Route::get('/home', [HomePublicController::class, 'index']);

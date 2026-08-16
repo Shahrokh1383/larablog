@@ -1,9 +1,9 @@
 <?php
 
-namespace Database\Factories\Modules\Content;
+namespace Database\Factories\Modules\Taxonomy;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\Content\Models\Tag;
+use Modules\Taxonomy\Models\Tag;
 use Illuminate\Support\Str;
 
 class TagFactory extends Factory

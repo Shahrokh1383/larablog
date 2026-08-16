@@ -9,7 +9,7 @@ use Modules\Articles\Policies\PostPolicy;
 use Modules\Articles\Services\PostInfoService;
 use Modules\Articles\Services\Contracts\PostInfoContract;
 use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
-use Modules\Articles\Services\Contracts\PostPublicContract;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Modules\Articles\Services\PostService;
 use Modules\Articles\Services\PostPublicService;
 
@@ -19,7 +19,7 @@ class ArticlesServiceProvider extends ServiceProvider
     {
         $this->app->bind(PostInfoContract::class, PostInfoService::class);
         $this->app->bind(PostAdminServiceInterface::class, PostService::class);
-        $this->app->bind(PostPublicContract::class, PostPublicService::class);
+        $this->app->bind(PostPublicServiceInterface::class, PostPublicService::class);
     }
 
     public function boot(): void

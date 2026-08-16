@@ -4,11 +4,12 @@ namespace Modules\Articles\Services;
 
 use Modules\Articles\Models\Post;
 use Modules\Articles\Actions\MapPostRelationsAction;
-use Modules\Articles\Services\Contracts\PostPublicContract;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
-class PostPublicService implements PostPublicContract
+class PostPublicService implements PostPublicServiceInterface
 {
     public function __construct(
         private MapPostRelationsAction $mapPostRelations,
@@ -58,16 +59,11 @@ class PostPublicService implements PostPublicContract
 
     public function getPostsByCategory(string $categoryId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        // Removed Category model import. We now query directly by ID.
         $query = Post::with(['category', 'tags'])
             ->published()
             ->byCategory($categoryId);
 
-        match ($sort) {
-            'oldest'       => $query->oldest('updated_at'),
-            'most_popular' => $query->popular(),
-            default        => $query->latest('updated_at'),
-        };
+        $this->applyPublicSort($query, $sort);
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
@@ -76,16 +72,11 @@ class PostPublicService implements PostPublicContract
 
     public function getPostsByTag(string $tagId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        // Removed Tag model import. We now query directly by ID.
         $query = Post::with(['category', 'tags'])
             ->published()
             ->whereHas('tags', fn($q) => $q->whereKey($tagId));
 
-        match ($sort) {
-            'oldest'       => $query->oldest('updated_at'),
-            'most_popular' => $query->popular(),
-            default        => $query->latest('updated_at'),
-        };
+        $this->applyPublicSort($query, $sort);
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
@@ -100,11 +91,7 @@ class PostPublicService implements PostPublicContract
             ->published()
             ->where('user_id', $user->id);
 
-        match ($sort) {
-            'oldest'       => $query->oldest('updated_at'),
-            'most_popular' => $query->popular(),
-            default        => $query->latest('updated_at'),
-        };
+        $this->applyPublicSort($query, $sort);
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
@@ -118,7 +105,7 @@ class PostPublicService implements PostPublicContract
             ->search($term)
             ->latest('published_at')
             ->paginate($perpage);
-            
+
         $this->mapPostRelations->execute($posts);
         return $posts;
     }
@@ -131,7 +118,7 @@ class PostPublicService implements PostPublicContract
             ->latest('published_at')
             ->take($limit)
             ->get();
-            
+
         $this->mapPostRelations->execute($posts);
         return $posts;
     }
@@ -143,7 +130,7 @@ class PostPublicService implements PostPublicContract
             ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
             ->latest('published_at')
             ->take($limit);
-            
+
         $posts = $query->get();
         $this->mapPostRelations->execute($posts);
         return $posts;
@@ -151,6 +138,64 @@ class PostPublicService implements PostPublicContract
 
     public function getTotalPostsCount(): int
     {
+        return Post::count();
+    }
+
+    public function getPublishedPostsCount(): int
+    {
         return Post::published()->count();
+    }
+
+    public function getTotalViews(): int
+    {
+        return (int) Post::sum('views');
+    }
+
+    public function getAuthorStats(): array
+    {
+        return Post::selectRaw('user_id, COUNT(*) as posts_count, SUM(views) as total_views')
+            ->whereNotNull('user_id')
+            ->groupBy('user_id')
+            ->get()
+            ->keyBy('user_id')
+            ->toArray();
+    }
+
+    public function getPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    {
+        $query = Post::with(['category', 'tags'])
+            ->published()
+            ->whereHas('category', fn($q) => $q->where('slug', $categorySlug));
+
+        $this->applyPublicSort($query, $sort);
+
+        $posts = $query->paginate($perPage);
+        $this->mapPostRelations->execute($posts);
+        return $posts;
+    }
+
+    public function getPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    {
+        $query = Post::with(['category', 'tags'])
+            ->published()
+            ->whereHas('tags', fn($q) => $q->where('slug', $tagSlug));
+
+        $this->applyPublicSort($query, $sort);
+
+        $posts = $query->paginate($perPage);
+        $this->mapPostRelations->execute($posts);
+        return $posts;
+    }
+
+    /**
+     * Apply common public sorting logic.
+     */
+    private function applyPublicSort(Builder $query, ?string $sort): void
+    {
+        match ($sort) {
+            'oldest'       => $query->oldest('updated_at'),
+            'most_popular' => $query->popular(),
+            default        => $query->latest('updated_at'),
+        };
     }
 }
