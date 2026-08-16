@@ -66,7 +66,6 @@
     "Admin\\src\\features\\marketing",
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\category",
-    "User\\src\\features\\comments",
     "User\\src\\features\\dashboard",
     "User\\src\\features\\reader",
     "User\\src\\features\\newsletter",
@@ -109,11 +108,13 @@
     "User\\src\\features\\authors",
     "Admin\\src\\features\\about",
     "back-end\\src\\Modules\\Content",
-    "User\\src\\features\\posts",
     "User\\src\\shared",
-    "Admin\\src\\features\\auth"
+    "Admin\\src\\features\\auth",
+    "User\\src\\features\\auth",
+    "User\\app",
+    "User\\app\\(auth)"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-15T17:36:45.490Z",
+  "lastModified": "2026-08-16T15:26:21.857Z",
   "version": 1
 }

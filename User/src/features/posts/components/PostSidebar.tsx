@@ -1,16 +1,26 @@
 import Link from 'next/link';
 import { Author, Category, Post } from '../types/post';
 import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
-import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import { UseMutationResult } from '@tanstack/react-query';
+
+// Define the expected shape of the newsletter mutation state for strict typing
+interface NewsletterStateShape {
+  mutate: UseMutationResult<any, Error, string>['mutate'];
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+}
 
 interface PostSidebarProps {
   author: Author;
   relatedPosts: Post[] | undefined;
   categories: Category[] | undefined;
+  newsletterState: NewsletterStateShape; // Passed down from page.tsx
 }
 
-export default function PostSidebar({ author, relatedPosts, categories }: PostSidebarProps) {
-  const newsletterState = useSubscribeNewsletter();
+export default function PostSidebar({ author, relatedPosts, categories, newsletterState }: PostSidebarProps) {
+  // Removed: const newsletterState = useSubscribeNewsletter();
+  // Component is now a pure presentation component (Constitution Article V)
 
   return (
     <aside className="col-lg-4">

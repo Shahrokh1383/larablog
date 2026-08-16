@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Comment } from '@/features/comments/types/comment';
+import type { Comment } from '../types/comment';
 
 interface CommentItemProps {
   comment: Comment;
@@ -49,7 +49,7 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
       <div className="comment-body">
         <div className="comment-avatar">
           {comment.author.avatar ? (
-            <img src={comment.author.avatar} alt={comment.author.name}      loading="lazy" />
+            <img src={comment.author.avatar} alt={comment.author.name} loading="lazy" />
           ) : (
             <AvatarPlaceholder name={comment.author.name} />
           )}
@@ -61,7 +61,6 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
           </div>
           <p className="comment-text">{comment.body}</p>
           
-          {/* Button Group: Stacked Vertically */}
           <div className="d-flex flex-column align-items-start gap-2 mb-2">
             {hasExtraReplies && (
               <button 
@@ -87,7 +86,6 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
             </button>
           </div>
           
-          {/* Nested Replies */}
           {visibleReplies.length > 0 && (
             <ul className="comments-list nested-replies mt-3">
               {visibleReplies.map((reply) => (

@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import type { UseInfiniteQueryResult, InfiniteData } from '@tanstack/react-query';
-import type { CommentsResponse } from '@/features/comments/api/commentsApi';
+import type { CommentsResponse } from '../api/commentsApi';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 
 interface CommentsSectionProps {
   postId: string;
-  // Fix: Use InfiniteData<CommentsResponse> for React Query v5 infinite queries
   commentsQuery: UseInfiniteQueryResult<InfiniteData<CommentsResponse>, Error>;
   onLoadMoreReplies: (commentId: string) => void;
   fetchingReplyId?: string | null;
@@ -19,7 +18,6 @@ export default function CommentsSection({ postId, commentsQuery, onLoadMoreRepli
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = commentsQuery;
 
-  // data is now correctly typed as InfiniteData<CommentsResponse> | undefined
   const comments = data?.pages.flatMap(page => page.data) ?? [];
   const totalComments = data?.pages[0]?.meta.total ?? 0;
 

@@ -1,23 +1,16 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { usePost } from '@/features/posts/hooks/usePost';
-import { useRelatedPosts } from '@/features/posts/hooks/useRelatedPosts';
+// Using public barrel exports (Article V)
+import { usePost, useRelatedPosts } from '@/features/posts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useComments } from '@/features/comments/hooks/useComments';
 import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies';
+import CommentsSection from '@/features/comments/components/CommentsSection';
 import { useTrackPostRead } from '@/features/reader/hooks/useTrackPostRead';
 import { useToggleSavedPost } from '@/features/reader/hooks/useToggleSavedPost';
-import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
-import PostHeader from '@/features/posts/components/PostHeader';
-import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
-import PostBody from '@/features/posts/components/PostBody';
-import PostTags from '@/features/posts/components/PostTags';
-import AuthorBioCard from '@/features/posts/components/AuthorBioCard';
-import CommentsSection from '@/features/posts/components/CommentsSection';
-import PostSidebar from '@/features/posts/components/PostSidebar';
-import SavePostButton from '@/features/reader/components/SavePostButton';
-import '@/styles/post.css';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
 
 export default function PostPage() {
   const params = useParams();
@@ -33,6 +26,9 @@ export default function PostPage() {
   // Reader Experience Hooks
   useTrackPostRead(post?.id);
   const toggleSaveMutation = useToggleSavedPost(post?.id || '', slug);
+  
+  // Newsletter Hook moved here to respect Article V (Strict Layering)
+  const newsletterState = useSubscribeNewsletter();
 
   if (isLoading) {
     return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
@@ -61,7 +57,7 @@ export default function PostPage() {
                 }
               />
 
-              <PostFeaturedImage src={post.featured_image} alt={post.title} />
+              <PostFeaturedImage src={post.featured_image || ''} alt={post.title} />
               <PostBody post={post} />
               <PostTags tags={post.tags} />
               <AuthorBioCard author={post.author} />
@@ -75,13 +71,24 @@ export default function PostPage() {
             />
           </div>
 
+          {/* Pass newsletter state as props to maintain pure presentation components */}
           <PostSidebar 
             author={post.author} 
             relatedPosts={relatedPosts} 
             categories={categories}
+            newsletterState={newsletterState}
           />
         </div>
       </div>
     </main>
   );
 }
+
+import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
+import PostHeader from '@/features/posts/components/PostHeader';
+import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
+import PostBody from '@/features/posts/components/PostBody';
+import PostTags from '@/features/posts/components/PostTags';
+import AuthorBioCard from '@/features/posts/components/AuthorBioCard';
+import PostSidebar from '@/features/posts/components/PostSidebar';
+import SavePostButton from '@/features/reader/components/SavePostButton';

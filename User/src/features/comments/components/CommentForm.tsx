@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useCreateComment } from '@/features/comments/hooks/useCreateComment';
+import { useCreateComment } from '../hooks/useCreateComment';
 import { useAuth } from '@/features/auth/context/AuthContext';
 
 interface CommentFormProps {
@@ -20,7 +20,6 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
   const [comment, setComment] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Handle @mention logic
   useEffect(() => {
     if (replyTo) {
       const mention = `@${replyTo.name} `;
@@ -34,7 +33,7 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
         }
       }, 10);
     }
-  }, [replyTo]);
+  }, [replyTo, comment]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
