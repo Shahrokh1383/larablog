@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import type { PostFormData } from '../types/post';
 import type { Category } from '@/features/categories/types/category';
 import type { Tag } from '@/features/tags/types/tag';
-import { postsApi } from '../api/postsApi';
 import RichTextEditor from './RichTextEditor';
 import MultiSelectTags from './MultiSelectTags';
 
@@ -13,6 +12,10 @@ interface PostFormProps {
   onSubmit: (data: PostFormData) => void;
   isLoading: boolean;
   serverError: string | null;
+  onUploadImage: (file: File) => Promise<string | undefined>;
+  onRemoveImage: (url: string) => Promise<void>;
+  isUploadingImage: boolean;
+  isRemovingImage: boolean;
 }
 
 export default function PostForm({
@@ -22,6 +25,10 @@ export default function PostForm({
   onSubmit,
   isLoading,
   serverError,
+  onUploadImage,
+  onRemoveImage,
+  isUploadingImage,
+  isRemovingImage,
 }: PostFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? '');
   const [body, setBody] = useState(initialData?.body ?? '');
@@ -33,31 +40,21 @@ export default function PostForm({
   const [tagIds, setTagIds] = useState<string[]>(initialData?.tag_ids ?? []);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDeletingImage, setIsDeletingImage] = useState(false);
 
   const handleFeaturedImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    try {
-      const url = await postsApi.uploadImage(file);
+    
+    const url = await onUploadImage(file);
+    if (url) {
       setFeaturedImage(url);
-    } catch (error) {
-      alert('Failed to upload featured image.');
     }
   };
 
   const handleRemoveFeaturedImage = async () => {
     if (!featuredImage) return;
-    
-    setIsDeletingImage(true);
-    try {
-      await postsApi.deleteImage(featuredImage);
-      setFeaturedImage('');
-    } catch (error) {
-      alert('Failed to delete image from server.');
-    } finally {
-      setIsDeletingImage(false);
-    }
+    await onRemoveImage(featuredImage);
+    setFeaturedImage('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -95,20 +92,24 @@ export default function PostForm({
         </div>
         <div className="col-md-6">
           <label className="form-label">Featured Image</label>
-          <input type="url" className="form-control mb-2" value={featuredImage} onChange={(e) => setFeaturedImage(e.target.value)} placeholder="Image URL" />
+          <input type="url" className="form-control mb-2" value={featuredImage} onChange={(e) => setFeaturedImage(e.target.value)} placeholder="Image URL" disabled={isUploadingImage} />
           
           <div className="d-flex align-items-center gap-2">
-            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => fileInputRef.current?.click()}>
-              <i className="fas fa-upload me-1"></i> Upload Image
+            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImage}>
+              {isUploadingImage ? (
+                <span className="spinner-border spinner-border-sm" />
+              ) : (
+                <><i className="fas fa-upload me-1"></i> Upload Image</>
+              )}
             </button>
             {featuredImage && (
               <button 
                 type="button" 
                 className="btn btn-sm btn-outline-danger" 
                 onClick={handleRemoveFeaturedImage}
-                disabled={isDeletingImage}
+                disabled={isRemovingImage}
               >
-                {isDeletingImage ? (
+                {isRemovingImage ? (
                   <span className="spinner-border spinner-border-sm" />
                 ) : (
                   <><i className="fas fa-trash me-1"></i> Remove</>
@@ -139,7 +140,7 @@ export default function PostForm({
             <input type="checkbox" className="form-check-input" id="is_published" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
             <label className="form-check-label" htmlFor="is_published">Publish immediately</label>
           </div>
-          <div className='from-check mt-2'>
+          <div className="form-check mt-2">
             <input
               type="checkbox"
               className="form-check-input"

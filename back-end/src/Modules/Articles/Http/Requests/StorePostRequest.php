@@ -14,14 +14,15 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'          => ['required', 'string', 'max:255'],
-            'body'           => ['required', 'string'],
-            'excerpt'        => ['nullable', 'string'],
-            'featured_image' => ['nullable', 'url'],
-            'is_published'   => ['boolean'],
-            'category_id'    => ['nullable', 'exists:content_categories,id'],
-            'tag_ids'        => ['nullable', 'array'],
-            'tag_ids.*'      => ['exists:content_tags,id'],
+            'title'           => ['required', 'string', 'max:255'],
+            'body'            => ['required', 'string'],
+            'excerpt'         => ['nullable', 'string'],
+            'featured_image'  => ['nullable', 'url'],
+            'is_published'    => ['boolean'],
+            'is_editors_pick' => ['boolean'],
+            'category_id'     => ['nullable', 'exists:content_categories,id'],
+            'tag_ids'         => ['nullable', 'array'],
+            'tag_ids.*'       => ['exists:content_tags,id'],
         ];
     }
 }

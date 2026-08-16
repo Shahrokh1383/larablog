@@ -67,7 +67,6 @@
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\category",
     "User\\src\\features\\home",
-    "Admin\\src\\features\\posts",
     "back-end\\src\\Modules\\Engagement",
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\src\\Modules\\Administration",
@@ -111,9 +110,10 @@
     "User\\app\\(auth)",
     "User\\src\\features\\comments",
     "User\\src\\features\\posts",
-    "back-end\\src\\Modules\\Identity"
+    "back-end\\src\\Modules\\Identity",
+    "Admin\\src\\features\\users"
   ],
   "globalPatterns": [],
-  "lastModified": "2026-08-16T16:37:25.519Z",
+  "lastModified": "2026-08-16T16:50:10.440Z",
   "version": 1
 }

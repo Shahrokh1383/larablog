@@ -6,6 +6,8 @@ use Modules\Articles\Models\Post;
 use Modules\Articles\Services\PostService;
 use Modules\Articles\Http\Requests\StorePostRequest;
 use Modules\Articles\Http\Requests\UpdatePostRequest;
+use Modules\Articles\Http\Requests\UploadImageRequest;
+use Modules\Articles\Http\Requests\DeleteImageRequest;
 use Modules\Articles\Http\Resources\PostResource;
 use Modules\Articles\DTOs\PostCreateDTO;
 use Modules\Articles\DTOs\PostUpdateDTO;
@@ -82,22 +84,14 @@ class PostController extends Controller
         return response()->json(null, 204);
     }
 
-    public function uploadImage(Request $request): JsonResponse
+    public function uploadImage(UploadImageRequest $request): JsonResponse
     {
-        $request->validate([
-            'image' => ['required', 'image', 'max:5120'],
-        ]);
-
         $url = $this->postService->uploadImage($request->file('image'));
         return response()->json(['url' => $url], 200);
     }
 
-    public function deleteImage(Request $request): JsonResponse
+    public function deleteImage(DeleteImageRequest $request): JsonResponse
     {
-        $request->validate([
-            'url' => ['required', 'string'],
-        ]);
-
         $deleted = $this->postService->deleteImage($request->input('url'));
         
         return response()->json(['success' => $deleted], 200);
