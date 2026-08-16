@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, use } from 'react';
-import { useTagPosts } from '@/features/tags/hooks/useTagPosts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import TagHero from '@/features/tags/components/TagHero';
-import TagPostCard from '@/features/tags/components/TagPostCard';
-import TagsSidebar from '@/features/tags/components/TagsSidebar';
+import { TagHero, TagPostCard, useTagPosts } from '@/features/tags';
+import { useCategories } from '@/features/categories';
+import { usePopularTags } from '@/features/tags';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
 import Pagination from '@/shared/components/Pagination';
-import '@/styles/tags.css';
+import '@/styles/taxonomy.css';
 
 export default function TagPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -16,10 +16,11 @@ export default function TagPage({ params }: { params: Promise<{ slug: string }> 
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
 
-  const { data: categories } = useCategories();
-  const { data: popularTags } = usePopularTags();
-
+  const { categories: sidebarCategories } = useCategories();
+  const { data: popularTags = [] } = usePopularTags();
   const { data, isLoading, isError } = useTagPosts(slug, sort, page);
+
+  const newsletterState = useSubscribeNewsletter();
 
   if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
   if (isError || !data) return <div className="container py-5 text-center">Error loading tag.</div>;
@@ -28,7 +29,7 @@ export default function TagPage({ params }: { params: Promise<{ slug: string }> 
     <>
       <TagHero tag={data.tag} />
 
-      <section className="tags-grid-section section-padding">
+      <section className="taxonomy-section section-padding">
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
@@ -47,9 +48,8 @@ export default function TagPage({ params }: { params: Promise<{ slug: string }> 
                 </div>
               </div>
 
-              {/* Using a row g-4 to match the category grid structure, though TagPostCard will take full width */}
-              <div className="row g-4" id="postsGrid">
-                {data.posts.data.map((post: any) => (
+              <div className="row g-4">
+                {data.posts.data.map((post) => (
                   <div key={post.id} className="col-12">
                     <TagPostCard post={post} />
                   </div>
@@ -65,7 +65,10 @@ export default function TagPage({ params }: { params: Promise<{ slug: string }> 
               )}
             </div>
 
-            <TagsSidebar popularTags={popularTags || []} categories={categories || []} />
+            <aside className="col-lg-4">
+              <BlogSidebar categories={sidebarCategories} popularTags={popularTags} />
+              <NewsletterSidebar {...newsletterState} />
+            </aside>
           </div>
         </div>
       </section>

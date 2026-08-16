@@ -1,28 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import CategoryHero from '@/features/categories/components/CategoryHero';
-import CategoryPostCard from '@/features/categories/components/CategoryPostCard';
+import { useState, use } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { CategoryHero, CategoryPostCard, useCategoryPosts } from '@/features/categories';
+import { useCategories } from '@/features/categories';
+import { usePopularTags } from '@/features/tags';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
 import Pagination from '@/shared/components/Pagination';
-import { useCategoryPosts } from '@/features/categories/hooks/useCategoryPosts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import CategorySidebar from '@/features/categories/components/CategorySidebar';
-import '@/styles/category.css';
+import '@/styles/taxonomy.css';
 
-export default function CategorySlugPage() {
-  const params = useParams();
+export default function CategorySlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   const searchParams = useSearchParams();
-  const slug = params.slug as string;
   
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const [page, setPage] = useState(1);
 
-  const { data: categories } = useCategories();
-  const { data: popularTags } = usePopularTags();
-
+  const { categories: sidebarCategories } = useCategories();
+  const { data: popularTags = [] } = usePopularTags();
   const { data, isLoading, isError } = useCategoryPosts(slug, sort, page);
+  
+  const newsletterState = useSubscribeNewsletter();
 
   if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
   if (isError || !data) return <div className="container py-5 text-center">Error loading category.</div>;
@@ -36,7 +36,7 @@ export default function CategorySlugPage() {
         authorsCount={data.category.authors_count}
       />
 
-      <section className="category-posts section-padding">
+      <section className="taxonomy-section section-padding">
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
@@ -55,9 +55,11 @@ export default function CategorySlugPage() {
                 </div>
               </div>
 
-              <div className="row g-4" id="postsGrid">
+              <div className="row g-4">
                 {data.posts.data.map((post) => (
-                  <CategoryPostCard key={post.id} post={post} />
+                  <div key={post.id} className="col-md-6">
+                    <CategoryPostCard post={post} />
+                  </div>
                 ))}
               </div>
 
@@ -68,7 +70,10 @@ export default function CategorySlugPage() {
               />
             </div>
 
-            <CategorySidebar categories={categories || []} popularTags={popularTags || []} />
+            <aside className="col-lg-4">
+              <BlogSidebar categories={sidebarCategories} popularTags={popularTags} />
+              <NewsletterSidebar {...newsletterState} />
+            </aside>
           </div>
         </div>
       </section>

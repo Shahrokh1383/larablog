@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import type { Post } from '@/features/posts';
 
-interface TagPostCardProps { post: Post; }
+interface TagPostCardProps {
+  post: Post;
+}
 
 export default function TagPostCard({ post }: TagPostCardProps) {
   return (
