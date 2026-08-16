@@ -3,12 +3,12 @@
 namespace Modules\Articles\Services;
 
 use Modules\Articles\Models\Post;
-use Modules\Content\Models\Category;
-use Modules\Content\Models\Tag;
 use Modules\Articles\Actions\MapPostRelationsAction;
+use Modules\Articles\Services\Contracts\PostPublicContract;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
-class PostPublicService
+class PostPublicService implements PostPublicContract
 {
     public function __construct(
         private MapPostRelationsAction $mapPostRelations,
@@ -22,33 +22,27 @@ class PostPublicService
             ->paginate($perPage);
 
         $this->mapPostRelations->execute($posts);
-
         return $posts;
     }
 
-    public function getBySlug(string $slug): ?Post
+    public function getBySlug(string $slug): ?object
     {
         $post = Post::with(['category', 'tags'])
             ->where('slug', $slug)
             ->published()
             ->first();
 
-        if (!$post) {
-            return null;
-        }
+        if (!$post) return null;
 
         $post->increment('views');
         $this->mapPostRelations->execute([$post]);
-
         return $post;
     }
 
     public function getRelatedPosts(string $slug, int $limit = 3): array
     {
         $post = Post::where('slug', $slug)->published()->first();
-        if (!$post) {
-            return [];
-        }
+        if (!$post) return [];
 
         $related = Post::with(['category', 'tags'])
             ->published()
@@ -59,17 +53,15 @@ class PostPublicService
             ->get();
 
         $this->mapPostRelations->execute($related);
-
         return $related->all();
     }
 
-    public function getPostsByCategory(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    public function getPostsByCategory(string $categoryId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        $category = Category::where('slug', $categorySlug)->firstOrFail();
-
+        // Removed Category model import. We now query directly by ID.
         $query = Post::with(['category', 'tags'])
             ->published()
-            ->byCategory($category->id);
+            ->byCategory($categoryId);
 
         match ($sort) {
             'oldest'       => $query->oldest('updated_at'),
@@ -79,17 +71,15 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-
         return $posts;
     }
 
-    public function getPostsByTag(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    public function getPostsByTag(string $tagId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        $tag = Tag::where('slug', $tagSlug)->firstOrFail();
-
+        // Removed Tag model import. We now query directly by ID.
         $query = Post::with(['category', 'tags'])
             ->published()
-            ->whereHas('tags', fn($q) => $q->whereKey($tag->id));
+            ->whereHas('tags', fn($q) => $q->whereKey($tagId));
 
         match ($sort) {
             'oldest'       => $query->oldest('updated_at'),
@@ -99,7 +89,6 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-
         return $posts;
     }
 
@@ -119,7 +108,6 @@ class PostPublicService
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-
         return $posts;
     }
 
@@ -132,7 +120,37 @@ class PostPublicService
             ->paginate($perpage);
             
         $this->mapPostRelations->execute($posts);
-        
         return $posts;
+    }
+
+    public function getFeaturedPosts(int $limit = 4): Collection
+    {
+        $posts = Post::with(['category', 'tags'])
+            ->published()
+            ->where('is_editors_pick', true)
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
+            
+        $this->mapPostRelations->execute($posts);
+        return $posts;
+    }
+
+    public function getRecentPosts(int $limit = 6, array $excludeIds = []): Collection
+    {
+        $query = Post::with(['category', 'tags'])
+            ->published()
+            ->when(!empty($excludeIds), fn($q) => $q->whereNotIn('id', $excludeIds))
+            ->latest('published_at')
+            ->take($limit);
+            
+        $posts = $query->get();
+        $this->mapPostRelations->execute($posts);
+        return $posts;
+    }
+
+    public function getTotalPostsCount(): int
+    {
+        return Post::published()->count();
     }
 }

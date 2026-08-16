@@ -2,8 +2,9 @@
 
 return [
     'enabled' => [
-        \Modules\Content\ContentServiceProvider::class,
+        \Modules\Taxonomy\TaxonomyServiceProvider::class,
         \Modules\Articles\ArticlesServiceProvider::class,
+        \Modules\Home\HomeServiceProvider::class,
         \Modules\Identity\IdentityServiceProvider::class,
         \Modules\Administration\AdministrationServiceProvider::class,
         \Modules\Profile\ProfileServiceProvider::class,
