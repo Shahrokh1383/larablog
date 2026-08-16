@@ -1,25 +1,26 @@
 'use client';
 
-import CategoriesHero from '@/features/categories/components/CategoriesHero';
-import CategoryCard from '@/features/categories/components/CategoryCard';
-import CategorySidebar from '@/features/categories/components/CategorySidebar';
+import { CategoriesHero, CategoryCard, useCategoryList, useCategories } from '@/features/categories';
+import { usePopularTags } from '@/features/tags';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
 import Pagination from '@/shared/components/Pagination';
-import { useCategoryList, useCategories } from '@/features/categories/hooks/useCategories';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import '@/styles/category.css';
+import '@/styles/taxonomy.css';
 
 export default function CategoriesPage() {
   const { search, setSearch, page, setPage, categories, totalPages, isLoading, isError } = useCategoryList();
-  const { data: sidebarCategories } = useCategories();
-  const { data: popularTags } = usePopularTags();
-
-  const safePopularTags = Array.isArray(popularTags) ? popularTags : [];
+  const { categories: sidebarCategories } = useCategories();
+  const { data: popularTags = [] } = usePopularTags();
+  
+  // Hook lifted to orchestrator to obey Article V
+  const newsletterState = useSubscribeNewsletter();
 
   return (
     <>
       <CategoriesHero search={search} onSearchChange={setSearch} />
 
-      <section className="category-posts section-padding">
+      <section className="taxonomy-section section-padding">
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
@@ -36,13 +37,14 @@ export default function CategoriesPage() {
                 <div className="text-center mt-4">
                   <i className="fa-sharp fa-solid fa-circle-exclamation fa-2x text-muted mb-3"></i>
                   <h5>No categories found</h5>
-                  <p className="text-muted">Try a different search term.</p>
                 </div>
               ) : (
                 <>
-                  <div className="row g-4" id="categoriesGrid">
+                  <div className="row g-4">
                     {categories.map((cat) => (
-                      <CategoryCard key={cat.id} category={cat} />
+                      <div key={cat.id} className="col-md-4 col-6">
+                        <CategoryCard category={cat} />
+                      </div>
                     ))}
                   </div>
                   <Pagination currentPage={page} lastPage={totalPages} onPageChange={setPage} />
@@ -50,8 +52,10 @@ export default function CategoriesPage() {
               )}
             </div>
 
-            {/* Pass showCategories={false} here */}
-            <CategorySidebar categories={sidebarCategories || []} popularTags={safePopularTags} showCategories={false} />
+            <aside className="col-lg-4">
+              <BlogSidebar categories={sidebarCategories} popularTags={popularTags} />
+              <NewsletterSidebar {...newsletterState} />
+            </aside>
           </div>
         </div>
       </section>

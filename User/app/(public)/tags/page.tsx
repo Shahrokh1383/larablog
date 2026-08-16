@@ -1,27 +1,26 @@
 'use client';
 
-import TagsHero from '@/features/tags/components/TagsHero';
-import TagCard from '@/features/tags/components/TagCard';
-import TagsSidebar from '@/features/tags/components/TagsSidebar';
+import { TagsHero, TagCard, useTags } from '@/features/tags';
+import { usePopularTags } from '@/features/tags';
+import { useCategories } from '@/features/categories';
+import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
 import Pagination from '@/shared/components/Pagination';
-import { useTags } from '@/features/tags/hooks/useTags';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import '@/styles/tags.css';
+import '@/styles/taxonomy.css';
 
 export default function TagsPage() {
   const { search, setSearch, page, setPage, tags, totalPages, isLoading, isError } = useTags();
-  const { data: popularTags } = usePopularTags();
-  const { data: categories } = useCategories(); // Fetch real categories
-
-  const safePopularTags = Array.isArray(popularTags) ? popularTags : [];
-  const safeCategories = Array.isArray(categories) ? categories : [];
+  const { data: popularTags = [] } = usePopularTags();
+  const { categories: sidebarCategories } = useCategories();
+  
+  const newsletterState = useSubscribeNewsletter();
 
   return (
     <>
       <TagsHero search={search} onSearchChange={setSearch} />
 
-      <section className="tags-grid-section section-padding">
+      <section className="taxonomy-section section-padding">
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
@@ -35,16 +34,17 @@ export default function TagsPage() {
               ) : isError ? (
                 <div className="text-center text-danger py-5">Failed to load tags.</div>
               ) : tags.length === 0 ? (
-                <div id="noTagsFound" className="text-center mt-4">
+                <div className="text-center mt-4">
                   <i className="fa-sharp fa-solid fa-circle-exclamation fa-2x text-muted mb-3"></i>
                   <h5>No tags found</h5>
-                  <p className="text-muted">Try a different search term.</p>
                 </div>
               ) : (
                 <>
-                  <div className="row g-4" id="tagsGrid">
+                  <div className="row g-4">
                     {tags.map((tag) => (
-                      <TagCard key={tag.id} tag={tag} />
+                      <div key={tag.id} className="col-md-4 col-6">
+                        <TagCard tag={tag} />
+                      </div>
                     ))}
                   </div>
                   <Pagination currentPage={page} lastPage={totalPages} onPageChange={setPage} />
@@ -52,8 +52,10 @@ export default function TagsPage() {
               )}
             </div>
 
-            {/* Pass real categories here */}
-            <TagsSidebar popularTags={safePopularTags} categories={safeCategories} />
+            <aside className="col-lg-4">
+              <BlogSidebar categories={sidebarCategories} popularTags={popularTags} />
+              <NewsletterSidebar {...newsletterState} />
+            </aside>
           </div>
         </div>
       </section>
