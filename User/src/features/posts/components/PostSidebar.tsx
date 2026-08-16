@@ -1,14 +1,16 @@
 import Link from 'next/link';
 import { Author, Category, Post } from '../types/post';
 import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
-import { UseMutationResult } from '@tanstack/react-query';
 
-// Define the expected shape of the newsletter mutation state for strict typing
-interface NewsletterStateShape {
-  mutate: UseMutationResult<any, Error, string>['mutate'];
+// Fixed: Interface exactly matches the object returned by useSubscribeNewsletter()
+export interface NewsletterStateShape {
+  email: string;
+  onEmailChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
   isPending: boolean;
   isSuccess: boolean;
   isError: boolean;
+  message?: string;
 }
 
 interface PostSidebarProps {
@@ -19,9 +21,6 @@ interface PostSidebarProps {
 }
 
 export default function PostSidebar({ author, relatedPosts, categories, newsletterState }: PostSidebarProps) {
-  // Removed: const newsletterState = useSubscribeNewsletter();
-  // Component is now a pure presentation component (Constitution Article V)
-
   return (
     <aside className="col-lg-4">
       <div className="sidebar">
@@ -68,7 +67,6 @@ export default function PostSidebar({ author, relatedPosts, categories, newslett
           </div>
         </div>
 
-        {/* Newsletter */}
         <NewsletterSidebar {...newsletterState} />
       </div>
     </aside>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-// Using public barrel exports (Article V)
 import { usePost, useRelatedPosts } from '@/features/posts';
 import { useCategories } from '@/features/categories/hooks/useCategories';
 import { useComments } from '@/features/comments/hooks/useComments';
@@ -9,8 +8,17 @@ import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies
 import CommentsSection from '@/features/comments/components/CommentsSection';
 import { useTrackPostRead } from '@/features/reader/hooks/useTrackPostRead';
 import { useToggleSavedPost } from '@/features/reader/hooks/useToggleSavedPost';
+import SavePostButton from '@/features/reader/components/SavePostButton';
 import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
-import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+
+// Component imports
+import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
+import PostHeader from '@/features/posts/components/PostHeader';
+import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
+import PostBody from '@/features/posts/components/PostBody';
+import PostTags from '@/features/posts/components/PostTags';
+import AuthorBioCard from '@/features/posts/components/AuthorBioCard';
+import PostSidebar from '@/features/posts/components/PostSidebar';
 
 export default function PostPage() {
   const params = useParams();
@@ -27,7 +35,7 @@ export default function PostPage() {
   useTrackPostRead(post?.id);
   const toggleSaveMutation = useToggleSavedPost(post?.id || '', slug);
   
-  // Newsletter Hook moved here to respect Article V (Strict Layering)
+  // Newsletter Hook at the page level (Article V compliance)
   const newsletterState = useSubscribeNewsletter();
 
   if (isLoading) {
@@ -71,7 +79,7 @@ export default function PostPage() {
             />
           </div>
 
-          {/* Pass newsletter state as props to maintain pure presentation components */}
+          {/* Spread the exact state shape returned by the hook */}
           <PostSidebar 
             author={post.author} 
             relatedPosts={relatedPosts} 
@@ -83,12 +91,3 @@ export default function PostPage() {
     </main>
   );
 }
-
-import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
-import PostHeader from '@/features/posts/components/PostHeader';
-import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
-import PostBody from '@/features/posts/components/PostBody';
-import PostTags from '@/features/posts/components/PostTags';
-import AuthorBioCard from '@/features/posts/components/AuthorBioCard';
-import PostSidebar from '@/features/posts/components/PostSidebar';
-import SavePostButton from '@/features/reader/components/SavePostButton';
