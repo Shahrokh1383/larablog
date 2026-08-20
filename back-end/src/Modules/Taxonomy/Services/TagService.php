@@ -60,4 +60,22 @@ class TagService
     {
         $tag->delete();
     }
+
+    public function getByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return Tag::whereIn('id', $ids)
+            ->get(['id', 'name', 'slug'])
+            ->mapWithKeys(fn($tag) => [
+                $tag->id => [
+                    'id'   => $tag->id,
+                    'name' => $tag->name,
+                    'slug' => $tag->slug,
+                ]
+            ])
+            ->toArray();
+    }
 }

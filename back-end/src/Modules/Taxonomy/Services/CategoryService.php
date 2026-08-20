@@ -60,4 +60,22 @@ class CategoryService
     {
         $category->delete();
     }
+
+    public function getByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return Category::whereIn('id', $ids)
+            ->get(['id', 'name', 'slug'])
+            ->mapWithKeys(fn($cat) => [
+                $cat->id => [
+                    'id'   => $cat->id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                ]
+            ])
+            ->toArray();
+    }
 }
