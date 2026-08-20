@@ -1,11 +1,10 @@
 interface CategoryHeroProps {
   name: string;
-  description?: string;
   postsCount: number;
   authorsCount: number;
 }
 
-export default function CategoryHero({ name, description, postsCount, authorsCount }: CategoryHeroProps) {
+export default function CategoryHero({ name, postsCount, authorsCount }: CategoryHeroProps) {
   return (
     <section className="taxonomy-hero">
       <div className="hero-bg-shapes">
@@ -17,7 +16,9 @@ export default function CategoryHero({ name, description, postsCount, authorsCou
         <div className="taxonomy-hero-content">
           <span className="taxonomy-hero-icon"><i className="fa-sharp fa-solid fa-code"></i></span>
           <h1 className="taxonomy-hero-title">{name}</h1>
-          <p className="taxonomy-hero-desc">{description || `Explore the latest articles, tutorials, and insights on ${name}.`}</p>
+          <p className="taxonomy-hero-desc">
+            Explore the latest articles, tutorials, and insights on {name}.
+          </p>
           <div className="taxonomy-hero-meta">
             <span><i className="fa-sharp fa-solid fa-file-lines"></i> {postsCount} Articles</span>
             <span><i className="fa-sharp fa-solid fa-users"></i> {authorsCount} Authors</span>

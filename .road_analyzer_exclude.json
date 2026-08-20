@@ -50,13 +50,32 @@
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\database",
-    "User",
-    "Admin"
+    "Admin",
+    "back-end\\src\\Modules\\Articles",
+    "User\\app\\(dashboard)",
+    "User\\app\\(auth)",
+    "User\\src\\styles",
+    "User\\src\\features\\terms",
+    "User\\src\\features\\search",
+    "User\\src\\features\\reader",
+    "User\\src\\features\\profile",
+    "User\\src\\features\\privacy",
+    "User\\src\\features\\posts",
+    "User\\src\\features\\notifications",
+    "User\\src\\features\\newsletter",
+    "User\\src\\features\\home",
+    "User\\src\\features\\dashboard",
+    "User\\src\\features\\contact",
+    "User\\src\\features\\comments",
+    "User\\src\\features\\authors",
+    "User\\src\\features\\auth",
+    "User\\src\\features\\about",
+    "User"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T16:08:48.933Z",
+  "lastModified": "2026-08-20T19:39:49.651Z",
   "version": 1
 }
