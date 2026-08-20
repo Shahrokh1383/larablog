@@ -3,28 +3,30 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class TagService
 {
     public function __construct(
-        private GenerateSlugAction $generateSlugAction
+        private GenerateSlugAction $generateSlugAction,
+        private PostAdminServiceInterface $postAdminService
     ) {}
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        $postsCountSubQuery = DB::table('content_post_tag')
-            ->selectRaw('count(*)')
-            ->whereColumn('content_post_tag.tag_id', 'content_tags.id');
+        $tags = Tag::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+        $tagIds = $tags->pluck('id')->toArray();
 
-        return Tag::select('content_tags.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-            ])
-            ->orderBy('name')
-            ->paginate($perPage, ['*'], 'page', $page);
+        // Fetch total counts (including unpublished) strictly via Admin Contract
+        $counts = $this->postAdminService->getTotalPostCountsByTags($tagIds);
+
+        $tags->each(function ($tag) use ($counts) {
+            $tag->posts_count = $counts[$tag->id] ?? 0;
+        });
+
+        return $tags;
     }
 
     public function create(string $name): Tag

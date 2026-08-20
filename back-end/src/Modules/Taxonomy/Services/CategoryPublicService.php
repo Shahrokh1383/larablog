@@ -4,51 +4,43 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\Services\Contracts\CategoryPublicServiceInterface;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class CategoryPublicService implements CategoryPublicServiceInterface
 {
+    public function __construct(
+        private PostPublicServiceInterface $postPublicService
+    ) {}
+
     public function getPublicCategories(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
-        $postsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(*)')
-            ->whereColumn('category_id', 'content_categories.id')
-            ->where('is_published', true);
+        $categories = Category::search($search)->paginate($perPage);
+        $categoryIds = $categories->pluck('id')->toArray();
 
-        $authorsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(distinct user_id)')
-            ->whereColumn('category_id', 'content_categories.id')
-            ->where('is_published', true);
+        // Fetch aggregates strictly via Contract (Map Pattern)
+        $postCounts = $this->postPublicService->getPublishedPostCountsByCategories($categoryIds);
+        $authorCounts = $this->postPublicService->getDistinctAuthorCountsByCategories($categoryIds);
 
-        return Category::select('content_categories.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-                'authors_count' => $authorsCountSubQuery,
-            ])
-            ->search($search)
-            ->paginate($perPage);
+        $categories->each(function ($category) use ($postCounts, $authorCounts) {
+            $category->posts_count = $postCounts[$category->id] ?? 0;
+            $category->authors_count = $authorCounts[$category->id] ?? 0;
+        });
+
+        return $categories;
     }
 
     public function getPublicCategoryBySlug(string $slug): Category
     {
-        $postsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(*)')
-            ->whereColumn('category_id', 'content_categories.id')
-            ->where('is_published', true);
+        $category = Category::where('slug', $slug)->firstOrFail();
+        
+        $postCounts = $this->postPublicService->getPublishedPostCountsByCategories([$category->id]);
+        $authorCounts = $this->postPublicService->getDistinctAuthorCountsByCategories([$category->id]);
 
-        $authorsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(distinct user_id)')
-            ->whereColumn('category_id', 'content_categories.id')
-            ->where('is_published', true);
+        $category->posts_count = $postCounts[$category->id] ?? 0;
+        $category->authors_count = $authorCounts[$category->id] ?? 0;
 
-        return Category::select('content_categories.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-                'authors_count' => $authorsCountSubQuery,
-            ])
-            ->where('slug', $slug)
-            ->firstOrFail();
+        return $category;
     }
 
     public function getCategoryIdBySlug(string $slug): string
@@ -58,25 +50,29 @@ class CategoryPublicService implements CategoryPublicServiceInterface
 
     public function getPopularCategories(int $limit): array
     {
-        $postsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(*)')
-            ->whereColumn('category_id', 'content_categories.id')
-            ->where('is_published', true);
+        // 1. Ask Articles for the top category IDs and their counts
+        $stats = $this->postPublicService->getPopularCategoryStats($limit);
+        if (empty($stats)) return [];
 
-        return Category::select('content_categories.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-            ])
-            ->orderByDesc('posts_count')
-            ->take($limit)
-            ->get()
-            ->map(fn(Category $category) => [
-                'id'          => $category->id,
-                'name'        => $category->name,
-                'slug'        => $category->slug,
-                'posts_count' => (int) $category->posts_count,
-            ])
-            ->toArray();
+        // 2. Fetch the actual Category models by those IDs
+        $categoryIds = array_column($stats, 'category_id');
+        $categories = Category::whereIn('id', $categoryIds)->get()->keyBy('id');
+
+        // 3. Map and preserve the exact order returned by Articles
+        $result = [];
+        foreach ($stats as $stat) {
+            $category = $categories[$stat['category_id']] ?? null;
+            if ($category) {
+                $result[] = [
+                    'id'          => $category->id,
+                    'name'        => $category->name,
+                    'slug'        => $category->slug,
+                    'posts_count' => (int) $stat['posts_count'],
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public function getCategoryStats(): array

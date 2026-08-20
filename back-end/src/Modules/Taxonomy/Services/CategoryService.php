@@ -3,28 +3,30 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class CategoryService
 {
     public function __construct(
-        private GenerateSlugAction $generateSlugAction
+        private GenerateSlugAction $generateSlugAction,
+        private PostAdminServiceInterface $postAdminService
     ) {}
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        $postsCountSubQuery = DB::table('content_posts')
-            ->selectRaw('count(*)')
-            ->whereColumn('category_id', 'content_categories.id');
+        $categories = Category::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
+        $categoryIds = $categories->pluck('id')->toArray();
 
-        return Category::select('content_categories.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-            ])
-            ->orderBy('name')
-            ->paginate($perPage, ['*'], 'page', $page);
+        // Fetch total counts (including unpublished) strictly via Admin Contract
+        $counts = $this->postAdminService->getTotalPostCountsByCategories($categoryIds);
+
+        $categories->each(function ($category) use ($counts) {
+            $category->posts_count = $counts[$category->id] ?? 0;
+        });
+
+        return $categories;
     }
 
     public function create(string $name): Category

@@ -4,85 +4,65 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
 use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 
 class TagPublicService implements TagPublicServiceInterface
 {
+    public function __construct(
+        private PostPublicServiceInterface $postPublicService
+    ) {}
+
     public function getPublicTags(?string $search = null, int $perPage = 12): LengthAwarePaginator
     {
-        $postsCountSubQuery = DB::table('content_post_tag')
-            ->selectRaw('count(*)')
-            ->whereColumn('content_post_tag.tag_id', 'content_tags.id')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('content_posts')
-                    ->whereColumn('content_posts.id', 'content_post_tag.post_id')
-                    ->where('content_posts.is_published', true);
-            });
+        $tags = Tag::search($search)->paginate($perPage);
+        $tagIds = $tags->pluck('id')->toArray();
 
-        return Tag::select('content_tags.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-            ])
-            ->search($search)
-            ->paginate($perPage);
+        $postCounts = $this->postPublicService->getPublishedPostCountsByTags($tagIds);
+
+        $tags->each(function ($tag) use ($postCounts) {
+            $tag->posts_count = $postCounts[$tag->id] ?? 0;
+        });
+
+        return $tags;
     }
 
     public function getPopularTags(int $limit = 10): array
     {
-        $postsCountSubQuery = DB::table('content_post_tag')
-            ->selectRaw('count(*)')
-            ->whereColumn('content_post_tag.tag_id', 'content_tags.id')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('content_posts')
-                    ->whereColumn('content_posts.id', 'content_post_tag.post_id')
-                    ->where('content_posts.is_published', true);
-            });
+        // 1. Ask Articles for the top tag IDs, post counts, and view sums
+        $stats = $this->postPublicService->getPopularTagStats($limit);
+        if (empty($stats)) return [];
 
-        $totalViewsSubQuery = DB::table('content_post_tag')
-            ->join('content_posts', 'content_posts.id', '=', 'content_post_tag.post_id')
-            ->whereColumn('content_post_tag.tag_id', 'content_tags.id')
-            ->where('content_posts.is_published', true)
-            ->selectRaw('COALESCE(sum(content_posts.views), 0)');
+        // 2. Fetch the actual Tag models by those IDs
+        $tagIds = array_column($stats, 'tag_id');
+        $tags = Tag::whereIn('id', $tagIds)->get()->keyBy('id');
 
-        return Tag::select('content_tags.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-                'total_views' => $totalViewsSubQuery,
-            ])
-            ->orderByDesc('total_views')
-            ->take($limit)
-            ->get()
-            ->map(fn(Tag $tag) => [
-                'id'          => $tag->id,
-                'name'        => $tag->name,
-                'slug'        => $tag->slug,
-                'posts_count' => (int) $tag->posts_count,
-                'total_views' => (int) $tag->total_views,
-            ])
-            ->toArray();
+        // 3. Map and preserve the exact order returned by Articles
+        $result = [];
+        foreach ($stats as $stat) {
+            $tag = $tags[$stat['tag_id']] ?? null;
+            if ($tag) {
+                $result[] = [
+                    'id'          => $tag->id,
+                    'name'        => $tag->name,
+                    'slug'        => $tag->slug,
+                    'posts_count' => (int) $stat['posts_count'],
+                    'total_views' => (int) $stat['total_views'],
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public function getPublicTagBySlug(string $slug): Tag
     {
-        $postsCountSubQuery = DB::table('content_post_tag')
-            ->selectRaw('count(*)')
-            ->whereColumn('content_post_tag.tag_id', 'content_tags.id')
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('content_posts')
-                    ->whereColumn('content_posts.id', 'content_post_tag.post_id')
-                    ->where('content_posts.is_published', true);
-            });
+        $tag = Tag::where('slug', $slug)->firstOrFail();
+        
+        $postCounts = $this->postPublicService->getPublishedPostCountsByTags([$tag->id]);
+        $tag->posts_count = $postCounts[$tag->id] ?? 0;
 
-        return Tag::select('content_tags.*')
-            ->addSelect([
-                'posts_count' => $postsCountSubQuery,
-            ])
-            ->where('slug', $slug)
-            ->firstOrFail();
+        return $tag;
     }
 
     public function getTagIdBySlug(string $slug): string
@@ -92,8 +72,6 @@ class TagPublicService implements TagPublicServiceInterface
 
     public function getPopularTagsAsArray(int $limit = 10): array
     {
-        // Simplified to directly return the array from getPopularTags,
-        // eliminating redundant mapping logic (Dead Code Removal).
         return $this->getPopularTags($limit);
     }
 

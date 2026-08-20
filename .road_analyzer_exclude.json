@@ -51,13 +51,12 @@
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\database",
     "User",
-    "Admin",
-    "back-end\\src\\Modules\\Taxonomy"
+    "Admin"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T15:25:54.635Z",
+  "lastModified": "2026-08-20T16:08:48.933Z",
   "version": 1
 }
