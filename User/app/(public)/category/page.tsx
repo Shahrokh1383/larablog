@@ -7,21 +7,35 @@ export const metadata = {
   description: 'Browse all article categories and find exactly what you are looking for.',
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  'name': 'All Categories',
+  'description': 'Browse all article categories and find exactly what you are looking for.',
+  'url': '/category',
+};
+
 export default function CategoriesPage() {
   return (
-    <section className="taxonomy-section section-padding">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-8">
-            <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary"></div></div>}>
-              <CategoriesClientView />
-            </Suspense>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <section className="taxonomy-section section-padding">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8">
+              <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary"></div></div>}>
+                <CategoriesClientView />
+              </Suspense>
+            </div>
+            <aside className="col-lg-4">
+              <BlogSidebar />
+            </aside>
           </div>
-          <aside className="col-lg-4">
-            <BlogSidebar />
-          </aside>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

@@ -1,30 +1,28 @@
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { tagsApi } from '../api/tagsApi';
-import { useDebounce } from '@/shared/hooks/useDebounce';
+import type { PaginatedResponse } from '@/shared/types/api';
+import type { Tag } from '../types/tag';
 
 export const tagKeys = {
   all: ['tags'] as const,
   lists: () => [...tagKeys.all, 'list'] as const,
-  list: (filters: { search?: string; page?: number }) => [...tagKeys.lists(), filters] as const,
+  list: (filters: { search?: string; page?: number; per_page?: number }) => [...tagKeys.lists(), filters] as const,
   popular: () => [...tagKeys.all, 'popular'] as const,
 };
 
-export function useTags() {
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
-  const debouncedSearch = useDebounce(search, 300);
+interface UseTagsOptions {
+  search?: string;
+  page?: number;
+  per_page?: number;
+}
 
-  const query = useQuery({
-    queryKey: tagKeys.list({ search: debouncedSearch, page }),
-    queryFn: () => tagsApi.getAll({ search: debouncedSearch, page, per_page: 12 }),
+export function useTags(options: UseTagsOptions = {}) {
+  const { search, page = 1, per_page = 12 } = options;
+
+  return useQuery<PaginatedResponse<Tag>>({
+    queryKey: tagKeys.list({ search, page, per_page }),
+    queryFn: () => tagsApi.getAll({ search, page, per_page }),
+    enabled: per_page > 0,
     placeholderData: (previousData) => previousData,
   });
-
-  return {
-    search, setSearch, page, setPage,
-    tags: query.data?.data || [],
-    totalPages: query.data?.meta?.last_page || 1,
-    isLoading: query.isLoading, isError: query.isError,
-  };
 }
