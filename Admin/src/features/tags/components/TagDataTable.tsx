@@ -4,13 +4,32 @@ interface TagDataTableProps {
   tags: Tag[];
   isLoading: boolean;
   isError: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
   onEdit: (tag: Tag) => void;
   onDelete: (tag: Tag) => void;
 }
 
-export default function TagDataTable({ tags, isLoading, isError, onEdit, onDelete }: TagDataTableProps) {
-  if (isLoading) return <div className="text-center py-5"><div className="spinner-border" /></div>;
-  if (isError) return <div className="alert alert-danger m-4">Failed to load tags.</div>;
+export default function TagDataTable({
+  tags,
+  isLoading,
+  isError,
+  canEdit,
+  canDelete,
+  onEdit,
+  onDelete,
+}: TagDataTableProps) {
+  if (isLoading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div className="alert alert-danger m-4">Failed to load tags.</div>;
+  }
 
   if (tags.length === 0) {
     return (
@@ -30,7 +49,7 @@ export default function TagDataTable({ tags, isLoading, isError, onEdit, onDelet
             <th>Slug</th>
             <th>Posts</th>
             <th>Created</th>
-            <th className="text-end">Actions</th>
+            {(canEdit || canDelete) && <th className="text-end">Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -42,14 +61,28 @@ export default function TagDataTable({ tags, isLoading, isError, onEdit, onDelet
                 <span className="badge bg-info text-dark">{tag.posts_count ?? 0}</span>
               </td>
               <td>{new Date(tag.created_at).toLocaleDateString()}</td>
-              <td className="text-end">
-                <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => onEdit(tag)}>
-                  <i className="fas fa-pen"></i>
-                </button>
-                <button className="btn btn-sm btn-outline-danger" onClick={() => onDelete(tag)}>
-                  <i className="fas fa-trash"></i>
-                </button>
-              </td>
+              {(canEdit || canDelete) && (
+                <td className="text-end">
+                  {canEdit && (
+                    <button
+                      className="btn btn-sm btn-outline-secondary me-1"
+                      onClick={() => onEdit(tag)}
+                      title="Edit tag"
+                    >
+                      <i className="fas fa-pen"></i>
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => onDelete(tag)}
+                      title="Delete tag"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

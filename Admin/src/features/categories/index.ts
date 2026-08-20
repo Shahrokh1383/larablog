@@ -1,6 +1,5 @@
 export { useCategories } from './hooks/useCategories';
 export { useCategoryMutations } from './hooks/useCategoryMutations';
-export { useCategoryManager } from './hooks/useCategoryManager';
 export { default as CategoryDataTable } from './components/CategoryDataTable';
 export type { Category, CategoryFormData } from './types/category';
 

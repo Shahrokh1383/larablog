@@ -4,6 +4,8 @@ interface CategoryDataTableProps {
   categories: Category[];
   isLoading: boolean;
   isError: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
   onEdit: (cat: Category) => void;
   onDelete: (cat: Category) => void;
 }
@@ -12,11 +14,22 @@ export default function CategoryDataTable({
   categories,
   isLoading,
   isError,
+  canEdit,
+  canDelete,
   onEdit,
   onDelete,
 }: CategoryDataTableProps) {
-  if (isLoading) return <div className="text-center py-5"><div className="spinner-border" /></div>;
-  if (isError) return <div className="alert alert-danger m-4">Failed to load categories.</div>;
+  if (isLoading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div className="alert alert-danger m-4">Failed to load categories.</div>;
+  }
 
   if (categories.length === 0) {
     return (
@@ -36,7 +49,7 @@ export default function CategoryDataTable({
             <th>Slug</th>
             <th>Posts</th>
             <th>Created</th>
-            <th className="text-end">Actions</th>
+            {(canEdit || canDelete) && <th className="text-end">Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -48,24 +61,29 @@ export default function CategoryDataTable({
                 <span className="badge bg-info text-dark">{cat.posts_count ?? 0}</span>
               </td>
               <td>{new Date(cat.created_at).toLocaleDateString()}</td>
-              <td className="text-end">
-                <button
-                  className="btn btn-sm btn-outline-secondary me-1"
-                  onClick={() => onEdit(cat)}
-                >
-                  <i className="fas fa-pen"></i>
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => onDelete(cat)}
-                >
-                  <i className="fas fa-trash"></i>
-                </button>
-              </td>
+              {(canEdit || canDelete) && (
+                <td className="text-end">
+                  {canEdit && (
+                    <button
+                      className="btn btn-sm btn-outline-secondary me-1"
+                      onClick={() => onEdit(cat)}
+                      title="Edit category"
+                    >
+                      <i className="fas fa-pen"></i>
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => onDelete(cat)}
+                      title="Delete category"
+                    >
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
-    </div>
-  );
-}
