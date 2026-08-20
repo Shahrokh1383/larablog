@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Modules\Identity\Models\User as IdentityUser;
 use Shared\Models\User as SharedUser;
@@ -18,11 +21,6 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register($provider);
         }
 
-        if ($this->app->environment('testing')) {
-            $this->app->singleton(\Tests\Support\SmtpSinkService::class, function () {
-                return new \Tests\Support\SmtpSinkService();
-            });
-        }
     }
 
     public function boot(): void
@@ -38,5 +36,9 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             SharedUser::class => IdentityUser::class,
         ]);
+
+        RateLimiter::for('public-taxonomy', function (Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
     }
 }
