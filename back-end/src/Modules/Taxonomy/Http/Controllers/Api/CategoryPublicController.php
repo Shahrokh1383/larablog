@@ -7,7 +7,6 @@ use Modules\Taxonomy\Services\CategoryPublicService;
 use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
 use Modules\Taxonomy\Http\Requests\IndexCategoryPublicRequest;
 use Modules\Taxonomy\Http\Requests\ShowCategoryPostsRequest;
-use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Routing\Controller;
 
@@ -31,8 +30,7 @@ class CategoryPublicController extends Controller
     public function posts(string $slug, ShowCategoryPostsRequest $request): JsonResponse
     {
         $category = $this->categoryPublicService->getPublicCategoryBySlug($slug);
-
-        $posts = $this->postPublicService->getPostsByCategoryForPublic(
+        $posts = $this->postPublicService->getPublishedPostsByCategoryForPublic(
             categorySlug: $slug,
             sort: $request->validated('sort', 'newest'),
             perPage: $request->validated('per_page', 10)
@@ -40,7 +38,7 @@ class CategoryPublicController extends Controller
 
         return response()->json([
             'category' => new CategoryPublicResource($category),
-            'posts'    => PostPublicResource::collection($posts)->response()->getData(true),
+            'posts'    => $posts,
         ]);
     }
 }

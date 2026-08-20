@@ -8,7 +8,6 @@ use Modules\Taxonomy\Http\Resources\TagPublicResource;
 use Modules\Taxonomy\Http\Requests\IndexTagPublicRequest;
 use Modules\Taxonomy\Http\Requests\ShowTagPostsRequest;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
-use Modules\Articles\Http\Resources\PostPublicResource;
 use Illuminate\Routing\Controller;
 
 class TagPublicController extends Controller
@@ -32,14 +31,15 @@ class TagPublicController extends Controller
     {
         $tags = $this->tagPublicService->getPopularTags();
 
-        return TagPublicResource::collection($tags)->response();
+        return response()->json([
+            'data' => $tags,
+        ]);
     }
 
     public function posts(string $slug, ShowTagPostsRequest $request): JsonResponse
     {
         $tag = $this->tagPublicService->getPublicTagBySlug($slug);
-
-        $posts = $this->postPublicService->getPostsByTagForPublic(
+        $posts = $this->postPublicService->getPublishedPostsByTagForPublic(
             tagSlug: $slug,
             sort: $request->validated('sort', 'newest'),
             perPage: $request->validated('per_page', 10)
@@ -47,7 +47,7 @@ class TagPublicController extends Controller
 
         return response()->json([
             'tag'   => new TagPublicResource($tag),
-            'posts' => PostPublicResource::collection($posts)->response()->getData(true),
+            'posts' => $posts,
         ]);
     }
 }
