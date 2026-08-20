@@ -15,19 +15,6 @@ class CategoryPublicResource extends JsonResource
             'slug'          => $this->slug,
             'posts_count'   => $this->whenNotNull($this->posts_count),
             'authors_count' => $this->whenNotNull($this->authors_count),
-            'posts'         => $this->whenLoaded('posts', function () {
-                return $this->posts->map(fn($post) => [
-                    'id'             => $post->id,
-                    'title'          => $post->title,
-                    'slug'           => $post->slug,
-                    'excerpt'        => $post->excerpt,
-                    'featured_image' => $post->featured_image,
-                    'reading_time'   => $post->reading_time,
-                    'views'          => $post->views,
-                    'comments_count' => $post->comments_count ?? 0,
-                    'published_at'   => $post->published_at,
-                ])->values();
-            }),
         ];
     }
 }

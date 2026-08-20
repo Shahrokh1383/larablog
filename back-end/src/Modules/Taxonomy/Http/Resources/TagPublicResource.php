@@ -13,7 +13,7 @@ class TagPublicResource extends JsonResource
             'name'           => $this->name,
             'slug'           => $this->slug,
             'posts_count'    => $this->whenNotNull($this->posts_count),
-            'total_views'    => $this->whenNotNull($this->posts_sum_views), // For popular tags
+            'total_views'    => $this->whenNotNull($this->total_views),
         ];
     }
 }

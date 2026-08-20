@@ -11,22 +11,43 @@ class CategoryPublicService implements CategoryPublicServiceInterface
 {
     public function getPublicCategories(?string $search = null, int $perPage = 10): LengthAwarePaginator
     {
-        return Category::search($search)
-            ->withCount([
-                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true),
-                'posts as authors_count' => fn($q) => $q->where('content_posts.is_published', true)->select(DB::raw('count(distinct user_id)'))
+        $postsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(*)')
+            ->whereColumn('category_id', 'content_categories.id')
+            ->where('is_published', true);
+
+        $authorsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(distinct user_id)')
+            ->whereColumn('category_id', 'content_categories.id')
+            ->where('is_published', true);
+
+        return Category::select('content_categories.*')
+            ->addSelect([
+                'posts_count' => $postsCountSubQuery,
+                'authors_count' => $authorsCountSubQuery,
             ])
-            ->with(['posts' => fn($q) => $q->where('content_posts.is_published', true)->latest('published_at')->take(4)])
+            ->search($search)
             ->paginate($perPage);
     }
 
     public function getPublicCategoryBySlug(string $slug): Category
     {
-        return Category::where('slug', $slug)
-            ->withCount([
-                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true),
-                'posts as authors_count' => fn($q) => $q->where('content_posts.is_published', true)->select(DB::raw('count(distinct user_id)'))
+        $postsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(*)')
+            ->whereColumn('category_id', 'content_categories.id')
+            ->where('is_published', true);
+
+        $authorsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(distinct user_id)')
+            ->whereColumn('category_id', 'content_categories.id')
+            ->where('is_published', true);
+
+        return Category::select('content_categories.*')
+            ->addSelect([
+                'posts_count' => $postsCountSubQuery,
+                'authors_count' => $authorsCountSubQuery,
             ])
+            ->where('slug', $slug)
             ->firstOrFail();
     }
 
@@ -37,8 +58,14 @@ class CategoryPublicService implements CategoryPublicServiceInterface
 
     public function getPopularCategories(int $limit): array
     {
-        return Category::withCount([
-                'posts as posts_count' => fn($q) => $q->where('content_posts.is_published', true)
+        $postsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(*)')
+            ->whereColumn('category_id', 'content_categories.id')
+            ->where('is_published', true);
+
+        return Category::select('content_categories.*')
+            ->addSelect([
+                'posts_count' => $postsCountSubQuery,
             ])
             ->orderByDesc('posts_count')
             ->take($limit)
