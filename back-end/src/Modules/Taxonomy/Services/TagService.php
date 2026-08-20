@@ -19,7 +19,6 @@ class TagService
         $tags = Tag::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
         $tagIds = $tags->pluck('id')->toArray();
 
-        // Fetch total counts (including unpublished) strictly via Admin Contract
         $counts = $this->postAdminService->getTotalPostCountsByTags($tagIds);
 
         $tags->each(function ($tag) use ($counts) {
@@ -27,6 +26,14 @@ class TagService
         });
 
         return $tags;
+    }
+
+    public function getWithStats(Tag $tag): Tag
+    {
+        $counts = $this->postAdminService->getTotalPostCountsByTags([$tag->id]);
+        $tag->posts_count = $counts[$tag->id] ?? 0;
+
+        return $tag;
     }
 
     public function create(string $name): Tag

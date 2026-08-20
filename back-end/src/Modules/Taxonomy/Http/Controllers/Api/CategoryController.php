@@ -4,6 +4,7 @@ namespace Modules\Taxonomy\Http\Controllers\Api;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\Services\CategoryService;
+use Modules\Taxonomy\Http\Requests\IndexCategoryRequest;
 use Modules\Taxonomy\Http\Requests\StoreCategoryRequest;
 use Modules\Taxonomy\Http\Requests\UpdateCategoryRequest;
 use Modules\Taxonomy\Http\Resources\CategoryResource;
@@ -21,10 +22,10 @@ class CategoryController extends Controller
         $this->authorizeResource(Category::class, 'category');
     }
 
-    public function index()
+    public function index(IndexCategoryRequest $request)
     {
-        $perPage = request()->query('per_page', 15);
-        $page = request()->query('page', 1);
+        $perPage = $request->validated('per_page', 15);
+        $page = $request->validated('page', 1);
 
         return CategoryResource::collection(
             $this->categoryService->getAll($perPage, $page)
@@ -40,7 +41,9 @@ class CategoryController extends Controller
 
     public function show(Category $category): CategoryResource
     {
-        return new CategoryResource($category);
+        return new CategoryResource(
+            $this->categoryService->getWithStats($category)
+        );
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): CategoryResource

@@ -19,7 +19,6 @@ class CategoryService
         $categories = Category::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
         $categoryIds = $categories->pluck('id')->toArray();
 
-        // Fetch total counts (including unpublished) strictly via Admin Contract
         $counts = $this->postAdminService->getTotalPostCountsByCategories($categoryIds);
 
         $categories->each(function ($category) use ($counts) {
@@ -27,6 +26,14 @@ class CategoryService
         });
 
         return $categories;
+    }
+
+    public function getWithStats(Category $category): Category
+    {
+        $counts = $this->postAdminService->getTotalPostCountsByCategories([$category->id]);
+        $category->posts_count = $counts[$category->id] ?? 0;
+
+        return $category;
     }
 
     public function create(string $name): Category

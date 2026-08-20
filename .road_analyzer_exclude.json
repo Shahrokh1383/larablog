@@ -51,7 +51,6 @@
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\database",
     "Admin",
-    "back-end\\src\\Modules\\Articles",
     "User\\app\\(dashboard)",
     "User\\app\\(auth)",
     "User\\src\\styles",
@@ -76,6 +75,6 @@
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T19:39:49.651Z",
+  "lastModified": "2026-08-20T20:21:55.772Z",
   "version": 1
 }

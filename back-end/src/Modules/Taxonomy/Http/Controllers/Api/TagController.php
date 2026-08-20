@@ -4,6 +4,7 @@ namespace Modules\Taxonomy\Http\Controllers\Api;
 
 use Modules\Taxonomy\Models\Tag;
 use Modules\Taxonomy\Services\TagService;
+use Modules\Taxonomy\Http\Requests\IndexTagRequest;
 use Modules\Taxonomy\Http\Requests\StoreTagRequest;
 use Modules\Taxonomy\Http\Requests\UpdateTagRequest;
 use Modules\Taxonomy\Http\Resources\TagResource;
@@ -21,10 +22,10 @@ class TagController extends Controller
         $this->authorizeResource(Tag::class, 'tag');
     }
 
-    public function index()
+    public function index(IndexTagRequest $request)
     {
-        $perPage = request()->query('per_page', 15);
-        $page = request()->query('page', 1);
+        $perPage = $request->validated('per_page', 15);
+        $page = $request->validated('page', 1);
 
         return TagResource::collection(
             $this->tagService->getAll($perPage, $page)
@@ -40,7 +41,9 @@ class TagController extends Controller
 
     public function show(Tag $tag): TagResource
     {
-        return new TagResource($tag);
+        return new TagResource(
+            $this->tagService->getWithStats($tag)
+        );
     }
 
     public function update(UpdateTagRequest $request, Tag $tag): TagResource
