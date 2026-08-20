@@ -7,6 +7,7 @@ use Modules\Taxonomy\Services\CategoryPublicService;
 use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
 use Modules\Taxonomy\Http\Requests\IndexCategoryPublicRequest;
 use Modules\Taxonomy\Http\Requests\ShowCategoryPostsRequest;
+use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Routing\Controller;
 
@@ -39,7 +40,7 @@ class CategoryPublicController extends Controller
 
         return response()->json([
             'category' => new CategoryPublicResource($category),
-            'posts'    => $posts,
+            'posts'    => PostPublicResource::collection($posts)->response()->getData(true),
         ]);
     }
 }
