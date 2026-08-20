@@ -41,7 +41,6 @@
     "back-end\\src\\Shared",
     "back-end\\src\\Modules\\About",
     "back-end\\src\\Modules\\Administration",
-    "back-end\\src\\Modules\\Articles",
     "back-end\\src\\Modules\\Engagement",
     "back-end\\src\\Modules\\Profile",
     "back-end\\src\\Modules\\Notification",
@@ -49,12 +48,16 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Home",
     "back-end\\src\\Modules\\Search",
-    "back-end\\src\\Modules\\ReaderExperience"
+    "back-end\\src\\Modules\\ReaderExperience",
+    "back-end\\database",
+    "User",
+    "Admin",
+    "back-end\\src\\Modules\\Taxonomy"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T14:44:11.919Z",
+  "lastModified": "2026-08-20T15:25:54.635Z",
   "version": 1
 }

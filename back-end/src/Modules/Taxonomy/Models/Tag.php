@@ -16,11 +16,6 @@ class Tag extends Model
 
     protected $fillable = ['name', 'slug'];
 
-    public function posts()
-    {
-        return $this->belongsToMany(\Modules\Articles\Models\Post::class, 'content_post_tag', 'tag_id', 'post_id');
-    }
-
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         if ($term) {

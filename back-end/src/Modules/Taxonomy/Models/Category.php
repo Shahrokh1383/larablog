@@ -16,11 +16,6 @@ class Category extends Model
 
     protected $fillable = ['name', 'slug'];
 
-    public function posts()
-    {
-        return $this->hasMany(\Modules\Articles\Models\Post::class);
-    }
-
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         if ($term) {
