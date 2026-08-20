@@ -5,6 +5,7 @@ namespace Modules\Taxonomy\Services;
 use Modules\Taxonomy\Models\Category;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class CategoryService
 {
@@ -14,7 +15,14 @@ class CategoryService
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        return Category::withCount('posts')
+        $postsCountSubQuery = DB::table('content_posts')
+            ->selectRaw('count(*)')
+            ->whereColumn('category_id', 'content_categories.id');
+
+        return Category::select('content_categories.*')
+            ->addSelect([
+                'posts_count' => $postsCountSubQuery,
+            ])
             ->orderBy('name')
             ->paginate($perPage, ['*'], 'page', $page);
     }

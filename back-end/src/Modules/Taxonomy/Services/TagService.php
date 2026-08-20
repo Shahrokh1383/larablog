@@ -5,6 +5,7 @@ namespace Modules\Taxonomy\Services;
 use Modules\Taxonomy\Models\Tag;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class TagService
 {
@@ -14,7 +15,14 @@ class TagService
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
-        return Tag::withCount('posts')
+        $postsCountSubQuery = DB::table('content_post_tag')
+            ->selectRaw('count(*)')
+            ->whereColumn('content_post_tag.tag_id', 'content_tags.id');
+
+        return Tag::select('content_tags.*')
+            ->addSelect([
+                'posts_count' => $postsCountSubQuery,
+            ])
             ->orderBy('name')
             ->paginate($perPage, ['*'], 'page', $page);
     }
