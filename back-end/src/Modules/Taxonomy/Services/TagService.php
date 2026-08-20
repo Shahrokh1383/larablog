@@ -53,7 +53,7 @@ class TagService
             $tag->update(['name' => $name, 'slug' => $slug]);
         }
 
-        return $tag;
+        return $this->getWithStats($tag);
     }
 
     public function delete(Tag $tag): void

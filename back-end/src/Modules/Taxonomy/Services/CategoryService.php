@@ -53,7 +53,7 @@ class CategoryService
             $category->update(['name' => $name, 'slug' => $slug]);
         }
 
-        return $category;
+        return $this->getWithStats($category);
     }
 
     public function delete(Category $category): void
