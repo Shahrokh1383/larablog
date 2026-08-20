@@ -293,9 +293,9 @@ class PostPublicService implements PostPublicServiceInterface
     private function applyPublicSort(Builder $query, ?string $sort): void
     {
         match ($sort) {
-            'oldest'       => $query->oldest('updated_at'),
+            'oldest'       => $query->oldest('published_at'),
             'most_popular' => $query->popular(),
-            default        => $query->latest('updated_at'),
+            default        => $query->latest('published_at'),
         };
     }
 
