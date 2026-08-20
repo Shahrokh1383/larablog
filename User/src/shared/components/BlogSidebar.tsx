@@ -5,9 +5,10 @@ import { useCategories } from '@/features/categories';
 import { usePopularTags } from '@/features/tags';
 
 export function BlogSidebar() {
-  const { categories, isLoading: isLoadingCategories } = useCategories({ per_page: 50 });
+  const { data: categoryResponse, isLoading: isLoadingCategories } = useCategories({ per_page: 50 });
   const { data: popularTags = [], isLoading: isLoadingTags } = usePopularTags();
 
+  const categories = categoryResponse?.data || [];
   const visibleCategories = categories.slice(0, 7);
 
   return (

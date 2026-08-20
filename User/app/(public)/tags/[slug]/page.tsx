@@ -1,77 +1,45 @@
-'use client';
-
-import { useState, use } from 'react';
-import { TagHero, TagPostCard, useTagPosts } from '@/features/tags';
-import { useCategories } from '@/features/categories';
-import { usePopularTags } from '@/features/tags';
+import TagPostsClientView from '@/features/tags/components/TagPostsClientView';
 import { BlogSidebar } from '@/shared/components/BlogSidebar';
-import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
-import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
-import Pagination from '@/shared/components/Pagination';
-import '@/styles/taxonomy.css';
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 
-export default function TagPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
+async function getTagMeta(slug: string) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${slug}/posts?per_page=1`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.tag;
+  } catch { return null; }
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const tag = await getTagMeta(params.slug);
+  return {
+    title: tag ? `${tag.name} Articles | Larablog` : 'Tag | Larablog',
+    description: tag ? `Explore articles and tutorials tagged with ${tag.name}.` : '',
+  };
+}
+
+export default async function TagSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const tag = await getTagMeta(slug);
   
-  const [sort, setSort] = useState('newest');
-  const [page, setPage] = useState(1);
-
-  const { categories: sidebarCategories } = useCategories();
-  const { data: popularTags = [] } = usePopularTags();
-  const { data, isLoading, isError } = useTagPosts(slug, sort, page);
-
-  const newsletterState = useSubscribeNewsletter();
-
-  if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
-  if (isError || !data) return <div className="container py-5 text-center">Error loading tag.</div>;
+  if (!tag) notFound();
 
   return (
-    <>
-      <TagHero tag={data.tag} />
-
-      <section className="taxonomy-section section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {data.tag.name}</h2>
-                <div className="sort-dropdown">
-                  <select 
-                    className="form-select sort-select" 
-                    value={sort}
-                    onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="most_popular">Most Popular</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="row g-4">
-                {data.posts.data.map((post) => (
-                  <div key={post.id} className="col-12">
-                    <TagPostCard post={post} />
-                  </div>
-                ))}
-              </div>
-
-              {data.posts.meta.last_page > 1 && (
-                <Pagination 
-                  currentPage={data.posts.meta.current_page} 
-                  lastPage={data.posts.meta.last_page} 
-                  onPageChange={setPage} 
-                />
-              )}
-            </div>
-
-            <aside className="col-lg-4">
-              <BlogSidebar categories={sidebarCategories} popularTags={popularTags} />
-              <NewsletterSidebar {...newsletterState} />
-            </aside>
+    <section className="taxonomy-section section-padding">
+      <div className="container">
+        <div className="row">
+          <div className="col-lg-8">
+            <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary"></div></div>}>
+              <TagPostsClientView slug={slug} tagData={tag} />
+            </Suspense>
           </div>
+          <aside className="col-lg-4">
+            <BlogSidebar />
+          </aside>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

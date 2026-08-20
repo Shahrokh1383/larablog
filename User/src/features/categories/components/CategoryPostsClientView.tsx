@@ -9,11 +9,7 @@ import Pagination from '@/shared/components/Pagination';
 
 interface CategoryPostsClientViewProps {
   slug: string;
-  categoryData: {
-    name: string;
-    posts_count: number;
-    authors_count: number;
-  };
+  categoryData: { name: string; posts_count: number; authors_count: number };
 }
 
 export default function CategoryPostsClientView({ slug, categoryData }: CategoryPostsClientViewProps) {
@@ -25,7 +21,6 @@ export default function CategoryPostsClientView({ slug, categoryData }: Category
 
   const { data, isLoading, isError } = useCategoryPosts(slug, sort, currentPage);
 
-  // Sync URL with sort and page
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sort', sort);
@@ -36,7 +31,7 @@ export default function CategoryPostsClientView({ slug, categoryData }: Category
   const handleSortChange = (newSort: string) => {
     setSort(newSort);
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1'); // Reset to page 1 on sort change
+    params.set('page', '1');
     router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
   };
 
@@ -46,8 +41,8 @@ export default function CategoryPostsClientView({ slug, categoryData }: Category
     router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
   };
 
-  if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
-  if (isError || !data) return <div className="container py-5 text-center">Error loading category.</div>;
+  if (isLoading) return <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>;
+  if (isError || !data) return <div className="text-center text-danger py-5">Error loading category.</div>;
 
   return (
     <>
@@ -57,42 +52,34 @@ export default function CategoryPostsClientView({ slug, categoryData }: Category
         authorsCount={categoryData.authors_count}
       />
 
-      <section className="taxonomy-section section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {categoryData.name}</h2>
-                <div className="sort-dropdown">
-                  <select 
-                    className="form-select sort-select" 
-                    value={sort}
-                    onChange={(e) => handleSortChange(e.target.value)}
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="most_popular">Most Popular</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="row g-4">
-                {data.posts.data.map((post) => (
-                  <div key={post.id} className="col-md-6">
-                    <CategoryPostCard post={post} />
-                  </div>
-                ))}
-              </div>
-
-              <Pagination 
-                currentPage={data.posts.meta.current_page} 
-                lastPage={data.posts.meta.last_page} 
-                onPageChange={handlePageChange} 
-              />
-            </div>
-          </div>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {categoryData.name}</h2>
+        <div className="sort-dropdown">
+          <select 
+            className="form-select sort-select" 
+            value={sort}
+            onChange={(e) => handleSortChange(e.target.value)}
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="most_popular">Most Popular</option>
+          </select>
         </div>
-      </section>
+      </div>
+
+      <div className="row g-4">
+        {data.posts.data.map((post) => (
+          <div key={post.id} className="col-md-6">
+            <CategoryPostCard post={post} />
+          </div>
+        ))}
+      </div>
+
+      <Pagination 
+        currentPage={data.posts.meta.current_page} 
+        lastPage={data.posts.meta.last_page} 
+        onPageChange={handlePageChange} 
+      />
     </>
   );
 }
