@@ -4,10 +4,6 @@ import { tagKeys } from '../index';
 import type { TagFormData } from '../types/tag';
 import { AxiosError } from 'axios';
 
-export interface ValidationErrors {
-  [key: string]: string[];
-}
-
 export function useTagMutations() {
   const queryClient = useQueryClient();
 
@@ -15,11 +11,7 @@ export function useTagMutations() {
     mutationFn: (data: TagFormData) => tagsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.all });
-      alert('Tag created successfully!'); // TODO: Replace with toast provider
-    },
-    onError: (error: AxiosError<{ errors?: ValidationErrors; message?: string }>) => {
-      const errorMessage = error.response?.data?.message ?? 'Failed to create tag';
-      alert(errorMessage);
+      alert('Tag created successfully!');
     },
   });
 
@@ -28,11 +20,7 @@ export function useTagMutations() {
       tagsApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.all });
-      alert('Tag updated successfully!'); // TODO: Replace with toast provider
-    },
-    onError: (error: AxiosError<{ errors?: ValidationErrors; message?: string }>) => {
-      const errorMessage = error.response?.data?.message ?? 'Failed to update tag';
-      alert(errorMessage);
+      alert('Tag updated successfully!');
     },
   });
 

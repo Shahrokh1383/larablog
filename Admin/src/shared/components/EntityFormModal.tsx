@@ -1,13 +1,12 @@
-import type { ValidationErrors } from '@/features/categories/hooks/useCategoryMutations';
+import { useState, useEffect } from 'react';
 
 interface EntityFormModalProps {
   show: boolean;
   title: string;
-  name: string;
-  onNameChange: (name: string) => void;
+  initialName?: string;
   onSubmit: (data: { name: string }) => void;
   isLoading: boolean;
-  validationErrors?: ValidationErrors | null;
+  serverError: string | null;
   onClose: () => void;
   entityIcon?: string;
 }
@@ -15,14 +14,19 @@ interface EntityFormModalProps {
 export default function EntityFormModal({
   show,
   title,
-  name,
-  onNameChange,
+  initialName = '',
   onSubmit,
   isLoading,
-  validationErrors,
+  serverError,
   onClose,
   entityIcon = 'folder',
 }: EntityFormModalProps) {
+  const [name, setName] = useState(initialName);
+
+  useEffect(() => {
+    setName(initialName);
+  }, [initialName, show]);
+
   if (!show) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,51 +34,38 @@ export default function EntityFormModal({
     onSubmit({ name });
   };
 
-  const nameError = validationErrors?.name?.[0];
-
   return (
     <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit}>
             <div className="modal-header">
               <h5 className="modal-title">
                 <i className={`fas fa-${entityIcon} me-2`}></i>
                 {title}
               </h5>
-              <button type="button" className="btn-close" onClick={onClose} disabled={isLoading}></button>
+              <button type="button" className="btn-close" onClick={onClose}></button>
             </div>
             <div className="modal-body">
+              {serverError && <div className="alert alert-danger">{serverError}</div>}
               <div className="mb-3">
                 <label className="form-label">Name</label>
                 <input
                   type="text"
-                  className={`form-control ${nameError ? 'is-invalid' : ''}`}
+                  className="form-control"
                   value={name}
-                  onChange={(e) => onNameChange(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   autoFocus
-                  disabled={isLoading}
-                  maxLength={255}
                 />
-                {nameError && (
-                  <div className="invalid-feedback d-block">{nameError}</div>
-                )}
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose} disabled={isLoading}>
+              <button type="button" className="btn btn-secondary" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary" disabled={isLoading || !name.trim()}>
-                {isLoading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" />
-                    Saving...
-                  </>
-                ) : (
-                  'Save'
-                )}
+              <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
             </div>
           </form>

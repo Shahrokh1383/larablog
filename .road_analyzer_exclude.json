@@ -72,17 +72,19 @@
     "back-end\\src\\Modules\\AdminStats",
     "back-end\\src\\Modules\\Articles",
     "back-end",
-    "Admin\\src\\features\\users",
     "Admin\\src\\features\\profile",
     "Admin\\src\\features\\marketing",
     "Admin\\src\\features\\dashboard",
     "Admin\\src\\features\\auth",
-    "Admin\\src\\features\\about"
+    "Admin\\src\\features\\about",
+    "Admin\\src\\features\\comments",
+    "Admin\\src\\features\\posts",
+    "Admin\\src\\features\\tags"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T21:40:16.287Z",
+  "lastModified": "2026-08-20T21:57:18.992Z",
   "version": 1
 }

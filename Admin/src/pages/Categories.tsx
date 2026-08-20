@@ -9,13 +9,13 @@ export default function CategoriesPage() {
   const { user } = useAdminAuth();
   const [page, setPage] = useState(1);
 
-  // Modal state (orchestrated in page, matching Posts.tsx pattern)
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formName, setFormName] = useState('');
-  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string[] } | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const canMutate = user?.roles.includes('admin') || user?.roles.includes('editor');
+  // FIX: Ensure canMutate is strictly boolean
+  const roles = user?.roles ?? [];
+  const canMutate = roles.includes('admin') || roles.includes('editor');
 
   const { data: paginatedResponse, isLoading, isError } = useCategories({ page });
   const { createCategory, updateCategory, deleteCategory } = useCategoryMutations();
@@ -25,23 +25,20 @@ export default function CategoriesPage() {
 
   const openCreate = () => {
     setEditingCategory(null);
-    setFormName('');
-    setValidationErrors(null);
+    setServerError(null);
     setShowModal(true);
   };
 
   const openEdit = (category: Category) => {
     setEditingCategory(category);
-    setFormName(category.name);
-    setValidationErrors(null);
+    setServerError(null);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setShowModal(false);
     setEditingCategory(null);
-    setFormName('');
-    setValidationErrors(null);
+    setServerError(null);
   };
 
   const handleDelete = (category: Category) => {
@@ -50,29 +47,30 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleSubmit = () => {
-    setValidationErrors(null);
-    const payload = { name: formName.trim() };
+  const handleSubmit = (data: { name: string }) => {
+    setServerError(null);
+    const payload = { name: data.name.trim() };
 
-    const mutation = editingCategory
-      ? updateCategory
-      : createCategory;
-
-    const args = editingCategory
-      ? { id: editingCategory.id, data: payload }
-      : payload;
-
-    mutation.mutate(args as never, {
-      onSuccess: () => {
-        closeModal();
-      },
-      onError: (error) => {
-        const axiosErr = error as AxiosError<{ errors?: { [key: string]: string[] }; message?: string }>;
-        if (axiosErr.response?.data?.errors) {
-          setValidationErrors(axiosErr.response.data.errors);
+    if (editingCategory) {
+      updateCategory.mutate(
+        { id: editingCategory.id, data: payload },
+        {
+          onSuccess: closeModal,
+          onError: (error) => {
+            const axiosErr = error as AxiosError<{ message?: string }>;
+            setServerError(axiosErr.response?.data?.message ?? 'Update failed');
+          },
         }
-      },
-    });
+      );
+    } else {
+      createCategory.mutate(payload, {
+        onSuccess: closeModal,
+        onError: (error) => {
+          const axiosErr = error as AxiosError<{ message?: string }>;
+          setServerError(axiosErr.response?.data?.message ?? 'Create failed');
+        },
+      });
+    }
   };
 
   return (
@@ -133,11 +131,10 @@ export default function CategoriesPage() {
       <EntityFormModal
         show={showModal}
         title={editingCategory ? 'Edit Category' : 'Create Category'}
-        name={formName}
-        onNameChange={setFormName}
+        initialName={editingCategory?.name ?? ''}
         onSubmit={handleSubmit}
         isLoading={createCategory.isPending || updateCategory.isPending}
-        validationErrors={validationErrors}
+        serverError={serverError}
         onClose={closeModal}
         entityIcon="folder"
       />

@@ -4,10 +4,6 @@ import { categoryKeys } from '../index';
 import type { CategoryFormData } from '../types/category';
 import { AxiosError } from 'axios';
 
-export interface ValidationErrors {
-  [key: string]: string[];
-}
-
 export function useCategoryMutations() {
   const queryClient = useQueryClient();
 
@@ -15,11 +11,7 @@ export function useCategoryMutations() {
     mutationFn: (data: CategoryFormData) => categoriesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all });
-      alert('Category created successfully!'); // TODO: Replace with toast provider
-    },
-    onError: (error: AxiosError<{ errors?: ValidationErrors; message?: string }>) => {
-      const errorMessage = error.response?.data?.message ?? 'Failed to create category';
-      alert(errorMessage);
+      alert('Category created successfully!');
     },
   });
 
@@ -28,11 +20,7 @@ export function useCategoryMutations() {
       categoriesApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.all });
-      alert('Category updated successfully!'); // TODO: Replace with toast provider
-    },
-    onError: (error: AxiosError<{ errors?: ValidationErrors; message?: string }>) => {
-      const errorMessage = error.response?.data?.message ?? 'Failed to update category';
-      alert(errorMessage);
+      alert('Category updated successfully!');
     },
   });
 

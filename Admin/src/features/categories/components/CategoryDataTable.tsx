@@ -87,3 +87,6 @@ export default function CategoryDataTable({
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
