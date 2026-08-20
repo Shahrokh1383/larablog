@@ -33,7 +33,15 @@ interface PostPublicServiceInterface
 
     public function getAuthorStats(): array;
 
-    public function getPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator;
+    /**
+     * Returns published posts for a specific category as a structured array.
+     * Contains 'data', 'links', and 'meta' keys identical to a standard Laravel API response.
+     */
+    public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): array;
 
-    public function getPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator;
+    /**
+     * Returns published posts for a specific tag as a structured array.
+     * Contains 'data', 'links', and 'meta' keys identical to a standard Laravel API response.
+     */
+    public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): array;
 }

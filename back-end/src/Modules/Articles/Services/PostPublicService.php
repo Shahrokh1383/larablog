@@ -4,6 +4,7 @@ namespace Modules\Articles\Services;
 
 use Modules\Articles\Models\Post;
 use Modules\Articles\Actions\MapPostRelationsAction;
+use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -161,7 +162,7 @@ class PostPublicService implements PostPublicServiceInterface
             ->toArray();
     }
 
-    public function getPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): array
     {
         $query = Post::with(['category', 'tags'])
             ->published()
@@ -171,10 +172,11 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        return $posts;
+        
+        return $this->formatPostsArray($posts);
     }
 
-    public function getPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): array
     {
         $query = Post::with(['category', 'tags'])
             ->published()
@@ -184,7 +186,8 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        return $posts;
+        
+        return $this->formatPostsArray($posts);
     }
 
     /**
@@ -197,5 +200,12 @@ class PostPublicService implements PostPublicServiceInterface
             'most_popular' => $query->popular(),
             default        => $query->latest('updated_at'),
         };
+    }
+
+    private function formatPostsArray(LengthAwarePaginator $paginator): array
+    {
+        return PostPublicResource::collection($paginator)
+            ->response()
+            ->getData(true);
     }
 }
