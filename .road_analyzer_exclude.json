@@ -50,7 +50,6 @@
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\ReaderExperience",
     "back-end\\database",
-    "Admin",
     "User\\app\\(dashboard)",
     "User\\app\\(auth)",
     "User\\src\\styles",
@@ -69,12 +68,21 @@
     "User\\src\\features\\authors",
     "User\\src\\features\\auth",
     "User\\src\\features\\about",
-    "User"
+    "User",
+    "back-end\\src\\Modules\\AdminStats",
+    "back-end\\src\\Modules\\Articles",
+    "back-end",
+    "Admin\\src\\features\\users",
+    "Admin\\src\\features\\profile",
+    "Admin\\src\\features\\marketing",
+    "Admin\\src\\features\\dashboard",
+    "Admin\\src\\features\\auth",
+    "Admin\\src\\features\\about"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T21:13:29.548Z",
+  "lastModified": "2026-08-20T21:40:16.287Z",
   "version": 1
 }
