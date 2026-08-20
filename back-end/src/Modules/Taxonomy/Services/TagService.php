@@ -4,10 +4,10 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
 use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
-class TagService
+class TagService implements TagAdminServiceInterface
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction,

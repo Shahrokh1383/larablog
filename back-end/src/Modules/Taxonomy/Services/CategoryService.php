@@ -4,10 +4,10 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-
-class CategoryService
+class CategoryService implements CategoryAdminServiceInterface
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
