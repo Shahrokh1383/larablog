@@ -1,3 +1,4 @@
+import '@/styles/taxonomy.css';
 import TagsClientView from '@/features/tags/components/TagsClientView';
 import { BlogSidebar } from '@/shared/components/BlogSidebar';
 import { Suspense } from 'react';

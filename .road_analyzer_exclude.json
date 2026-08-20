@@ -58,7 +58,6 @@
     "User\\src\\features\\profile",
     "User\\src\\features\\privacy",
     "User\\src\\features\\posts",
-    "User\\src\\features\\notifications",
     "User\\src\\features\\newsletter",
     "User\\src\\features\\home",
     "User\\src\\features\\dashboard",
@@ -77,12 +76,15 @@
     "Admin\\src\\features\\comments",
     "Admin\\src\\features\\posts",
     "Admin\\src\\features\\tags",
-    "Admin"
+    "Admin",
+    "back-end",
+    "User\\src\\features\\tags",
+    "User\\src\\features\\categories"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T23:05:01.582Z",
+  "lastModified": "2026-08-20T23:33:42.668Z",
   "version": 1
 }
