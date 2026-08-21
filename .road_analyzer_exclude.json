@@ -76,15 +76,15 @@
     "Admin\\src\\features\\posts",
     "Admin\\src\\features\\tags",
     "Admin",
-    "User\\src\\features\\tags",
-    "User\\src\\features\\categories",
-    "User",
-    "back-end\\database"
+    "back-end\\database",
+    "back-end\\src\\Modules\\Articles",
+    "User\\src\\features\\notifications",
+    "User\\src\\providers"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-21T00:06:58.741Z",
+  "lastModified": "2026-08-21T00:20:30.588Z",
   "version": 1
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCategoryPosts } from '../hooks/useCategoryPosts';
 import CategoryHero from './CategoryHero';
@@ -25,27 +25,21 @@ export default function CategoryPostsClientView({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
+  const sort = searchParams.get('sort') || 'newest';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   const { data, isLoading, isError } = useCategoryPosts(slug, sort, currentPage);
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('sort', sort);
-    params.set('page', currentPage.toString());
-    router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
-  }, [sort, currentPage, router, searchParams, slug]);
-
   const handleSortChange = (newSort: string) => {
-    setSort(newSort);
     const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', newSort);
     params.set('page', '1');
     router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
   };
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', sort);
     params.set('page', page.toString());
     router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
   };

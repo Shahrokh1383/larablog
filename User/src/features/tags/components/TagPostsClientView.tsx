@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTagPosts } from '../hooks/useTagPosts';
 import TagHero from './TagHero';
@@ -22,27 +22,21 @@ export default function TagPostsClientView({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
+  const sort = searchParams.get('sort') || 'newest';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   const { data, isLoading, isError } = useTagPosts(slug, sort, currentPage, 9);
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('sort', sort);
-    params.set('page', currentPage.toString());
-    router.push(`/tags/${slug}?${params.toString()}`, { scroll: false });
-  }, [sort, currentPage, router, searchParams, slug]);
-
   const handleSortChange = (newSort: string) => {
-    setSort(newSort);
     const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', newSort);
     params.set('page', '1');
     router.push(`/tags/${slug}?${params.toString()}`, { scroll: false });
   };
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', sort);
     params.set('page', page.toString());
     router.push(`/tags/${slug}?${params.toString()}`, { scroll: false });
   };

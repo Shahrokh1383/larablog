@@ -18,8 +18,9 @@ async function getCategoryMeta(slug: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const category = await getCategoryMeta(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const category = await getCategoryMeta(slug);
   return {
     title: category ? `${category.name} Articles | Larablog` : 'Category | Larablog',
     description: category

@@ -18,8 +18,9 @@ async function getTagMeta(slug: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const tag = await getTagMeta(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const tag = await getTagMeta(slug);
   return {
     title: tag ? `${tag.name} Articles | Larablog` : 'Tag | Larablog',
     description: tag ? `Explore articles and tutorials tagged with ${tag.name}.` : '',
