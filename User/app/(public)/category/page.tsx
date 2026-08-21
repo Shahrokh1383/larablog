@@ -11,9 +11,9 @@ export const metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  'name': 'All Categories',
-  'description': 'Browse all article categories and find exactly what you are looking for.',
-  'url': '/category',
+  name: 'All Categories',
+  description: 'Browse all article categories and find exactly what you are looking for.',
+  url: '/category',
 };
 
 export default function CategoriesPage() {
@@ -23,20 +23,17 @@ export default function CategoriesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="taxonomy-section section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary"></div></div>}>
-                <CategoriesClientView />
-              </Suspense>
-            </div>
-            <aside className="col-lg-4">
-              <BlogSidebar />
-            </aside>
+      <Suspense
+        fallback={
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary"></div>
           </div>
-        </div>
-      </section>
+        }
+      >
+        <CategoriesClientView>
+          <BlogSidebar />
+        </CategoriesClientView>
+      </Suspense>
     </>
   );
 }

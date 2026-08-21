@@ -67,7 +67,6 @@
     "User\\src\\features\\auth",
     "User\\src\\features\\about",
     "back-end\\src\\Modules\\AdminStats",
-    "back-end\\src\\Modules\\Articles",
     "Admin\\src\\features\\profile",
     "Admin\\src\\features\\marketing",
     "Admin\\src\\features\\dashboard",
@@ -77,14 +76,15 @@
     "Admin\\src\\features\\posts",
     "Admin\\src\\features\\tags",
     "Admin",
-    "back-end",
     "User\\src\\features\\tags",
-    "User\\src\\features\\categories"
+    "User\\src\\features\\categories",
+    "User",
+    "back-end\\database"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-20T23:33:42.668Z",
+  "lastModified": "2026-08-21T00:06:58.741Z",
   "version": 1
 }

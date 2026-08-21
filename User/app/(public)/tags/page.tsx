@@ -11,9 +11,9 @@ export const metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  'name': 'All Tags',
-  'description': 'Browse all topics and tags to find exactly what you are looking for.',
-  'url': '/tags',
+  name: 'All Tags',
+  description: 'Browse all topics and tags to find exactly what you are looking for.',
+  url: '/tags',
 };
 
 export default function TagsPage() {
@@ -23,20 +23,17 @@ export default function TagsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="taxonomy-section section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <Suspense fallback={<div className="text-center py-5"><div className="spinner-border text-primary"></div></div>}>
-                <TagsClientView />
-              </Suspense>
-            </div>
-            <aside className="col-lg-4">
-              <BlogSidebar />
-            </aside>
+      <Suspense
+        fallback={
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary"></div>
           </div>
-        </div>
-      </section>
+        }
+      >
+        <TagsClientView>
+          <BlogSidebar />
+        </TagsClientView>
+      </Suspense>
     </>
   );
 }

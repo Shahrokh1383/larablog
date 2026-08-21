@@ -21,14 +21,20 @@ const getTagIcon = (slug: string): string => {
   return 'fa-solid fa-hashtag';
 };
 
-interface TagCardProps { tag: Tag; }
+interface TagCardProps {
+  tag: Tag;
+}
 
 export default function TagCard({ tag }: TagCardProps) {
   return (
-    <Link href={`/tags/${tag.slug}`} className="taxonomy-card">
-      <div className="taxonomy-card-icon"><i className={getTagIcon(tag.slug)}></i></div>
-      <h4 className="taxonomy-card-name">{tag.name}</h4>
-      <span className="taxonomy-card-count">{tag.posts_count} articles</span>
-    </Link>
+    <div className="col-md-4 col-6 tag-card-col" data-tag={tag.slug}>
+      <Link href={`/tags/${tag.slug}`} className="taxonomy-card">
+        <div className="taxonomy-card-icon">
+          <i className={getTagIcon(tag.slug)}></i>
+        </div>
+        <h4 className="taxonomy-card-name">{tag.name}</h4>
+        <span className="taxonomy-card-count">{tag.posts_count} articles</span>
+      </Link>
+    </div>
   );
 }

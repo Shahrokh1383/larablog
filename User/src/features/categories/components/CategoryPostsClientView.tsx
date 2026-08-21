@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useCategoryPosts } from '../hooks/useCategoryPosts';
 import CategoryHero from './CategoryHero';
@@ -9,13 +9,22 @@ import Pagination from '@/shared/components/Pagination';
 
 interface CategoryPostsClientViewProps {
   slug: string;
-  categoryData: { name: string; posts_count: number; authors_count: number };
+  categoryData: {
+    name: string;
+    posts_count: number;
+    authors_count: number;
+  };
+  children: ReactNode;
 }
 
-export default function CategoryPostsClientView({ slug, categoryData }: CategoryPostsClientViewProps) {
+export default function CategoryPostsClientView({
+  slug,
+  categoryData,
+  children,
+}: CategoryPostsClientViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
@@ -41,45 +50,64 @@ export default function CategoryPostsClientView({ slug, categoryData }: Category
     router.push(`/category/${slug}?${params.toString()}`, { scroll: false });
   };
 
-  if (isLoading) return <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>;
-  if (isError || !data) return <div className="text-center text-danger py-5">Error loading category.</div>;
+  if (isLoading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
+  }
+
+  if (isError || !data) {
+    return <div className="text-center text-danger py-5">Error loading category.</div>;
+  }
 
   return (
     <>
-      <CategoryHero 
+      <CategoryHero
         name={categoryData.name}
         postsCount={categoryData.posts_count}
         authorsCount={categoryData.authors_count}
       />
 
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {categoryData.name}</h2>
-        <div className="sort-dropdown">
-          <select 
-            className="form-select sort-select" 
-            value={sort}
-            onChange={(e) => handleSortChange(e.target.value)}
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="most_popular">Most Popular</option>
-          </select>
-        </div>
-      </div>
+      <section className="taxonomy-section section-padding">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8">
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="section-title mb-0">
+                  <span className="text-gradient">Latest</span> in {categoryData.name}
+                </h2>
+                <div className="sort-dropdown">
+                  <select
+                    className="form-select sort-select"
+                    value={sort}
+                    onChange={(e) => handleSortChange(e.target.value)}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="most_popular">Most Popular</option>
+                  </select>
+                </div>
+              </div>
 
-      <div className="row g-4">
-        {data.posts.data.map((post) => (
-          <div key={post.id} className="col-md-6">
-            <CategoryPostCard post={post} />
+              <div className="row g-4" id="postsGrid">
+                {data.posts.data.map((post) => (
+                  <CategoryPostCard key={post.id} post={post} />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={data.posts.meta.current_page}
+                lastPage={data.posts.meta.last_page}
+                onPageChange={handlePageChange}
+              />
+            </div>
+
+            <aside className="col-lg-4">{children}</aside>
           </div>
-        ))}
-      </div>
-
-      <Pagination 
-        currentPage={data.posts.meta.current_page} 
-        lastPage={data.posts.meta.last_page} 
-        onPageChange={handlePageChange} 
-      />
+        </div>
+      </section>
     </>
   );
 }
