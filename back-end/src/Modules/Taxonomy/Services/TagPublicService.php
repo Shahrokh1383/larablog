@@ -6,6 +6,7 @@ use Modules\Taxonomy\Models\Tag;
 use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class TagPublicService implements TagPublicServiceInterface
 {
@@ -80,5 +81,35 @@ class TagPublicService implements TagPublicServiceInterface
         return [
             'total_tags' => Tag::count(),
         ];
+    }
+
+    public function getTagsByPostIds(array $postIds): array
+    {
+        if (empty($postIds)) return [];
+
+        $tags = DB::table('content_post_tag as pt')
+            ->join('content_tags as t', 't.id', '=', 'pt.tag_id')
+            ->whereIn('pt.post_id', $postIds)
+            ->select('pt.post_id', 't.id', 't.name', 't.slug')
+            ->get();
+
+        $map = [];
+        foreach ($tags as $tag) {
+            $map[$tag->post_id][] = [
+                'id'   => $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ];
+        }
+
+        return $map;
+    }
+
+    public function getPostIdsByTag(string $tagId): array
+    {
+        return DB::table('content_post_tag')
+            ->where('tag_id', $tagId)
+            ->pluck('post_id')
+            ->all();
     }
 }

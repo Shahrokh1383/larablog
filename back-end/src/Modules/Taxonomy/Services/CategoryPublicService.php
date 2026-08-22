@@ -81,4 +81,20 @@ class CategoryPublicService implements CategoryPublicServiceInterface
             'total_categories' => Category::count(),
         ];
     }
+
+    public function getCategoriesByIds(array $ids): array
+    {
+        if (empty($ids)) return [];
+
+        return Category::whereIn('id', $ids)
+            ->get()
+            ->mapWithKeys(fn($c) => [
+                $c->id => [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'slug' => $c->slug,
+                ]
+            ])
+            ->all();
+    }
 }

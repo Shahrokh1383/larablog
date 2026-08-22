@@ -52,9 +52,9 @@ class PostInfoService implements PostInfoContract
         })->all();
     }
 
-    public function getTotalReadingTimeByIds($postIds): int
+    public function getTotalReadingTimeByIds(array $postIds): int
     {
-        if (is_array($postIds) && empty($postIds)) {
+        if (empty($postIds)) {
             return 0;
         }
 

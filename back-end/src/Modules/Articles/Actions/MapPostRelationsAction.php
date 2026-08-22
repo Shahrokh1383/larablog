@@ -6,6 +6,8 @@ use Modules\Articles\Models\Post;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;
+use Modules\Taxonomy\Services\Contracts\CategoryPublicServiceInterface;
+use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +18,8 @@ class MapPostRelationsAction
         private FetchesPublicProfiles $profileService,
         private CommentServiceInterface $commentService,
         private SavedPostInteractionContract $savedPostService,
+        private CategoryPublicServiceInterface $categoryService,
+        private TagPublicServiceInterface $tagService,
     ) {}
 
     public function execute(LengthAwarePaginator|Collection|array $posts): void
@@ -29,6 +33,8 @@ class MapPostRelationsAction
         $this->mapAuthors($postsCollection);
         $this->mapComments($postsCollection);
         $this->mapSavedStatus($postsCollection);
+        $this->mapCategories($postsCollection);
+        $this->mapTags($postsCollection);
     }
 
     private function mapAuthors(Collection $posts): void
@@ -59,5 +65,27 @@ class MapPostRelationsAction
 
         $savedIds = $this->savedPostService->getSavedPostIdsForUser($user->id, $postIds);
         $posts->each(fn(Post $post) => $post->is_saved = in_array($post->id, $savedIds));
+    }
+
+    private function mapCategories(Collection $posts): void
+    {
+        $categoryIds = $posts->pluck('category_id')->unique()->filter()->values()->toArray();
+        if (empty($categoryIds)) return;
+
+        $categoriesMap = $this->categoryService->getCategoriesByIds($categoryIds);
+        $posts->each(function (Post $post) use ($categoriesMap) {
+            $post->category_detail = $categoriesMap[$post->category_id] ?? null;
+        });
+    }
+
+    private function mapTags(Collection $posts): void
+    {
+        $postIds = $posts->pluck('id')->toArray();
+        if (empty($postIds)) return;
+
+        $tagsMap = $this->tagService->getTagsByPostIds($postIds);
+        $posts->each(function (Post $post) use ($tagsMap) {
+            $post->tags_detail = $tagsMap[$post->id] ?? [];
+        });
     }
 }

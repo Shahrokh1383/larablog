@@ -8,6 +8,7 @@ use Modules\Articles\Actions\CalculateReadingTimeAction;
 use Modules\Articles\Actions\AssignTagsToPostAction;
 use Modules\Articles\Actions\UploadImageAction;
 use Modules\Articles\Actions\DeleteImageAction;
+use Modules\Articles\Actions\MapPostRelationsAction;
 use Modules\Articles\DTOs\PostCreateDTO;
 use Modules\Articles\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
@@ -24,11 +25,12 @@ class PostService implements PostAdminServiceInterface
         private AssignTagsToPostAction $assignTagsToPostAction,
         private UploadImageAction $uploadImageAction,
         private DeleteImageAction $deleteImageAction,
+        private MapPostRelationsAction $mapPostRelations,
     ) {}
 
     public function getAll(?string $search = null, ?HasRolesContract $user = null, int $perPage = 15, int $page = 1, ?bool $isEditorPick = null): LengthAwarePaginator
     {
-        return Post::with(['user', 'category', 'tags'])
+        $posts = Post::with(['user']) // Removed category and tags
             ->when($user && $user->hasRole('author'), function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
@@ -41,6 +43,9 @@ class PostService implements PostAdminServiceInterface
             })
             ->latest()
             ->paginate($perPage, ['*'], 'page', $page);
+
+        $this->mapPostRelations->execute($posts);
+        return $posts;
     }
 
     public function create(PostCreateDTO $dto): Post
@@ -74,12 +79,12 @@ class PostService implements PostAdminServiceInterface
             return $post;
         });
 
+        $this->mapPostRelations->execute([$post]);
         return $post;
     }
 
     public function update(Post $post, PostUpdateDTO $dto): Post
     {
-        // KISS/DRY Approach: Filter out null values dynamically
         $data = array_filter([
             'title' => $dto->title,
             'body' => $dto->body,
@@ -90,17 +95,14 @@ class PostService implements PostAdminServiceInterface
             'category_id' => $dto->categoryId,
         ], fn ($value) => !is_null($value));
 
-        // Regenerate slug if title changed
         if ($dto->title !== null && $dto->title !== $post->title) {
             $data['slug'] = $this->generateSlugAction->execute($dto->title, Post::class, $post->id);
         }
 
-        // Recalculate reading time if body changed
         if ($dto->body !== null) {
             $data['reading_time'] = $this->calculateReadingTimeAction->execute($dto->body);
         }
 
-        // Handle publication dates
         if (isset($data['is_published']) && $data['is_published'] && $post->published_at === null) {
             $data['published_at'] = $dto->publishedAt ?? now();
         } elseif ($dto->publishedAt !== null) {
@@ -115,108 +117,25 @@ class PostService implements PostAdminServiceInterface
             }
         });
 
-        return $post->fresh();
+        $updatedPost = $post->fresh();
+        $this->mapPostRelations->execute([$updatedPost]);
+        return $updatedPost;
     }
 
-    public function delete(Post $post): void
-    {
-        $post->delete();
+    public function delete(Post $post): void { $post->delete(); }
+    public function find(string $id): ?Post { 
+        $post = Post::with(['user'])->find($id);
+        if ($post) $this->mapPostRelations->execute([$post]);
+        return $post;
     }
-
-    public function find(string $id): ?Post
-    {
-        return Post::find($id);
-    }
-
-    public function uploadImage(UploadedFile $file): string
-    {
-        return $this->uploadImageAction->execute($file);
-    }
-
-    public function deleteImage(string $url): bool
-    {
-        return $this->deleteImageAction->execute($url);
-    }
-
-    public function getTotalPostCountsByCategories(array $categoryIds): array
-    {
-        if (empty($categoryIds)) return [];
-        
-        return Post::select('category_id')
-            ->selectRaw('count(*) as count')
-            ->whereIn('category_id', $categoryIds)
-            ->groupBy('category_id')
-            ->pluck('count', 'category_id')
-            ->toArray();
-    }
-
-    public function getTotalPostCountsByTags(array $tagIds): array
-    {
-        if (empty($tagIds)) return [];
-        
-        return DB::table('content_post_tag')
-            ->select('tag_id')
-            ->selectRaw('count(*) as count')
-            ->whereIn('tag_id', $tagIds)
-            ->groupBy('tag_id')
-            ->pluck('count', 'tag_id')
-            ->toArray();
-    }
-
-    public function getPopularCategoryStats(int $limit): array
-    {
-        return Post::select('category_id')
-            ->selectRaw('count(*) as posts_count')
-            ->whereNotNull('category_id')
-            ->groupBy('category_id')
-            ->orderByDesc('posts_count')
-            ->limit($limit)
-            ->get()
-            ->map(fn($row) => [
-                'category_id' => $row->category_id,
-                'posts_count' => (int) $row->posts_count,
-            ])
-            ->toArray();
-    }
-
-    public function getPopularTagStats(int $limit): array
-    {
-        return DB::table('content_post_tag')
-            ->select('tag_id')
-            ->selectRaw('count(*) as posts_count')
-            ->groupBy('tag_id')
-            ->orderByDesc('posts_count')
-            ->limit($limit)
-            ->get()
-            ->map(fn($row) => [
-                'tag_id'      => $row->tag_id,
-                'posts_count' => (int) $row->posts_count,
-            ])
-            ->toArray();
-    }
-
-    public function getTotalPostsCount(): int
-    {
-        return Post::count();
-    }
-
-    public function getPublishedPostsCount(): int
-    {
-        return Post::published()->count();
-    }
-
-    public function getTotalViews(): int
-    {
-        return (int) Post::sum('views');
-    }
-
-    public function getAuthorStats(): array
-    {
-        return Post::selectRaw('user_id, COUNT(*) as posts_count, SUM(views) as total_views')
-            ->whereNotNull('user_id')
-            ->groupBy('user_id')
-            ->get()
-            ->keyBy('user_id')
-            ->toArray();
-    }
+    public function uploadImage(UploadedFile $file): string { return $this->uploadImageAction->execute($file); }
+    public function deleteImage(string $url): bool { return $this->deleteImageAction->execute($url); }
+    public function getTotalPostCountsByCategories(array $categoryIds): array { if (empty($categoryIds)) return []; return Post::select('category_id')->selectRaw('count(*) as count')->whereIn('category_id', $categoryIds)->groupBy('category_id')->pluck('count', 'category_id')->toArray(); }
+    public function getTotalPostCountsByTags(array $tagIds): array { if (empty($tagIds)) return []; return DB::table('content_post_tag')->select('tag_id')->selectRaw('count(*) as count')->whereIn('tag_id', $tagIds)->groupBy('tag_id')->pluck('count', 'tag_id')->toArray(); }
+    public function getPopularCategoryStats(int $limit): array { return Post::select('category_id')->selectRaw('count(*) as posts_count')->whereNotNull('category_id')->groupBy('category_id')->orderByDesc('posts_count')->limit($limit)->get()->map(fn($row) => ['category_id' => $row->category_id, 'posts_count' => (int) $row->posts_count])->toArray(); }
+    public function getPopularTagStats(int $limit): array { return DB::table('content_post_tag')->select('tag_id')->selectRaw('count(*) as posts_count')->groupBy('tag_id')->orderByDesc('posts_count')->limit($limit)->get()->map(fn($row) => ['tag_id' => $row->tag_id, 'posts_count' => (int) $row->posts_count])->toArray(); }
+    public function getTotalPostsCount(): int { return Post::count(); }
+    public function getPublishedPostsCount(): int { return Post::published()->count(); }
+    public function getTotalViews(): int { return (int) Post::sum('views'); }
+    public function getAuthorStats(): array { return Post::selectRaw('user_id, COUNT(*) as posts_count, SUM(views) as total_views')->whereNotNull('user_id')->groupBy('user_id')->get()->keyBy('user_id')->toArray(); }
 }

@@ -76,7 +76,6 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\tests\\Feature\\Identity",
     "back-end\\database",
-    "back-end\\src\\Modules\\Taxonomy",
     "back-end\\tests",
     "User\\app\\(public)\\tags",
     "User\\app\\(public)\\search",
@@ -87,13 +86,14 @@
     "User\\app\\(public)\\author",
     "User\\app\\(public)\\about",
     "User\\app\\(public)\\terms",
-    "back-end",
-    "User\\src\\features\\comments"
+    "User\\src\\features\\comments",
+    "User",
+    "back-end\\src\\Modules\\Engagement"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-22T21:34:44.596Z",
+  "lastModified": "2026-08-22T22:01:01.243Z",
   "version": 1
 }
