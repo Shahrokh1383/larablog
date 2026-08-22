@@ -6,7 +6,7 @@ use Modules\Engagement\Http\Requests\StoreCommentRequest;
 use Modules\Engagement\Http\Resources\CommentResource;
 use Modules\Engagement\Services\CommentService;
 use Modules\Engagement\DTOs\CommentCreateDTO;
-use Modules\Content\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

@@ -3,7 +3,7 @@
 namespace Modules\ReaderExperience\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Modules\ReaderExperience\Actions\ToggleSavedPostAction;
 use Modules\ReaderExperience\Models\SavedPost;
 use Modules\ReaderExperience\Services\Contracts\SavedPostInteractionContract;

@@ -1,32 +1,25 @@
 import Link from 'next/link';
+import type { Post } from '@/features/posts';
 
 interface TagPostCardProps {
-  post: any;
+  post: Post;
 }
 
 export default function TagPostCard({ post }: TagPostCardProps) {
   return (
-    <article className="tag-post-card">
-      <div className="tag-post-img">
-        <img 
-          src={post.featured_image || 'https://picsum.photos/seed/tagpost/150/150'} 
-          alt={post.title} 
-          loading="lazy" 
-        />
+    <article className="compact-post-card">
+      <div className="compact-post-card__img">
+        <img src={post.featured_image || 'https://picsum.photos/seed/tagpost/150/150'} alt={post.title} loading="lazy" />
       </div>
-      <div className="tag-post-body">
-        <div className="tag-post-meta">
-          {post.category?.name && <span className="tag-post-category">{post.category.name}</span>}
-          <span className="tag-post-read-time">{post.reading_time} min read</span>
+      <div className="compact-post-card__body">
+        <div className="compact-post-card__meta">
+          {post.category?.name && <span className="compact-post-card__category">{post.category.name}</span>}
+          <span className="compact-post-card__read-time">{post.reading_time} min read</span>
         </div>
-        <h3 className="tag-post-title">
-          <Link href={`/post/${post.slug}`}>
-            {post.title}
-          </Link>
+        <h3 className="compact-post-card__title">
+          <Link href={`/post/${post.slug}`}>{post.title}</Link>
         </h3>
-        <p className="tag-post-excerpt">
-          {post.excerpt?.substring(0, 100)}...
-        </p>
+        <p className="compact-post-card__excerpt">{post.excerpt?.substring(0, 100)}...</p>
       </div>
     </article>
   );

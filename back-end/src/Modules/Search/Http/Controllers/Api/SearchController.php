@@ -6,9 +6,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Search\Http\Requests\SearchRequest;
 use Modules\Search\Services\SearchService;
-use Modules\Content\Http\Resources\PostPublicResource;
-use Modules\Content\Http\Resources\CategoryPublicResource;
-use Modules\Content\Http\Resources\TagPublicResource;
+use Modules\Articles\Http\Resources\PostPublicResource;
+use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
+use Modules\Taxonomy\Http\Resources\TagPublicResource;
 use Modules\Profile\Http\Resources\AuthorResource;
 
 class SearchController extends Controller

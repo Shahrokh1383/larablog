@@ -31,9 +31,9 @@ export interface Post {
   title: string;
   slug: string;
   body: string;
-  excerpt: string;
-  featured_image: string;
-  reading_time: number;
+  excerpt: string | null;
+  featured_image: string | null;
+  reading_time: number | null;
   views: number;
   published_at: string | null;
   created_at: string;

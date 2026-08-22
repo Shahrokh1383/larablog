@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Modules\Content\Models\Category;
-use Modules\Content\Models\Tag;
+use Modules\Taxonomy\Models\Category;
+use Modules\Taxonomy\Models\Tag;
 use Modules\Identity\Models\User;
 
 class ContentSeeder extends Seeder

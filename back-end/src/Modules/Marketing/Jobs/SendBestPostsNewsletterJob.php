@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Modules\Marketing\Models\Subscriber;
 use Modules\Marketing\Mail\BestPostsMail;
 use Modules\Marketing\Exceptions\MarketingException;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Illuminate\Support\Facades\Mail;
 
 class SendBestPostsNewsletterJob implements ShouldQueue

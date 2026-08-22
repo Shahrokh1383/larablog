@@ -1,0 +1,60 @@
+<?php
+
+use Modules\Taxonomy\Http\Resources\CategoryResource;
+use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
+use Modules\Taxonomy\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+
+test('CategoryResource output shape', function () {
+    $category = new Category();
+    $category->setRawAttributes([
+        'id' => 'uuid-1',
+        'name' => 'Test Category',
+        'slug' => 'test-category',
+        'created_at' => '2026-01-01 00:00:00',
+        'updated_at' => '2026-01-01 00:00:00',
+    ]);
+    $category->posts_count = '7';
+
+    $resource = (new CategoryResource($category))->toArray(new Request());
+
+    expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'created_at', 'updated_at'])
+        ->and($resource['id'])->toBe('uuid-1')
+        ->and($resource['name'])->toBe('Test Category')
+        ->and($resource['slug'])->toBe('test-category')
+        ->and($resource['posts_count'])->toBe(7)
+        ->and($resource['created_at'])->toBeInstanceOf(Carbon::class)
+        ->and($resource['updated_at'])->toBeInstanceOf(Carbon::class);
+});
+
+test('CategoryPublicResource includes aggregates when present', function () {
+    $category = new Category();
+    $category->setRawAttributes([
+        'id' => 'uuid-2',
+        'name' => 'Public Category',
+        'slug' => 'public-category',
+    ]);
+    $category->posts_count = 5;
+    $category->authors_count = 2;
+
+    $resource = (new CategoryPublicResource($category))->resolve();
+
+    expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'authors_count'])
+        ->and($resource['posts_count'])->toBe(5)
+        ->and($resource['authors_count'])->toBe(2);
+});
+
+test('CategoryPublicResource omits aggregates when null', function () {
+    $category = new Category();
+    $category->setRawAttributes([
+        'id' => 'uuid-3',
+        'name' => 'No Aggregates',
+        'slug' => 'no-aggregates',
+    ]);
+
+    $resource = (new CategoryPublicResource($category))->resolve();
+
+    expect($resource)->not->toHaveKeys(['posts_count', 'authors_count'])
+        ->and($resource)->toHaveKeys(['id', 'name', 'slug']);
+});

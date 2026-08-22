@@ -6,7 +6,7 @@ use Modules\Engagement\Models\Comment;
 use Modules\Engagement\DTOs\CommentCreateDTO;
 use Modules\Engagement\Events\CommentCreated;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

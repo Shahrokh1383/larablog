@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import type { Tag } from '../types/tag';
 
-// Helper function to determine the icon based on tag slug/name (KISS principle)
 const getTagIcon = (slug: string): string => {
   const s = slug.toLowerCase();
   if (s.includes('laravel') || s.includes('php')) return 'fa-brands fa-laravel';
@@ -27,14 +26,14 @@ interface TagCardProps {
 }
 
 export default function TagCard({ tag }: TagCardProps) {
-  const iconClass = getTagIcon(tag.slug);
-
   return (
     <div className="col-md-4 col-6 tag-card-col" data-tag={tag.slug}>
-      <Link href={`/tags/${tag.slug}`} className="tag-card">
-        <div className="tag-card-icon"><i className={iconClass}></i></div>
-        <h4 className="tag-card-name">{tag.name}</h4>
-        <span className="tag-card-count">{tag.posts_count} articles</span>
+      <Link href={`/tags/${tag.slug}`} className="taxonomy-card">
+        <div className="taxonomy-card-icon">
+          <i className={getTagIcon(tag.slug)}></i>
+        </div>
+        <h4 className="taxonomy-card-name">{tag.name}</h4>
+        <span className="taxonomy-card-count">{tag.posts_count} articles</span>
       </Link>
     </div>
   );

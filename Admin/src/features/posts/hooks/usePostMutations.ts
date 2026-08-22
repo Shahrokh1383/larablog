@@ -28,5 +28,13 @@ export function usePostMutations() {
     },
   });
 
-  return { createPost, updatePost, deletePost };
+  const uploadImage = useMutation({
+    mutationFn: (file: File) => postsApi.uploadImage(file),
+  });
+
+  const deleteImage = useMutation({
+    mutationFn: (url: string) => postsApi.deleteImage(url),
+  });
+
+  return { createPost, updatePost, deletePost, uploadImage, deleteImage };
 }

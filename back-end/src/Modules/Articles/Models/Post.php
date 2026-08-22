@@ -61,13 +61,13 @@ class Post extends Model
     public function category()
     {
         // Respecting Article III: No cross-module Model imports
-        return $this->belongsTo(\Modules\Content\Models\Category::class);
+        return $this->belongsTo(\Modules\Taxonomy\Models\Category::class);
     }
 
     public function tags()
     {
         // Respecting Article III: No cross-module Model imports
-        return $this->belongsToMany(\Modules\Content\Models\Tag::class, 'content_post_tag', 'post_id', 'tag_id');
+        return $this->belongsToMany(\Modules\Taxonomy\Models\Tag::class, 'content_post_tag', 'post_id', 'tag_id');
     }
 
     protected static function newFactory(): PostFactory

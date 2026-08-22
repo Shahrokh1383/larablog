@@ -21,26 +21,23 @@ Any code that violates these rules is incorrect and must be refactored.
 ```mermaid
 flowchart LR
     SK[Shared Kernel<br/>User, truly shared VOs/Traits]:::kernel
-    IDN[Identity<br/>Auth, OAuth, Roles, Password]:::ctx
-    CNT[Content<br/>Post, Category, Tag, EditorsPick]:::ctx
-    ENG[Engagement<br/>Comments, Replies, Realtime]:::ctx
-    RDX[ReaderExperience<br/>Saved Posts, Reading Tracking, Dashboard]:::ctx
-    MKT[Marketing<br/>Newsletter, Subscribers, Contact]:::ctx
-    ABT[About<br/>Settings, Team Members]:::ctx
-    ADM[Administration<br/>Cross-module admin aggregator]:::ctx
+    C1[{Context A}<br/>Domain capability]:::ctx
+    C2[{Context B}<br/>Domain capability]:::ctx
+    C3[{Context C}<br/>Domain capability]:::ctx
+    C4[{Context D}<br/>Domain capability]:::ctx
+    C5[{Context E}<br/>Domain capability]:::ctx
+    AGG[Aggregator Context<br/>Cross-module aggregation]:::ctx
     NEW[??? New Contexts ???<br/>Billing, Notifications, Analytics...]:::new
 
-    IDN -.->|contract| SK
-    CNT -.->|contract| SK
-    RDX -.->|contract| SK
-    ABT -.->|contract| SK
-    ADM -.->|contract| IDN
-    ADM -.->|contract| CNT
-    ADM -.->|contract| ENG
+    C1 -.->|contract| SK
+    C2 -.->|contract| SK
+    C3 -.->|contract| SK
+    AGG -.->|contract| C1
+    AGG -.->|contract| C2
     NEW -.->|contract| SK
-    ENG -.->|event| RDX
-    CNT -.->|event| MKT
-    CNT -.->|event| RDX
+    C3 -.->|event| C4
+    C2 -.->|event| C5
+    C2 -.->|event| C4
 
     classDef kernel fill:#fef3c7,stroke:#d97706,stroke-width:2px
     classDef ctx fill:#eff6ff,stroke:#3b82f6,stroke-width:1px
@@ -51,7 +48,7 @@ flowchart LR
 - **Avoid God Modules:** Never force a new capability into an existing module just to avoid a new folder. Over-segmentation is cheaper than Semantic Coupling.  
 - Modules never import another module’s Models, Controllers, or internal classes.  
 - Cross-module communication is allowed only through the two legal channels defined in **Article IV**.  
-- **Administration** is a lightweight aggregator for admin endpoints needing data from multiple modules. It contains no business logic.
+- **Aggregator contexts** are lightweight modules for admin or public endpoints needing data from multiple modules. They contain no business logic.
 
 ---
 
@@ -88,13 +85,10 @@ larablog-api/
     │   └── SharedServiceProvider.php
     └── Modules/
         ├── {Context}/                # ← placeholder for ANY new module
-        ├── Identity/                 # Seed module (example)
-        ├── Content/                  # Seed module (example)
-        ├── Engagement/               # Seed module (example)
-        ├── ReaderExperience/         # Seed module (example)
-        ├── Marketing/                # Seed module (example)
-        ├── About/                    # Seed module (example)
-        └── Administration/           # Seed module (example)
+        ├── {ContextA}/               # Seed module (example)
+        ├── {ContextB}/               # Seed module (example)
+        ├── {ContextC}/               # Seed module (example)
+        └── {AggregatorContext}/      # Aggregator module (example)
 ```
 
 **Shared Kernel — Initial Inventory:**  
@@ -128,7 +122,7 @@ src/Modules/{Context}/
     └── admin.php
 ```
 
-For aggregator modules (e.g., Administration), the skeleton may be simpler (no Models/Events/Policies), but **ServiceProvider, Routes, Http** are mandatory.
+For aggregator modules (e.g., a lightweight cross-module context), the skeleton may be simpler (no Models/Events/Policies), but **ServiceProvider, Routes, Http** are mandatory.
 
 ---
 
@@ -146,9 +140,6 @@ larablog-web/
 │   └── globals.css
 ├── src/
 │   ├── features/                             # Domain modules — mirrors backend
-│   │   ├── auth/
-│   │   ├── posts/
-│   │   ├── comments/
 │   │   └── {domain}/                         # ← create new feature dirs as needed
 │   ├── shared/
 │   │   ├── api/
@@ -184,8 +175,6 @@ larablog-admin/
     │   ├── Dashboard.tsx
     │   └── {Page}.tsx
     ├── features/
-    │   ├── auth/
-    │   ├── posts/
     │   └── {domain}/
     └── shared/
         ├── api/httpClient.ts
@@ -350,7 +339,7 @@ Forbidden: business logic, `DB::`, direct Eloquent queries, transactions.
 
 | Element | Convention | Example |
 | :--- | :--- | :--- |
-| Module | `Modules\{Context}` | `Modules\Content` |
+| Module | `Modules\{Context}` | `Modules\{NewContext}` |
 | Model | Singular | `Post` |
 | Service | `{Aggregate}Service` | `PostService` |
 | Action | `{Verb}{Aggregate}Action` | `PublishPostAction` |
@@ -383,14 +372,14 @@ Forbidden: business logic, `DB::`, direct Eloquent queries, transactions.
 
 | Phase | Primary Module(s) | Notes |
 | :--- | :--- | :--- |
-| 1 | Identity | Auth, roles, OAuth |
-| 2 | Content | CRUD Posts, Categories, Tags |
-| 3 | Content + Identity | Public read APIs |
-| 4 | Engagement | Comments + Reverb |
-| 5 | ReaderExperience | Saved posts, dashboard |
-| 6 | Marketing | Newsletter, contact |
-| 7 | Content Enhancements | Rich editors, media |
-| 8 | About, Administration | Settings, Team, Admin aggregation |
+| 1 | Context A | Auth, roles, OAuth |
+| 2 | Context B | CRUD Posts, Categories, Tags |
+| 3 | Context A + Context B | Public read APIs |
+| 4 | Context C | Comments + Reverb |
+| 5 | Context D | Saved posts, dashboard |
+| 6 | Context E | Newsletter, contact |
+| 7 | Context F | Rich editors, media |
+| 8 | Context G, Aggregator Context | Settings, Team, Admin aggregation |
 
 ---
 
@@ -412,7 +401,7 @@ Forbidden: business logic, `DB::`, direct Eloquent queries, transactions.
 | New endpoint | Controller method + Service method + Route | Existing module | Existing channels |
 | New business rule | Action or Service method | Existing module | None |
 | Reaction to another module | Listener | Your module | Domain Event |
-| New admin aggregation | Lightweight endpoint | `Modules/Administration` | Service injection only |
+| New admin aggregation | Lightweight endpoint | `Modules/{AggregatorContext}` | Service injection only |
 | New frontend page | Page + Hook + Components + api file | `features/{domain}` | `httpClient` via hooks |
 
 ### New Module Creation Checklist (Backend)
@@ -432,7 +421,7 @@ Forbidden: business logic, `DB::`, direct Eloquent queries, transactions.
 2. Add migration, model, service, controller, resource, policy, routes.  
 3. Register PSR-4 + ServiceProvider + `config/modules.php`.  
 4. Needs User → `Shared\Models\User`.  
-5. Needs Post → inject `Content\Services\Contracts\PostServiceInterface`, never import Model.
+5. Needs Post → inject `{PostContext}\Services\Contracts\PostServiceInterface`, never import Model.
 
 **Frontend**  
 1. Create `src/features/bookmarks/` with mandatory anatomy.  
@@ -470,13 +459,13 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 }
 ```
 
-`features/posts/hooks/usePost.ts`
+`features/{domain}/hooks/use{Entity}.ts`
 
 ```ts
-export function usePost(slug: string) {
+export function use{Entity}(slug: string) {
   return useQuery({
-    queryKey: postKeys.detail(slug),
-    queryFn: () => postsApi.getBySlug(slug),
+    queryKey: entityKeys.detail(slug),
+    queryFn: () => entityApi.getBySlug(slug),
     enabled: !!slug,
   });
 }

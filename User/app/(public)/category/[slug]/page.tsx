@@ -1,77 +1,69 @@
-'use client';
+import '@/styles/taxonomy.css';
+import CategoryPostsClientView from '@/features/categories/components/CategoryPostsClientView';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 
-import { useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
-import CategoryHero from '@/features/categories/components/CategoryHero';
-import CategoryPostCard from '@/features/categories/components/CategoryPostCard';
-import Pagination from '@/shared/components/Pagination';
-import { useCategoryPosts } from '@/features/categories/hooks/useCategoryPosts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import CategorySidebar from '@/features/categories/components/CategorySidebar';
-import '@/styles/category.css';
+async function getCategoryMeta(slug: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const res = await fetch(`${apiUrl}/categories/${slug}/posts?per_page=1`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.category;
+  } catch {
+    return null;
+  }
+}
 
-export default function CategorySlugPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const slug = params.slug as string;
-  
-  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
-  const [page, setPage] = useState(1);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const category = await getCategoryMeta(slug);
+  return {
+    title: category ? `${category.name} Articles | Larablog` : 'Category | Larablog',
+    description: category
+      ? `Explore the latest articles and insights on ${category.name}.`
+      : '',
+  };
+}
 
-  const { data: categories } = useCategories();
-  const { data: popularTags } = usePopularTags();
+export default async function CategorySlugPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const category = await getCategoryMeta(slug);
 
-  const { data, isLoading, isError } = useCategoryPosts(slug, sort, page);
+  if (!category) notFound();
 
-  if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
-  if (isError || !data) return <div className="container py-5 text-center">Error loading category.</div>;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.name,
+    description: `Explore the latest articles and insights on ${category.name}.`,
+    url: `/category/${slug}`,
+  };
 
   return (
     <>
-      <CategoryHero 
-        name={data.category.name} 
-        description={data.category.description}
-        postsCount={data.category.posts_count}
-        authorsCount={data.category.authors_count}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-
-      <section className="category-posts section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {data.category.name}</h2>
-                <div className="sort-dropdown">
-                  <select 
-                    className="form-select sort-select" 
-                    value={sort}
-                    onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="most_popular">Most Popular</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="row g-4" id="postsGrid">
-                {data.posts.data.map((post) => (
-                  <CategoryPostCard key={post.id} post={post} />
-                ))}
-              </div>
-
-              <Pagination 
-                currentPage={data.posts.meta.current_page} 
-                lastPage={data.posts.meta.last_page} 
-                onPageChange={setPage} 
-              />
-            </div>
-
-            <CategorySidebar categories={categories || []} popularTags={popularTags || []} />
+      <Suspense
+        fallback={
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary"></div>
           </div>
-        </div>
-      </section>
+        }
+      >
+        <CategoryPostsClientView slug={slug} categoryData={category}>
+          <BlogSidebar />
+        </CategoryPostsClientView>
+      </Suspense>
     </>
   );
 }

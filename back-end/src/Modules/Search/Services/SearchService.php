@@ -2,11 +2,10 @@
 
 namespace Modules\Search\Services;
 
-use Modules\Content\Services\PostPublicService;
-use Modules\Content\Services\CategoryPublicService;
-use Modules\Content\Services\TagPublicService;
+use Modules\Articles\Services\PostPublicService;
+use Modules\Taxonomy\Services\CategoryPublicService;
+use Modules\Taxonomy\Services\TagPublicService;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class SearchService
 {

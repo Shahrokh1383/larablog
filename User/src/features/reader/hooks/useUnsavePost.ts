@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { readerApi } from '../api/readerApi';
 import { readerKeys } from './useSavedPosts';
-import { dashboardKeys } from '@/features/dashboard/hooks/useDashboardOverview';
+import { dashboardKeys } from '@/features/dashboard';
 
 export function useUnsavePost() {
   const queryClient = useQueryClient();

@@ -2,7 +2,7 @@ export interface Tag {
   id: string;
   name: string;
   slug: string;
-  posts_count?: number;
+  posts_count: number;
   total_views?: number;
 }
 

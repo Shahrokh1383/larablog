@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { postsApi, postKeys, usePostMutations } from '@/features/posts';
+import { usePostDetail, usePostMutations, postsApi } from '@/features/posts';
 import PostForm from '@/features/posts/components/PostForm';
 import { useCategories } from '@/features/categories';
 import { useTags } from '@/features/tags';
@@ -13,20 +12,16 @@ export default function PostEditorPage() {
   const navigate = useNavigate();
   const isEditing = !!id;
 
-  const { data: post, isLoading: postLoading } = useQuery({
-    queryKey: postKeys.detail(id!),
-    queryFn: () => postsApi.getById(id!),
-    enabled: isEditing,
-  });
+  const { data: post, isLoading: postLoading } = usePostDetail(id);
 
-  // Fetch all categories and tags for the form dropdowns (large perPage)
+  // Fetch all categories and tags for the form dropdowns
   const { data: categoriesPaginated } = useCategories({ perPage: 1000 });
   const categories = categoriesPaginated?.data ?? [];
 
   const { data: tagsPaginated } = useTags({ perPage: 1000 });
   const tags = tagsPaginated?.data ?? [];
 
-  const { createPost, updatePost } = usePostMutations();
+  const { createPost, updatePost, uploadImage, deleteImage } = usePostMutations();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = (data: PostFormData) => {
@@ -50,6 +45,24 @@ export default function PostEditorPage() {
           setServerError(axiosErr.response?.data?.message ?? 'Create failed');
         },
       });
+    }
+  };
+
+  const handleUploadImage = async (file: File) => {
+    try {
+      return await uploadImage.mutateAsync(file);
+    } catch {
+      setServerError('Failed to upload image.');
+      return undefined;
+    }
+  };
+
+  const handleRemoveImage = async (url: string) => {
+    try {
+      await deleteImage.mutateAsync(url);
+      setServerError(null);
+    } catch {
+      setServerError('Failed to remove image from server.');
     }
   };
 
@@ -94,6 +107,10 @@ export default function PostEditorPage() {
                 onSubmit={handleSubmit}
                 isLoading={createPost.isPending || updatePost.isPending}
                 serverError={serverError}
+                onUploadImage={handleUploadImage}
+                onRemoveImage={handleRemoveImage}
+                isUploadingImage={uploadImage.isPending}
+                isRemovingImage={deleteImage.isPending}
               />
             </div>
           </div>

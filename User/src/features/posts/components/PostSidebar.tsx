@@ -1,17 +1,26 @@
 import Link from 'next/link';
 import { Author, Category, Post } from '../types/post';
 import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
-import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+
+// Fixed: Interface exactly matches the object returned by useSubscribeNewsletter()
+export interface NewsletterStateShape {
+  email: string;
+  onEmailChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  isPending: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+  message?: string;
+}
 
 interface PostSidebarProps {
   author: Author;
   relatedPosts: Post[] | undefined;
   categories: Category[] | undefined;
+  newsletterState: NewsletterStateShape; // Passed down from page.tsx
 }
 
-export default function PostSidebar({ author, relatedPosts, categories }: PostSidebarProps) {
-  const newsletterState = useSubscribeNewsletter();
-
+export default function PostSidebar({ author, relatedPosts, categories, newsletterState }: PostSidebarProps) {
   return (
     <aside className="col-lg-4">
       <div className="sidebar">
@@ -58,7 +67,6 @@ export default function PostSidebar({ author, relatedPosts, categories }: PostSi
           </div>
         </div>
 
-        {/* Newsletter */}
         <NewsletterSidebar {...newsletterState} />
       </div>
     </aside>

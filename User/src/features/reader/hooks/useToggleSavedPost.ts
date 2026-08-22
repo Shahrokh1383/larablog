@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { readerApi } from '../api/readerApi';
-import { postKeys } from '@/features/posts/hooks/usePost';
-import { readerKeys } from './useSavedPosts';
-import { dashboardKeys } from '@/features/dashboard/hooks/useDashboardOverview';
-import type { Post } from '@/features/posts/types/post';
+import { postKeys } from '@/features/posts';
+import type { Post } from '@/features/posts';
+import { readerKeys } from '@/features/reader';
+import { dashboardKeys } from '@/features/dashboard';
 
 export function useToggleSavedPost(postId: string, slug: string) {
   const queryClient = useQueryClient();
@@ -32,7 +32,6 @@ export function useToggleSavedPost(postId: string, slug: string) {
       }
     },
     onSuccess: (data) => {
-      // Only update if we have valid data from the server
       if (data && typeof data.saved === 'boolean') {
         queryClient.setQueryData<Post>(postQueryKey, (old) => {
           if (!old) return old;

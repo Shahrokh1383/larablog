@@ -1,74 +1,67 @@
-'use client';
+import '@/styles/taxonomy.css';
+import TagPostsClientView from '@/features/tags/components/TagPostsClientView';
+import { BlogSidebar } from '@/shared/components/BlogSidebar';
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
 
-import { useState, use } from 'react';
-import { useTagPosts } from '@/features/tags/hooks/useTagPosts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { usePopularTags } from '@/features/tags/hooks/usePopularTags';
-import TagHero from '@/features/tags/components/TagHero';
-import TagPostCard from '@/features/tags/components/TagPostCard';
-import TagsSidebar from '@/features/tags/components/TagsSidebar';
-import Pagination from '@/shared/components/Pagination';
-import '@/styles/tags.css';
+async function getTagMeta(slug: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const res = await fetch(`${apiUrl}/tags/${slug}/posts?per_page=1`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.tag;
+  } catch {
+    return null;
+  }
+}
 
-export default function TagPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
-  
-  const [sort, setSort] = useState('newest');
-  const [page, setPage] = useState(1);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const tag = await getTagMeta(slug);
+  return {
+    title: tag ? `${tag.name} Articles | Larablog` : 'Tag | Larablog',
+    description: tag ? `Explore articles and tutorials tagged with ${tag.name}.` : '',
+  };
+}
 
-  const { data: categories } = useCategories();
-  const { data: popularTags } = usePopularTags();
+export default async function TagSlugPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const tag = await getTagMeta(slug);
 
-  const { data, isLoading, isError } = useTagPosts(slug, sort, page);
+  if (!tag) notFound();
 
-  if (isLoading) return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
-  if (isError || !data) return <div className="container py-5 text-center">Error loading tag.</div>;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: tag.name,
+    description: `Explore articles and tutorials tagged with ${tag.name}.`,
+    url: `/tags/${slug}`,
+  };
 
   return (
     <>
-      <TagHero tag={data.tag} />
-
-      <section className="tags-grid-section section-padding">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-8">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="section-title mb-0"><span className="text-gradient">Latest</span> in {data.tag.name}</h2>
-                <div className="sort-dropdown">
-                  <select 
-                    className="form-select sort-select" 
-                    value={sort}
-                    onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="most_popular">Most Popular</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Using a row g-4 to match the category grid structure, though TagPostCard will take full width */}
-              <div className="row g-4" id="postsGrid">
-                {data.posts.data.map((post: any) => (
-                  <div key={post.id} className="col-12">
-                    <TagPostCard post={post} />
-                  </div>
-                ))}
-              </div>
-
-              {data.posts.meta.last_page > 1 && (
-                <Pagination 
-                  currentPage={data.posts.meta.current_page} 
-                  lastPage={data.posts.meta.last_page} 
-                  onPageChange={setPage} 
-                />
-              )}
-            </div>
-
-            <TagsSidebar popularTags={popularTags || []} categories={categories || []} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <Suspense
+        fallback={
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary"></div>
           </div>
-        </div>
-      </section>
+        }
+      >
+        <TagPostsClientView slug={slug} tagData={tag}>
+          <BlogSidebar />
+        </TagPostsClientView>
+      </Suspense>
     </>
   );
 }

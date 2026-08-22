@@ -5,7 +5,7 @@ namespace Modules\ReaderExperience\Services;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Modules\Content\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostInfoContract;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 use Modules\ReaderExperience\Models\PostRead;
 use Modules\ReaderExperience\Models\SavedPost;

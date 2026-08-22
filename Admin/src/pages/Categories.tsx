@@ -1,24 +1,27 @@
 import { useState } from 'react';
-import {
-  useCategories,
-  useCategoryMutations,
-  CategoryDataTable,
-  CategoryFormModal,
-} from '@/features/categories';
-import type { Category, CategoryFormData } from '@/features/categories';
+import { useCategories, useCategoryMutations, CategoryDataTable } from '@/features/categories';
+import { useAdminAuth } from '@/features/auth/hooks/useAdminAuth';
+import type { Category } from '@/features/categories';
 import { AxiosError } from 'axios';
+import EntityFormModal from '@/shared/components/EntityFormModal';
 
 export default function CategoriesPage() {
+  const { user } = useAdminAuth();
   const [page, setPage] = useState(1);
+
+  const [showModal, setShowModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  // FIX: Ensure canMutate is strictly boolean
+  const roles = user?.roles ?? [];
+  const canMutate = roles.includes('admin') || roles.includes('editor');
+
   const { data: paginatedResponse, isLoading, isError } = useCategories({ page });
   const { createCategory, updateCategory, deleteCategory } = useCategoryMutations();
 
   const categories = paginatedResponse?.data ?? [];
   const meta = paginatedResponse?.meta;
-
-  const [showModal, setShowModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const openCreate = () => {
     setEditingCategory(null);
@@ -26,36 +29,44 @@ export default function CategoriesPage() {
     setShowModal(true);
   };
 
-  const openEdit = (cat: Category) => {
-    setEditingCategory(cat);
+  const openEdit = (category: Category) => {
+    setEditingCategory(category);
     setServerError(null);
     setShowModal(true);
   };
 
-  const handleDelete = (cat: Category) => {
-    if (window.confirm(`Delete category "${cat.name}"?`)) {
-      deleteCategory.mutate(cat.id);
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingCategory(null);
+    setServerError(null);
+  };
+
+  const handleDelete = (category: Category) => {
+    if (window.confirm(`Delete category "${category.name}"? This action cannot be undone.`)) {
+      deleteCategory.mutate(category.id);
     }
   };
 
-  const handleSubmit = (formData: CategoryFormData) => {
+  const handleSubmit = (data: { name: string }) => {
     setServerError(null);
+    const payload = { name: data.name.trim() };
+
     if (editingCategory) {
       updateCategory.mutate(
-        { id: editingCategory.id, data: formData },
+        { id: editingCategory.id, data: payload },
         {
-          onSuccess: () => setShowModal(false),
-          onError: (err) => {
-            const axiosErr = err as AxiosError<{ message: string }>;
+          onSuccess: closeModal,
+          onError: (error) => {
+            const axiosErr = error as AxiosError<{ message?: string }>;
             setServerError(axiosErr.response?.data?.message ?? 'Update failed');
           },
         }
       );
     } else {
-      createCategory.mutate(formData, {
-        onSuccess: () => setShowModal(false),
-        onError: (err) => {
-          const axiosErr = err as AxiosError<{ message: string }>;
+      createCategory.mutate(payload, {
+        onSuccess: closeModal,
+        onError: (error) => {
+          const axiosErr = error as AxiosError<{ message?: string }>;
           setServerError(axiosErr.response?.data?.message ?? 'Create failed');
         },
       });
@@ -66,9 +77,11 @@ export default function CategoriesPage() {
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Categories</h1>
-        <button className="btn btn-primary" onClick={openCreate}>
-          <i className="fas fa-plus me-2"></i>New Category
-        </button>
+        {canMutate && (
+          <button className="btn btn-primary" onClick={openCreate}>
+            <i className="fas fa-plus me-2"></i>New Category
+          </button>
+        )}
       </div>
 
       <div className="card shadow-sm">
@@ -77,14 +90,16 @@ export default function CategoriesPage() {
             categories={categories}
             isLoading={isLoading}
             isError={isError}
+            canEdit={canMutate}
+            canDelete={canMutate}
             onEdit={openEdit}
             onDelete={handleDelete}
           />
 
-          {meta && (
+          {meta && meta.last_page > 1 && (
             <div className="d-flex justify-content-center mt-4">
               <nav>
-                <ul className="pagination">
+                <ul className="pagination mb-0">
                   <li className={`page-item ${page <= 1 ? 'disabled' : ''}`}>
                     <button
                       className="page-link"
@@ -98,7 +113,7 @@ export default function CategoriesPage() {
                       Page {meta.current_page} of {meta.last_page}
                     </span>
                   </li>
-                  <li className={`page-item ${page >= (meta.last_page ?? 1) ? 'disabled' : ''}`}>
+                  <li className={`page-item ${page >= meta.last_page ? 'disabled' : ''}`}>
                     <button
                       className="page-link"
                       onClick={() => setPage((p) => p + 1)}
@@ -113,14 +128,15 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <CategoryFormModal
+      <EntityFormModal
         show={showModal}
         title={editingCategory ? 'Edit Category' : 'Create Category'}
         initialName={editingCategory?.name ?? ''}
         onSubmit={handleSubmit}
         isLoading={createCategory.isPending || updateCategory.isPending}
         serverError={serverError}
-        onClose={() => setShowModal(false)}
+        onClose={closeModal}
+        entityIcon="folder"
       />
     </div>
   );

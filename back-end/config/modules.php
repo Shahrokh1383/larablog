@@ -2,10 +2,11 @@
 
 return [
     'enabled' => [
-        \Modules\Content\ContentServiceProvider::class,
+        \Modules\Taxonomy\TaxonomyServiceProvider::class,
         \Modules\Articles\ArticlesServiceProvider::class,
+        \Modules\Home\HomeServiceProvider::class,
+        \Modules\AdminStats\AdminStatsServiceProvider::class,
         \Modules\Identity\IdentityServiceProvider::class,
-        \Modules\Administration\AdministrationServiceProvider::class,
         \Modules\Profile\ProfileServiceProvider::class,
         \Modules\Engagement\EngagementServiceProvider::class,
         \Modules\Notification\NotificationServiceProvider::class,

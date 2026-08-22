@@ -12,7 +12,6 @@ export default function PostsPage() {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  // Reset to page 1 when search or filter changes
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, showEditorsPicksOnly]);
@@ -79,23 +78,14 @@ export default function PostsPage() {
           </div>
         </div>
         <div className="card-body">
-          {isLoading && (
-            <div className="text-center py-5">
-              <div className="spinner-border" />
-            </div>
-          )}
-          {isError && <div className="alert alert-danger m-4">Failed to load posts.</div>}
-
-          {!isLoading && !isError && data?.data && (
-            <PostDataTable
-              posts={data.data}
-              isLoading={false}
-              isError={false}
-              onEdit={(post) => navigate(`/posts/editor/${post.id}`)}
-              onDelete={handleDelete}
-              onComments={handleComments}
-            />
-          )}
+          <PostDataTable
+            posts={data?.data ?? []}
+            isLoading={isLoading}
+            isError={isError}
+            onEdit={(post) => navigate(`/posts/editor/${post.id}`)}
+            onDelete={handleDelete}
+            onComments={handleComments}
+          />
 
           {data?.meta && (
             <div className="d-flex justify-content-center mt-4">

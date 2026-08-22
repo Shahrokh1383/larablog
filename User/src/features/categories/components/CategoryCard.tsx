@@ -10,7 +10,7 @@ const getCategoryIcon = (slug: string): string => {
   if (s.includes('ai') || s.includes('ml')) return 'fa-solid fa-robot';
   if (s.includes('mobile')) return 'fa-solid fa-mobile-screen';
   if (s.includes('cloud')) return 'fa-solid fa-cloud';
-  return 'fa-solid fa-folder'; // Default fallback
+  return 'fa-solid fa-folder';
 };
 
 interface CategoryCardProps {
@@ -22,10 +22,12 @@ export default function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <div className="col-md-4 col-6 category-card-col" data-tag={category.slug}>
-      <Link href={`/category/${category.slug}`} className="category-card">
-        <div className="category-card-icon"><i className={iconClass}></i></div>
-        <h4 className="category-card-name">{category.name}</h4>
-        <span className="category-card-count">{category.posts_count} articles</span>
+      <Link href={`/category/${category.slug}`} className="taxonomy-card">
+        <div className="taxonomy-card-icon">
+          <i className={iconClass}></i>
+        </div>
+        <h4 className="taxonomy-card-name">{category.name}</h4>
+        <span className="taxonomy-card-count">{category.posts_count} articles</span>
       </Link>
     </div>
   );

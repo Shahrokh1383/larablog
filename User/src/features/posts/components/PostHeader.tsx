@@ -16,7 +16,9 @@ export default function PostHeader({ post, action }: PostHeaderProps) {
 
   return (
     <header className="post-header">
-      <span className="post-badge">{post.category.name}</span>
+      {/* Fix: Safe navigation for null category */}
+      {post.category && <span className="post-badge">{post.category.name}</span>}
+      
       <h1 className="post-title">{post.title}</h1>
       <div className="post-meta">
         <div className="post-meta-author">
