@@ -15,7 +15,6 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "back-end\\tests",
     "back-end\\routes",
     "back-end\\resources",
     "back-end\\bootstrap",
@@ -45,7 +44,6 @@
     "back-end\\src\\Modules\\Profile",
     "back-end\\src\\Modules\\Notification",
     "back-end\\src\\Modules\\Marketing",
-    "back-end\\src\\Modules\\Identity",
     "back-end\\src\\Modules\\Home",
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\ReaderExperience",
@@ -79,12 +77,13 @@
     "back-end\\database",
     "back-end\\src\\Modules\\Articles",
     "User\\src\\features\\notifications",
-    "User\\src\\providers"
+    "User\\src\\providers",
+    "back-end\\src\\Modules\\Taxonomy"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-21T00:20:30.588Z",
+  "lastModified": "2026-08-22T19:56:30.543Z",
   "version": 1
 }
