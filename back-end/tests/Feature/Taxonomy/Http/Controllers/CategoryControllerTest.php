@@ -39,7 +39,7 @@ it('stores a category', function () {
 
     $response = $this->postJson('/api/admin/categories', ['name' => 'New Category']);
 
-    $response->assertOk()
+    $response->assertCreated()
         ->assertJsonPath('data.name', 'New Category')
         ->assertJsonPath('data.slug', 'new-category');
 });
@@ -73,7 +73,12 @@ it('shows a category with stats', function () {
 it('updates a category', function () {
     $category = Category::factory()->create(['name' => 'Old', 'slug' => 'old']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+        $mock->shouldReceive('getTotalPostCountsByCategories')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$category->id])
+            ->andReturn([$category->id => 0]);
+    });
 
     $response = $this->putJson("/api/admin/categories/{$category->id}", ['name' => 'Updated']);
 

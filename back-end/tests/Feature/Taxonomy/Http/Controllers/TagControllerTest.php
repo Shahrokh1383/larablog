@@ -39,7 +39,7 @@ it('stores a tag', function () {
 
     $response = $this->postJson('/api/admin/tags', ['name' => 'New Tag']);
 
-    $response->assertOk()
+    $response->assertCreated()
         ->assertJsonPath('data.name', 'New Tag')
         ->assertJsonPath('data.slug', 'new-tag');
 });
@@ -73,7 +73,12 @@ it('shows a tag with stats', function () {
 it('updates a tag', function () {
     $tag = Tag::factory()->create(['name' => 'Old', 'slug' => 'old']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 0]);
+    });
 
     $response = $this->putJson("/api/admin/tags/{$tag->id}", ['name' => 'Updated']);
 
