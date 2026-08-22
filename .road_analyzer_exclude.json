@@ -74,16 +74,17 @@
     "Admin\\src\\features\\posts",
     "Admin\\src\\features\\tags",
     "Admin",
-    "back-end\\database",
     "back-end\\src\\Modules\\Articles",
     "User\\src\\features\\notifications",
     "User\\src\\providers",
-    "back-end\\src\\Modules\\Taxonomy"
+    "User",
+    "back-end\\src\\Modules\\Identity",
+    "back-end\\tests\\Feature\\Identity"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-22T19:56:30.543Z",
+  "lastModified": "2026-08-22T20:10:34.786Z",
   "version": 1
 }
