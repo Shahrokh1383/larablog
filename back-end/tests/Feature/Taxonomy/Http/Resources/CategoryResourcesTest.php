@@ -6,7 +6,8 @@ use Modules\Taxonomy\Models\Category;
 use Illuminate\Http\Request;
 
 test('CategoryResource output shape', function () {
-    $category = new Category([
+    $category = new Category();
+    $category->setRawAttributes([
         'id' => 'uuid-1',
         'name' => 'Test Category',
         'slug' => 'test-category',
@@ -28,7 +29,8 @@ test('CategoryResource output shape', function () {
 });
 
 test('CategoryPublicResource includes aggregates when present', function () {
-    $category = new Category([
+    $category = new Category();
+    $category->setRawAttributes([
         'id' => 'uuid-2',
         'name' => 'Public Category',
         'slug' => 'public-category',
@@ -36,7 +38,7 @@ test('CategoryPublicResource includes aggregates when present', function () {
     $category->posts_count = 5;
     $category->authors_count = 2;
 
-    $resource = (new CategoryPublicResource($category))->toArray(new Request());
+    $resource = (new CategoryPublicResource($category))->resolve();
 
     expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'authors_count'])
         ->and($resource['posts_count'])->toBe(5)
@@ -44,13 +46,14 @@ test('CategoryPublicResource includes aggregates when present', function () {
 });
 
 test('CategoryPublicResource omits aggregates when null', function () {
-    $category = new Category([
+    $category = new Category();
+    $category->setRawAttributes([
         'id' => 'uuid-3',
         'name' => 'No Aggregates',
         'slug' => 'no-aggregates',
     ]);
 
-    $resource = (new CategoryPublicResource($category))->toArray(new Request());
+    $resource = (new CategoryPublicResource($category))->resolve();
 
     expect($resource)->not->toHaveKeys(['posts_count', 'authors_count'])
         ->and($resource)->toHaveKeys(['id', 'name', 'slug']);

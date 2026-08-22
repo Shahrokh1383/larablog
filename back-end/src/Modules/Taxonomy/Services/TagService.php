@@ -42,7 +42,7 @@ class TagService implements TagAdminServiceInterface
 
         return Tag::create([
             'name' => $name,
-            'slug' => $slug,
+            'slug' => (string) $slug,
         ]);
     }
 
@@ -50,7 +50,7 @@ class TagService implements TagAdminServiceInterface
     {
         if ($name !== $tag->name) {
             $slug = $this->generateSlugAction->execute($name, Tag::class, $tag->id);
-            $tag->update(['name' => $name, 'slug' => $slug]);
+            $tag->update(['name' => $name, 'slug' => (string) $slug]);
         }
 
         return $this->getWithStats($tag);

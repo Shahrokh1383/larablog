@@ -42,7 +42,7 @@ class CategoryService implements CategoryAdminServiceInterface
 
         return Category::create([
             'name' => $name,
-            'slug' => $slug,
+            'slug' => (string) $slug,
         ]);
     }
 
@@ -50,7 +50,7 @@ class CategoryService implements CategoryAdminServiceInterface
     {
         if ($name !== $category->name) {
             $slug = $this->generateSlugAction->execute($name, Category::class, $category->id);
-            $category->update(['name' => $name, 'slug' => $slug]);
+            $category->update(['name' => $name, 'slug' => (string) $slug]);
         }
 
         return $this->getWithStats($category);

@@ -36,7 +36,12 @@ it('creates a category with generated slug', function () {
 it('regenerates slug when name changes', function () {
     $category = Category::factory()->create(['name' => 'Old Name', 'slug' => 'old-name']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+        $mock->shouldReceive('getTotalPostCountsByCategories')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$category->id])
+            ->andReturn([$category->id => 0]);
+    });
 
     $service = app(CategoryService::class);
     $updated = $service->update($category, 'New Name');
@@ -48,7 +53,12 @@ it('regenerates slug when name changes', function () {
 it('keeps slug when name unchanged', function () {
     $category = Category::factory()->create(['name' => 'Same Name', 'slug' => 'same-name']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+        $mock->shouldReceive('getTotalPostCountsByCategories')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$category->id])
+            ->andReturn([$category->id => 0]);
+    });
 
     $service = app(CategoryService::class);
     $updated = $service->update($category, 'Same Name');

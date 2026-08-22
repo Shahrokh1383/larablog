@@ -6,7 +6,8 @@ use Modules\Taxonomy\Models\Tag;
 use Illuminate\Http\Request;
 
 test('TagResource output shape', function () {
-    $tag = new Tag([
+    $tag = new Tag();
+    $tag->setRawAttributes([
         'id' => 'uuid-4',
         'name' => 'Test Tag',
         'slug' => 'test-tag',
@@ -28,7 +29,8 @@ test('TagResource output shape', function () {
 });
 
 test('TagPublicResource includes aggregates when present', function () {
-    $tag = new Tag([
+    $tag = new Tag();
+    $tag->setRawAttributes([
         'id' => 'uuid-5',
         'name' => 'Public Tag',
         'slug' => 'public-tag',
@@ -36,7 +38,7 @@ test('TagPublicResource includes aggregates when present', function () {
     $tag->posts_count = 8;
     $tag->total_views = 100;
 
-    $resource = (new TagPublicResource($tag))->toArray(new Request());
+    $resource = (new TagPublicResource($tag))->resolve();
 
     expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'total_views'])
         ->and($resource['posts_count'])->toBe(8)
@@ -44,13 +46,14 @@ test('TagPublicResource includes aggregates when present', function () {
 });
 
 test('TagPublicResource omits aggregates when null', function () {
-    $tag = new Tag([
+    $tag = new Tag();
+    $tag->setRawAttributes([
         'id' => 'uuid-6',
         'name' => 'No Aggregates',
         'slug' => 'no-aggregates',
     ]);
 
-    $resource = (new TagPublicResource($tag))->toArray(new Request());
+    $resource = (new TagPublicResource($tag))->resolve();
 
     expect($resource)->not->toHaveKeys(['posts_count', 'total_views'])
         ->and($resource)->toHaveKeys(['id', 'name', 'slug']);

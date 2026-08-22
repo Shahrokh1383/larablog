@@ -36,7 +36,12 @@ it('creates a tag with generated slug', function () {
 it('regenerates slug when name changes', function () {
     $tag = Tag::factory()->create(['name' => 'Old Tag', 'slug' => 'old-tag']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 0]);
+    });
 
     $service = app(TagService::class);
     $updated = $service->update($tag, 'New Tag');
@@ -48,7 +53,12 @@ it('regenerates slug when name changes', function () {
 it('keeps slug when name unchanged', function () {
     $tag = Tag::factory()->create(['name' => 'Same Tag', 'slug' => 'same-tag']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 0]);
+    });
 
     $service = app(TagService::class);
     $updated = $service->update($tag, 'Same Tag');
