@@ -2,64 +2,53 @@
 
 use Modules\Taxonomy\Policies\CategoryPolicy;
 use Modules\Taxonomy\Models\Category;
-use Shared\Contracts\HasRolesContract;
-use Mockery\MockInterface;
-
-function createUserMock(array $roles): HasRolesContract
-{
-    return Mockery::mock(HasRolesContract::class, function (MockInterface $mock) use ($roles) {
-        $mock->shouldReceive('hasAnyRole')
-            ->andReturnUsing(fn ($checkRoles) => !empty(array_intersect((array) $checkRoles, $roles)));
-        $mock->shouldReceive('hasRole')
-            ->andReturnUsing(fn ($role) => in_array($role, $roles));
-    });
-}
+use Tests\Feature\Taxonomy\Policies\Support\UserRoleMockFactory;
 
 test('CategoryPolicy viewAny truth table', function () {
     $policy = new CategoryPolicy();
 
-    expect($policy->viewAny(createUserMock(['admin'])))->toBeTrue()
-        ->and($policy->viewAny(createUserMock(['editor'])))->toBeTrue()
-        ->and($policy->viewAny(createUserMock(['author'])))->toBeTrue()
-        ->and($policy->viewAny(createUserMock(['user'])))->toBeFalse()
-        ->and($policy->viewAny(createUserMock([])))->toBeFalse();
+    expect($policy->viewAny(UserRoleMockFactory::make(['admin'])))->toBeTrue()
+        ->and($policy->viewAny(UserRoleMockFactory::make(['editor'])))->toBeTrue()
+        ->and($policy->viewAny(UserRoleMockFactory::make(['author'])))->toBeTrue()
+        ->and($policy->viewAny(UserRoleMockFactory::make(['user'])))->toBeFalse()
+        ->and($policy->viewAny(UserRoleMockFactory::make([])))->toBeFalse();
 });
 
 test('CategoryPolicy view truth table', function () {
     $policy = new CategoryPolicy();
     $category = new Category();
 
-    expect($policy->view(createUserMock(['admin']), $category))->toBeTrue()
-        ->and($policy->view(createUserMock(['editor']), $category))->toBeTrue()
-        ->and($policy->view(createUserMock(['author']), $category))->toBeTrue()
-        ->and($policy->view(createUserMock(['user']), $category))->toBeFalse();
+    expect($policy->view(UserRoleMockFactory::make(['admin']), $category))->toBeTrue()
+        ->and($policy->view(UserRoleMockFactory::make(['editor']), $category))->toBeTrue()
+        ->and($policy->view(UserRoleMockFactory::make(['author']), $category))->toBeTrue()
+        ->and($policy->view(UserRoleMockFactory::make(['user']), $category))->toBeFalse();
 });
 
 test('CategoryPolicy create truth table', function () {
     $policy = new CategoryPolicy();
 
-    expect($policy->create(createUserMock(['admin'])))->toBeTrue()
-        ->and($policy->create(createUserMock(['editor'])))->toBeTrue()
-        ->and($policy->create(createUserMock(['author'])))->toBeFalse()
-        ->and($policy->create(createUserMock(['user'])))->toBeFalse();
+    expect($policy->create(UserRoleMockFactory::make(['admin'])))->toBeTrue()
+        ->and($policy->create(UserRoleMockFactory::make(['editor'])))->toBeTrue()
+        ->and($policy->create(UserRoleMockFactory::make(['author'])))->toBeFalse()
+        ->and($policy->create(UserRoleMockFactory::make(['user'])))->toBeFalse();
 });
 
 test('CategoryPolicy update truth table', function () {
     $policy = new CategoryPolicy();
     $category = new Category();
 
-    expect($policy->update(createUserMock(['admin']), $category))->toBeTrue()
-        ->and($policy->update(createUserMock(['editor']), $category))->toBeTrue()
-        ->and($policy->update(createUserMock(['author']), $category))->toBeFalse()
-        ->and($policy->update(createUserMock(['user']), $category))->toBeFalse();
+    expect($policy->update(UserRoleMockFactory::make(['admin']), $category))->toBeTrue()
+        ->and($policy->update(UserRoleMockFactory::make(['editor']), $category))->toBeTrue()
+        ->and($policy->update(UserRoleMockFactory::make(['author']), $category))->toBeFalse()
+        ->and($policy->update(UserRoleMockFactory::make(['user']), $category))->toBeFalse();
 });
 
 test('CategoryPolicy delete truth table', function () {
     $policy = new CategoryPolicy();
     $category = new Category();
 
-    expect($policy->delete(createUserMock(['admin']), $category))->toBeTrue()
-        ->and($policy->delete(createUserMock(['editor']), $category))->toBeTrue()
-        ->and($policy->delete(createUserMock(['author']), $category))->toBeFalse()
-        ->and($policy->delete(createUserMock(['user']), $category))->toBeFalse();
+    expect($policy->delete(UserRoleMockFactory::make(['admin']), $category))->toBeTrue()
+        ->and($policy->delete(UserRoleMockFactory::make(['editor']), $category))->toBeTrue()
+        ->and($policy->delete(UserRoleMockFactory::make(['author']), $category))->toBeFalse()
+        ->and($policy->delete(UserRoleMockFactory::make(['user']), $category))->toBeFalse();
 });
