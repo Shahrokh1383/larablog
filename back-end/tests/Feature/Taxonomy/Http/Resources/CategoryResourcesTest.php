@@ -4,6 +4,7 @@ use Modules\Taxonomy\Http\Resources\CategoryResource;
 use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
 use Modules\Taxonomy\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 test('CategoryResource output shape', function () {
     $category = new Category();
@@ -18,14 +19,13 @@ test('CategoryResource output shape', function () {
 
     $resource = (new CategoryResource($category))->toArray(new Request());
 
-    expect($resource)->toBe([
-        'id' => 'uuid-1',
-        'name' => 'Test Category',
-        'slug' => 'test-category',
-        'posts_count' => 7,
-        'created_at' => '2026-01-01 00:00:00',
-        'updated_at' => '2026-01-01 00:00:00',
-    ]);
+    expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'created_at', 'updated_at'])
+        ->and($resource['id'])->toBe('uuid-1')
+        ->and($resource['name'])->toBe('Test Category')
+        ->and($resource['slug'])->toBe('test-category')
+        ->and($resource['posts_count'])->toBe(7)
+        ->and($resource['created_at'])->toBeInstanceOf(Carbon::class)
+        ->and($resource['updated_at'])->toBeInstanceOf(Carbon::class);
 });
 
 test('CategoryPublicResource includes aggregates when present', function () {

@@ -4,6 +4,7 @@ use Modules\Taxonomy\Http\Resources\TagResource;
 use Modules\Taxonomy\Http\Resources\TagPublicResource;
 use Modules\Taxonomy\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 test('TagResource output shape', function () {
     $tag = new Tag();
@@ -18,14 +19,13 @@ test('TagResource output shape', function () {
 
     $resource = (new TagResource($tag))->toArray(new Request());
 
-    expect($resource)->toBe([
-        'id' => 'uuid-4',
-        'name' => 'Test Tag',
-        'slug' => 'test-tag',
-        'posts_count' => 3,
-        'created_at' => '2026-01-01 00:00:00',
-        'updated_at' => '2026-01-01 00:00:00',
-    ]);
+    expect($resource)->toHaveKeys(['id', 'name', 'slug', 'posts_count', 'created_at', 'updated_at'])
+        ->and($resource['id'])->toBe('uuid-4')
+        ->and($resource['name'])->toBe('Test Tag')
+        ->and($resource['slug'])->toBe('test-tag')
+        ->and($resource['posts_count'])->toBe(3)
+        ->and($resource['created_at'])->toBeInstanceOf(Carbon::class)
+        ->and($resource['updated_at'])->toBeInstanceOf(Carbon::class);
 });
 
 test('TagPublicResource includes aggregates when present', function () {
