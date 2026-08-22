@@ -4,14 +4,15 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
 use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
-use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
+use Modules\Articles\Services\Contracts\PostStatsServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class TagPublicService implements TagPublicServiceInterface
 {
     public function __construct(
-        private PostPublicServiceInterface $postPublicService
+        private PostStatsServiceInterface $postStatsService
     ) {}
 
     public function getPublicTags(?string $search = null, int $perPage = 12): LengthAwarePaginator
@@ -19,7 +20,7 @@ class TagPublicService implements TagPublicServiceInterface
         $tags = Tag::search($search)->paginate($perPage);
         $tagIds = $tags->pluck('id')->toArray();
 
-        $postCounts = $this->postPublicService->getPublishedPostCountsByTags($tagIds);
+        $postCounts = $this->postStatsService->getPublishedPostCountsByTags($tagIds);
 
         $tags->each(function ($tag) use ($postCounts) {
             $tag->posts_count = $postCounts[$tag->id] ?? 0;
@@ -30,18 +31,19 @@ class TagPublicService implements TagPublicServiceInterface
 
     public function getPopularTags(int $limit = 10): array
     {
-        // 1. Ask Articles for the top tag IDs, post counts, and view sums
-        $stats = $this->postPublicService->getPopularTagStats($limit);
-        if (empty($stats)) return [];
+        $stats = $this->postStatsService->getPopularTagStats($limit);
 
-        // 2. Fetch the actual Tag models by those IDs
+        if (empty($stats)) {
+            return [];
+        }
+
         $tagIds = array_column($stats, 'tag_id');
         $tags = Tag::whereIn('id', $tagIds)->get()->keyBy('id');
 
-        // 3. Map and preserve the exact order returned by Articles
         $result = [];
         foreach ($stats as $stat) {
             $tag = $tags[$stat['tag_id']] ?? null;
+
             if ($tag) {
                 $result[] = [
                     'id'          => $tag->id,
@@ -59,16 +61,16 @@ class TagPublicService implements TagPublicServiceInterface
     public function getPublicTagBySlug(string $slug): Tag
     {
         $tag = Tag::where('slug', $slug)->firstOrFail();
-        
-        $postCounts = $this->postPublicService->getPublishedPostCountsByTags([$tag->id]);
+
+        $postCounts = $this->postStatsService->getPublishedPostCountsByTags([$tag->id]);
         $tag->posts_count = $postCounts[$tag->id] ?? 0;
 
         return $tag;
     }
 
-    public function getTagIdBySlug(string $slug): string
+    public function getTagIdBySlug(string $slug): ?string
     {
-        return Tag::where('slug', $slug)->firstOrFail()->id;
+        return Tag::where('slug', $slug)->value('id');
     }
 
     public function getPopularTagsAsArray(int $limit = 10): array
@@ -85,7 +87,9 @@ class TagPublicService implements TagPublicServiceInterface
 
     public function getTagsByPostIds(array $postIds): array
     {
-        if (empty($postIds)) return [];
+        if (empty($postIds)) {
+            return [];
+        }
 
         $tags = DB::table('content_post_tag as pt')
             ->join('content_tags as t', 't.id', '=', 'pt.tag_id')
@@ -105,11 +109,15 @@ class TagPublicService implements TagPublicServiceInterface
         return $map;
     }
 
-    public function getPostIdsByTag(string $tagId): array
+    public function applyTagPostFilter(Builder $query, string $tagId): Builder
     {
-        return DB::table('content_post_tag')
-            ->where('tag_id', $tagId)
-            ->pluck('post_id')
-            ->all();
+        $postTable = $query->getModel()->getTable();
+
+        return $query->whereExists(function ($subquery) use ($postTable, $tagId) {
+            $subquery->select(DB::raw(1))
+                ->from('content_post_tag')
+                ->whereColumn('content_post_tag.post_id', "{$postTable}.id")
+                ->where('content_post_tag.tag_id', $tagId);
+        });
     }
 }

@@ -27,7 +27,7 @@ class PostPublicService implements PostPublicServiceInterface
             ->paginate($perPage);
 
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
@@ -43,14 +43,14 @@ class PostPublicService implements PostPublicServiceInterface
 
         $post->increment('views');
         $this->mapPostRelations->execute([$post]);
-        
+
         return $post;
     }
 
     public function getRelatedPosts(string $slug, int $limit = 3): array
     {
         $post = Post::where('slug', $slug)->published()->first();
-        
+
         if (!$post) {
             return [];
         }
@@ -63,7 +63,7 @@ class PostPublicService implements PostPublicServiceInterface
             ->get();
 
         $this->mapPostRelations->execute($related);
-        
+
         return $related->all();
     }
 
@@ -74,24 +74,19 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
     public function getPostsByTag(string $tagId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        $postIds = $this->tagService->getPostIdsByTag($tagId);
-        
-        if (empty($postIds)) {
-            return new Paginator([], 0, $perPage);
-        }
-
-        $query = Post::published()->whereIn('id', $postIds);
+        $query = Post::published();
+        $query = $this->tagService->applyTagPostFilter($query, $tagId);
         $this->applyPublicSort($query, $sort);
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
@@ -104,7 +99,7 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
@@ -116,7 +111,7 @@ class PostPublicService implements PostPublicServiceInterface
             ->paginate($perpage);
 
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
@@ -129,7 +124,7 @@ class PostPublicService implements PostPublicServiceInterface
             ->get();
 
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
@@ -142,15 +137,15 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->get();
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
     public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        try {
-            $categoryId = $this->categoryService->getCategoryIdBySlug($categorySlug);
-        } catch (\Throwable $e) {
+        $categoryId = $this->categoryService->getCategoryIdBySlug($categorySlug);
+
+        if ($categoryId === null) {
             return new Paginator([], 0, $perPage);
         }
 
@@ -159,30 +154,25 @@ class PostPublicService implements PostPublicServiceInterface
 
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 
     public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
-        try {
-            $tagId = $this->tagService->getTagIdBySlug($tagSlug);
-        } catch (\Throwable $e) {
-            return new Paginator([], 0, $perPage);
-        }
-        
-        $postIds = $this->tagService->getPostIdsByTag($tagId);
+        $tagId = $this->tagService->getTagIdBySlug($tagSlug);
 
-        if (empty($postIds)) {
+        if ($tagId === null) {
             return new Paginator([], 0, $perPage);
         }
 
-        $query = Post::published()->whereIn('id', $postIds);
+        $query = Post::published();
+        $query = $this->tagService->applyTagPostFilter($query, $tagId);
         $this->applyPublicSort($query, $sort);
-        
+
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
-        
+
         return $posts;
     }
 

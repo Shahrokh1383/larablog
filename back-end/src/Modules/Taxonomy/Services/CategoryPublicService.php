@@ -4,13 +4,13 @@ namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\Services\Contracts\CategoryPublicServiceInterface;
-use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
+use Modules\Articles\Services\Contracts\PostStatsServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CategoryPublicService implements CategoryPublicServiceInterface
 {
     public function __construct(
-        private PostPublicServiceInterface $postPublicService
+        private PostStatsServiceInterface $postStatsService
     ) {}
 
     public function getPublicCategories(?string $search = null, int $perPage = 10): LengthAwarePaginator
@@ -18,9 +18,8 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         $categories = Category::search($search)->paginate($perPage);
         $categoryIds = $categories->pluck('id')->toArray();
 
-        // Fetch aggregates strictly via Contract (Map Pattern)
-        $postCounts = $this->postPublicService->getPublishedPostCountsByCategories($categoryIds);
-        $authorCounts = $this->postPublicService->getDistinctAuthorCountsByCategories($categoryIds);
+        $postCounts = $this->postStatsService->getPublishedPostCountsByCategories($categoryIds);
+        $authorCounts = $this->postStatsService->getDistinctAuthorCountsByCategories($categoryIds);
 
         $categories->each(function ($category) use ($postCounts, $authorCounts) {
             $category->posts_count = $postCounts[$category->id] ?? 0;
@@ -33,9 +32,9 @@ class CategoryPublicService implements CategoryPublicServiceInterface
     public function getPublicCategoryBySlug(string $slug): Category
     {
         $category = Category::where('slug', $slug)->firstOrFail();
-        
-        $postCounts = $this->postPublicService->getPublishedPostCountsByCategories([$category->id]);
-        $authorCounts = $this->postPublicService->getDistinctAuthorCountsByCategories([$category->id]);
+
+        $postCounts = $this->postStatsService->getPublishedPostCountsByCategories([$category->id]);
+        $authorCounts = $this->postStatsService->getDistinctAuthorCountsByCategories([$category->id]);
 
         $category->posts_count = $postCounts[$category->id] ?? 0;
         $category->authors_count = $authorCounts[$category->id] ?? 0;
@@ -43,25 +42,26 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         return $category;
     }
 
-    public function getCategoryIdBySlug(string $slug): string
+    public function getCategoryIdBySlug(string $slug): ?string
     {
-        return Category::where('slug', $slug)->firstOrFail()->id;
+        return Category::where('slug', $slug)->value('id');
     }
 
     public function getPopularCategories(int $limit): array
     {
-        // 1. Ask Articles for the top category IDs and their counts
-        $stats = $this->postPublicService->getPopularCategoryStats($limit);
-        if (empty($stats)) return [];
+        $stats = $this->postStatsService->getPopularCategoryStats($limit);
 
-        // 2. Fetch the actual Category models by those IDs
+        if (empty($stats)) {
+            return [];
+        }
+
         $categoryIds = array_column($stats, 'category_id');
         $categories = Category::whereIn('id', $categoryIds)->get()->keyBy('id');
 
-        // 3. Map and preserve the exact order returned by Articles
         $result = [];
         foreach ($stats as $stat) {
             $category = $categories[$stat['category_id']] ?? null;
+
             if ($category) {
                 $result[] = [
                     'id'          => $category->id,
@@ -84,13 +84,15 @@ class CategoryPublicService implements CategoryPublicServiceInterface
 
     public function getCategoriesByIds(array $ids): array
     {
-        if (empty($ids)) return [];
+        if (empty($ids)) {
+            return [];
+        }
 
         return Category::whereIn('id', $ids)
             ->get()
             ->mapWithKeys(fn($c) => [
                 $c->id => [
-                    'id' => $c->id,
+                    'id'   => $c->id,
                     'name' => $c->name,
                     'slug' => $c->slug,
                 ]
