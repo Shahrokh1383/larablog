@@ -8,6 +8,7 @@ use Modules\Taxonomy\Http\Resources\TagPublicResource;
 use Modules\Taxonomy\Http\Requests\IndexTagPublicRequest;
 use Modules\Taxonomy\Http\Requests\ShowTagPostsRequest;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
+use Modules\Articles\Http\Resources\PostPublicResource;
 use Illuminate\Routing\Controller;
 
 class TagPublicController extends Controller
@@ -47,7 +48,7 @@ class TagPublicController extends Controller
 
         return response()->json([
             'tag'   => new TagPublicResource($tag),
-            'posts' => $posts,
+            'posts' => PostPublicResource::collection($posts),
         ]);
     }
 }
