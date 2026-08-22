@@ -3,27 +3,19 @@
 namespace Modules\Articles\Services\Contracts;
 
 use Modules\Articles\Models\Post;
+use Modules\Articles\DTOs\PostCreateDTO;
+use Modules\Articles\DTOs\PostUpdateDTO;
+use Shared\Contracts\HasRolesContract;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\UploadedFile;
 
 interface PostAdminServiceInterface
 {
+    public function getAll(?string $search, ?HasRolesContract $user, int $perPage, int $page, ?bool $isEditorPick): LengthAwarePaginator;
+    public function create(PostCreateDTO $dto): Post;
+    public function update(Post $post, PostUpdateDTO $dto): Post;
+    public function delete(Post $post): void;
     public function find(string $id): ?Post;
-
-    /** @return array<string, int> Map of category_id => total post count (including unpublished) */
-    public function getTotalPostCountsByCategories(array $categoryIds): array;
-    
-    /** @return array<string, int> Map of tag_id => total post count (including unpublished) */
-    public function getTotalPostCountsByTags(array $tagIds): array;
-
-    /** @return array<int, array{category_id: string, posts_count: int}> Top categories by post count */
-    public function getPopularCategoryStats(int $limit): array;
-
-    /** @return array<int, array{tag_id: string, posts_count: int}> Top tags by post count */
-    public function getPopularTagStats(int $limit): array;
-
-    public function getTotalPostsCount(): int;
-    public function getPublishedPostsCount(): int;
-    public function getTotalViews(): int;
-    
-    /** @return array<int, array{posts_count: int, total_views: int}> */
-    public function getAuthorStats(): array;
+    public function uploadImage(UploadedFile $file): string;
+    public function deleteImage(string $url): bool;
 }
