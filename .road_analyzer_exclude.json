@@ -67,9 +67,7 @@
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\about",
     "Admin\\src\\features\\comments",
-    "Admin\\src\\features\\posts",
     "Admin\\src\\features\\tags",
-    "Admin",
     "User\\src\\features\\notifications",
     "User\\src\\providers",
     "back-end\\src\\Modules\\Identity",
@@ -92,12 +90,16 @@
     "User\\src\\features\\categories",
     "User\\src\\features\\tags",
     "User",
-    "back-end\\tests"
+    "Admin\\src\\shared",
+    "Admin\\src\\features\\categories",
+    "Admin\\src\\features\\users",
+    "Admin",
+    "back-end\\src\\Modules\\Articles"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T04:44:31.975Z",
+  "lastModified": "2026-08-23T05:35:27.337Z",
   "version": 1
 }

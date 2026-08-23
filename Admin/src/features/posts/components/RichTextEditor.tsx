@@ -1,17 +1,17 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { postsApi } from '../api/postsApi';
 
 interface RichTextEditorProps {
   value: string;
   onChange: (html: string) => void;
+  onImageUpload: (file: File) => Promise<string | undefined>;
+  isUploadingImage: boolean;
 }
 
-export default function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+export default function RichTextEditor({ value, onChange, onImageUpload, isUploadingImage }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeStates, setActiveStates] = useState<Record<string, boolean>>({});
 
-  // Set initial content and ensure it's never completely empty (to keep it focusable)
   useEffect(() => {
     if (editorRef.current) {
       if (value && editorRef.current.innerHTML !== value) {
@@ -31,7 +31,6 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       return;
     }
 
-    // Ensure the selection is actually inside our editor
     let node = selection.anchorNode;
     let isInsideEditor = false;
     while (node) {
@@ -57,7 +56,6 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
       pre: false,
     };
 
-    // Traverse DOM upwards to check block formatting
     let currentBlock = selection.anchorNode;
     if (currentBlock && currentBlock.nodeType === 3) {
       currentBlock = currentBlock.parentNode;
@@ -69,7 +67,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         if (currentBlock.nodeName === 'H2') states.h2 = true;
         if (currentBlock.nodeName === 'BLOCKQUOTE') states.blockquote = true;
         if (currentBlock.nodeName === 'PRE') states.pre = true;
-        break; // Stop once we hit the first block element
+        break;
       }
       currentBlock = currentBlock.parentNode;
     }
@@ -78,23 +76,18 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
   }, []);
 
   const exec = (command: string, val?: string) => {
-    // Execute the command
     document.execCommand(command, false, val);
-    
-    // Force DOM read and state update
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
       updateActiveStates();
     }
   };
 
-  // CRITICAL FIX: Prevent default on mousedown so the button doesn't steal focus
   const handleMouseDown = (e: React.MouseEvent, command: string, val?: string) => {
     e.preventDefault();
     exec(command, val);
   };
 
-  // CRITICAL FIX: Handle Enter key to break out of block elements (H2, Blockquote, Pre)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       const selection = window.getSelection();
@@ -111,19 +104,16 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         currentBlock = currentBlock.parentNode;
       }
 
-      // If we are inside a target block element, intercept Enter to create a new <p>
       if (currentBlock && currentBlock !== editorRef.current && blockTags.includes(currentBlock.nodeName)) {
         e.preventDefault();
         
         const p = document.createElement('p');
-        p.innerHTML = '<br>'; // Empty paragraph
+        p.innerHTML = '<br>';
         
-        // Insert the new paragraph after the current block
         if (currentBlock.parentNode) {
           currentBlock.parentNode.insertBefore(p, currentBlock.nextSibling);
         }
         
-        // Move the cursor into the new paragraph
         const range = document.createRange();
         range.setStart(p, 0);
         range.collapse(true);
@@ -139,12 +129,15 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const url = await postsApi.uploadImage(file);
-      exec('insertImage', url);
-    } catch (error) {
-      alert('Image upload failed.');
+    if (!file || isUploadingImage) return;
+    await onImageUpload(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleImageButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isUploadingImage) {
+      fileInputRef.current?.click();
     }
   };
 
@@ -161,8 +154,19 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         <button type="button" className={getButtonClass(activeStates.h2)} onMouseDown={(e) => handleMouseDown(e, 'formatBlock', 'h2')} title="Heading"><i className="fas fa-heading"></i></button>
         <button type="button" className={getButtonClass(activeStates.blockquote)} onMouseDown={(e) => handleMouseDown(e, 'formatBlock', 'blockquote')} title="Quote"><i className="fas fa-quote-right"></i></button>
         <button type="button" className={getButtonClass(activeStates.pre)} onMouseDown={(e) => handleMouseDown(e, 'formatBlock', 'pre')} title="Code Block"><i className="fas fa-code"></i></button>
-        <button type="button" className={getButtonClass(false)} onMouseDown={(e) => e.preventDefault()} onClick={() => fileInputRef.current?.click()} title="Insert Image">
-          <i className="fas fa-image"></i>
+        <button 
+          type="button" 
+          className={getButtonClass(false)} 
+          onMouseDown={(e) => e.preventDefault()} 
+          onClick={handleImageButtonClick} 
+          title="Insert Image"
+          disabled={isUploadingImage}
+        >
+          {isUploadingImage ? (
+            <span className="spinner-border spinner-border-sm" />
+          ) : (
+            <i className="fas fa-image"></i>
+          )}
         </button>
         <input type="file" ref={fileInputRef} className="d-none" accept="image/*" onChange={handleImageUpload} />
       </div>
