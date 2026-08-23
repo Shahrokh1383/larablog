@@ -28,4 +28,9 @@ interface TagPublicServiceInterface
     public function getTagsByPostIds(array $postIds): array;
 
     public function applyTagPostFilter(Builder $query, string $tagId): Builder;
+
+    /**
+     * @return array{id: string, name: string, slug: string, posts_count: int}
+     */
+    public function getTagMetaBySlug(string $slug): array;
 }

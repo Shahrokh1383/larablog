@@ -1,0 +1,41 @@
+# AI-OPTIMIZED ROADMAP
+# GENERATED: 2026-08-23T02:05:17.291Z
+# DYNAMIC ALIASES
+[A]=back-end/src/Modules/Taxonomy/Http/Requests
+[B]=back-end/src/Modules/Articles/Http/Requests
+[C]=back-end/src/Modules/Articles/Services/Contracts
+[D]=back-end/src/Modules/Taxonomy/Http/Controllers/Api
+[E]=back-end/src/Modules/Taxonomy/Services/Contracts
+[F]=back-end/src/Modules/Taxonomy/Http/Resources
+[G]=back-end/src/Modules/Articles/Actions
+[H]=back-end/src/Modules/Articles/Http/Controllers/Api
+[I]=back-end/src/Modules/Articles/Http/Resources
+[J]=back-end/src/Modules/Taxonomy/Policies
+[K]=back-end/src/Modules/Articles/Routes
+[L]=back-end/src/Modules/Taxonomy/Models
+[M]=back-end/src/Modules/Taxonomy/Routes
+[N]=back-end/src/Modules/Articles/DTOs
+[O]=back-end/src/Modules/Articles/Policies
+[P]=back-end/src/Modules/Articles/Models
+
+# MANIFEST
+back-end/src/Modules/Articles(ArticlesServiceProvider.php)
+[G](AssignTagsToPostAction.php,CalculateReadingTimeAction.php,DeleteImageAction.php,MapPostRelationsAction.php,UploadImageAction.php)
+[N](PostCreateDTO.php,PostUpdateDTO.php)
+[H](PostController.php,PostPublicController.php)
+[B](DeleteImageRequest.php,IndexPostsByCategoryRequest.php,IndexPostsByTagRequest.php,StorePostRequest.php,UpdatePostRequest.php,UploadImageRequest.php)
+[I](PostPublicResource.php,PostResource.php)
+[P](Post.php)
+[O](PostPolicy.php)
+[K](admin.php,api.php)
+back-end/src/Modules/Articles/Services(PostAdminStatsService.php,PostInfoService.php,PostPublicService.php,PostService.php,PostStatsService.php)
+[C](PostAdminServiceInterface.php,PostAdminStatsServiceInterface.php,PostInfoContract.php,PostPublicServiceInterface.php,PostStatsServiceInterface.php)
+back-end/src/Modules/Taxonomy(TaxonomyServiceProvider.php)
+[D](CategoryController.php,CategoryPublicController.php,TagController.php,TagPublicController.php)
+[A](IndexCategoryPublicRequest.php,IndexCategoryRequest.php,IndexTagPublicRequest.php,IndexTagRequest.php,StoreCategoryRequest.php,StoreTagRequest.php,UpdateCategoryRequest.php,UpdateTagRequest.php)
+[F](CategoryPublicResource.php,CategoryResource.php,TagPublicResource.php,TagResource.php)
+[L](Category.php,Tag.php)
+[J](CategoryPolicy.php,TagPolicy.php)
+[M](admin.php,api.php)
+back-end/src/Modules/Taxonomy/Services(CategoryPublicService.php,CategoryService.php,TagPublicService.php,TagService.php)
+[E](CategoryAdminServiceInterface.php,CategoryPublicServiceInterface.php,TagAdminServiceInterface.php,TagPublicServiceInterface.php)

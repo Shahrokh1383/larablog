@@ -86,4 +86,20 @@ class CategoryPublicService implements CategoryPublicServiceInterface
             ])
             ->all();
     }
+
+    public function getCategoryMetaBySlug(string $slug): array
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
+        
+        $postCounts = $this->postStatsService->getPublishedPostCountsByCategories([$category->id]);
+        $authorCounts = $this->postStatsService->getDistinctAuthorCountsByCategories([$category->id]);
+
+        return [
+            'id' => (string) $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
+            'posts_count' => $postCounts[$category->id] ?? 0,
+            'authors_count' => $authorCounts[$category->id] ?? 0,
+        ];
+    }
 }

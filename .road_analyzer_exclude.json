@@ -77,24 +77,26 @@
     "back-end\\tests\\Feature\\Identity",
     "back-end\\database",
     "back-end\\tests",
-    "User\\app\\(public)\\tags",
     "User\\app\\(public)\\search",
     "User\\app\\(public)\\privacy",
     "User\\app\\(public)\\contact",
-    "User\\app\\(public)\\category",
     "User\\app\\(public)\\authors",
     "User\\app\\(public)\\author",
     "User\\app\\(public)\\about",
     "User\\app\\(public)\\terms",
     "User\\src\\features\\comments",
-    "User",
     "back-end\\src\\Modules\\Engagement",
-    "back-end\\src\\Modules\\Articles"
+    "User\\src\\shared",
+    "User\\env.local.example",
+    "User\\next-env.d.ts.example",
+    "User\\src\\features\\posts",
+    "User\\app\\(public)\\post",
+    "User"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T01:13:20.412Z",
+  "lastModified": "2026-08-23T02:05:17.642Z",
   "version": 1
 }

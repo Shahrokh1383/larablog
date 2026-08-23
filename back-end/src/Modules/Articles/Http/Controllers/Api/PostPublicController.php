@@ -36,23 +36,33 @@ class PostPublicController extends Controller
 
     public function postsByCategory(string $categorySlug, IndexPostsByCategoryRequest $request): JsonResponse
     {
-        $posts = $this->postPublicService->getPublishedPostsByCategoryForPublic(
+        $result = $this->postPublicService->getPublishedPostsByCategoryForPublic(
             categorySlug: $categorySlug,
             sort: $request->validated('sort', 'newest'),
             perPage: $request->validated('per_page', 10)
         );
 
-        return PostPublicResource::collection($posts)->response();
+        $postsJson = PostPublicResource::collection($result['posts'])->response()->getData(true);
+
+        return response()->json([
+            'category' => $result['category'],
+            'posts' => $postsJson,
+        ]);
     }
 
     public function postsByTag(string $tagSlug, IndexPostsByTagRequest $request): JsonResponse
     {
-        $posts = $this->postPublicService->getPublishedPostsByTagForPublic(
+        $result = $this->postPublicService->getPublishedPostsByTagForPublic(
             tagSlug: $tagSlug,
             sort: $request->validated('sort', 'newest'),
             perPage: $request->validated('per_page', 10)
         );
 
-        return PostPublicResource::collection($posts)->response();
+        $postsJson = PostPublicResource::collection($result['posts'])->response()->getData(true);
+
+        return response()->json([
+            'tag' => $result['tag'],
+            'posts' => $postsJson,
+        ]);
     }
 }

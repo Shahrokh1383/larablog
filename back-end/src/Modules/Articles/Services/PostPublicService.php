@@ -140,9 +140,15 @@ class PostPublicService implements PostPublicServiceInterface
         return $posts;
     }
 
-    public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    /**
+     * Fetches category metadata and its published posts for the public API.
+     * 
+     * @return array{category: array{id: string, name: string, slug: string, posts_count: int, authors_count: int}, posts: LengthAwarePaginator}
+     */
+    public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): array
     {
-        $categoryId = $this->categoryService->getCategoryIdBySlug($categorySlug);
+        $categoryMeta = $this->categoryService->getCategoryMetaBySlug($categorySlug);
+        $categoryId = $categoryMeta['id'];
 
         $query = Post::published()->byCategory($categoryId);
         $this->applyPublicSort($query, $sort);
@@ -150,12 +156,21 @@ class PostPublicService implements PostPublicServiceInterface
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
 
-        return $posts;
+        return [
+            'category' => $categoryMeta,
+            'posts' => $posts,
+        ];
     }
 
-    public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
+    /**
+     * Fetches tag metadata and its published posts for the public API.
+     * 
+     * @return array{tag: array{id: string, name: string, slug: string, posts_count: int}, posts: LengthAwarePaginator}
+     */
+    public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): array
     {
-        $tagId = $this->tagService->getTagIdBySlug($tagSlug);
+        $tagMeta = $this->tagService->getTagMetaBySlug($tagSlug);
+        $tagId = $tagMeta['id'];
 
         $query = Post::published();
         $query = $this->tagService->applyTagPostFilter($query, $tagId);
@@ -164,7 +179,10 @@ class PostPublicService implements PostPublicServiceInterface
         $posts = $query->paginate($perPage);
         $this->mapPostRelations->execute($posts);
 
-        return $posts;
+        return [
+            'tag' => $tagMeta,
+            'posts' => $posts,
+        ];
     }
 
     private function applyPublicSort(Builder $query, ?string $sort): void

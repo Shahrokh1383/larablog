@@ -110,4 +110,18 @@ class TagPublicService implements TagPublicServiceInterface
                 ->where('content_post_tag.tag_id', $tagId);
         });
     }
+
+    public function getTagMetaBySlug(string $slug): array
+    {
+        $tag = Tag::where('slug', $slug)->firstOrFail();
+        
+        $postCounts = $this->postStatsService->getPublishedPostCountsByTags([$tag->id]);
+
+        return [
+            'id' => (string) $tag->id,
+            'name' => $tag->name,
+            'slug' => $tag->slug,
+            'posts_count' => $postCounts[$tag->id] ?? 0,
+        ];
+    }
 }

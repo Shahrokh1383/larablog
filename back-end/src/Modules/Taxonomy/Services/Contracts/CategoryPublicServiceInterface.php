@@ -23,4 +23,9 @@ interface CategoryPublicServiceInterface
      * @return array<string, array{id: string, name: string, slug: string}>
      */
     public function getCategoriesByIds(array $ids): array;
+
+    /**
+     * @return array{id: string, name: string, slug: string, posts_count: int, authors_count: int}
+     */
+    public function getCategoryMetaBySlug(string $slug): array;
 }
