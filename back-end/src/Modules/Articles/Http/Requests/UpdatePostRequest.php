@@ -24,7 +24,7 @@ class UpdatePostRequest extends FormRequest
             'is_published'   => ['sometimes', 'boolean'],
             'is_editors_pick'=> ['sometimes', 'boolean'],
             'category_id'    => ['nullable', 'string'],
-            'tag_ids'        => ['nullable', 'array'],
+            'tag_ids'        => ['nullable', 'array', 'distinct'],
             'tag_ids.*'      => ['string'],
         ];
     }
@@ -34,7 +34,7 @@ class UpdatePostRequest extends FormRequest
         $validator->after(function (Validator $validator) {
             $categoryId = $this->input('category_id');
 
-            if ($categoryId !== null) {
+            if (is_string($categoryId) && $categoryId !== '') {
                 $exists = app(CategoryPublicServiceInterface::class)
                     ->categoryIdsExist([$categoryId]);
 
@@ -45,7 +45,7 @@ class UpdatePostRequest extends FormRequest
 
             $tagIds = $this->input('tag_ids', []);
 
-            if (! empty($tagIds)) {
+            if (is_array($tagIds) && ! empty($tagIds)) {
                 $exists = app(TagPublicServiceInterface::class)
                     ->tagIdsExist($tagIds);
 

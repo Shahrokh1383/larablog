@@ -8,14 +8,13 @@ use Illuminate\Support\Facades\DB;
 class AssignTagsToPostAction
 {
     /**
-     * Syncs tags for a post using direct DB operations to strictly avoid 
-     * importing the Taxonomy Tag model, enforcing Article III boundaries.
-     * 
      * @param Post $post
      * @param array<int, string> $tagIds Array of tag UUIDs
      */
     public function execute(Post $post, array $tagIds): void
     {
+        $tagIds = array_unique($tagIds);
+
         DB::transaction(function () use ($post, $tagIds) {
             DB::table('content_post_tag')
                 ->where('post_id', $post->id)
