@@ -75,7 +75,6 @@
     "back-end\\src\\Modules\\Identity",
     "back-end\\tests\\Feature\\Identity",
     "back-end\\database",
-    "back-end\\tests",
     "User\\app\\(public)\\search",
     "User\\app\\(public)\\privacy",
     "User\\app\\(public)\\contact",
@@ -87,18 +86,18 @@
     "User\\src\\shared",
     "User\\env.local.example",
     "User\\next-env.d.ts.example",
-    "back-end\\src\\Modules\\Taxonomy",
     "back-end\\src\\Modules\\Home",
     "User\\app\\(public)\\category",
     "User\\app\\(public)\\tags",
     "User\\src\\features\\categories",
     "User\\src\\features\\tags",
-    "back-end"
+    "User",
+    "back-end\\src\\Modules\\Articles"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T03:29:09.452Z",
+  "lastModified": "2026-08-23T03:49:51.401Z",
   "version": 1
 }

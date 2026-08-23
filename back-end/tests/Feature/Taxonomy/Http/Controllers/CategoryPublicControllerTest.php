@@ -1,13 +1,16 @@
 <?php
 
 use Modules\Taxonomy\Models\Category;
+use Modules\Articles\Services\Contracts\PostStatsServiceInterface;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Mockery\MockInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 it('lists public categories with aggregates', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getPublishedPostCountsByCategories')
             ->once()
             ->andReturn([$category->id => 4]);
@@ -30,25 +33,24 @@ it('lists public categories with aggregates', function () {
 
 it('returns posts for a category', function () {
     $category = Category::factory()->create();
-    $postsArray = [
-        'data' => [],
-        'links' => [],
-        'meta' => [],
+    
+    $categoryMeta = [
+        'id' => (string) $category->id,
+        'name' => $category->name,
+        'slug' => $category->slug,
+        'posts_count' => 0,
+        'authors_count' => 0,
     ];
+    $paginator = new LengthAwarePaginator([], 0, 10);
 
-    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($category, $postsArray) {
-        $mock->shouldReceive('getPublishedPostCountsByCategories')
-            ->once()
-            ->with([$category->id])
-            ->andReturn([$category->id => 0]);
-        $mock->shouldReceive('getDistinctAuthorCountsByCategories')
-            ->once()
-            ->with([$category->id])
-            ->andReturn([$category->id => 0]);
+    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($category, $categoryMeta, $paginator) {
         $mock->shouldReceive('getPublishedPostsByCategoryForPublic')
             ->once()
             ->with($category->slug, 'newest', 10)
-            ->andReturn($postsArray);
+            ->andReturn([
+                'category' => $categoryMeta,
+                'posts' => $paginator,
+            ]);
     });
 
     $response = $this->getJson("/api/categories/{$category->slug}/posts");
@@ -61,7 +63,11 @@ it('returns posts for a category', function () {
 });
 
 it('returns 404 for missing category posts', function () {
-    $this->mock(PostPublicServiceInterface::class);
+    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getPublishedPostsByCategoryForPublic')
+            ->once()
+            ->andThrow(new ModelNotFoundException());
+    });
 
     $response = $this->getJson('/api/categories/missing/posts');
 

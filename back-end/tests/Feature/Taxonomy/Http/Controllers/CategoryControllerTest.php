@@ -3,7 +3,7 @@
 use Modules\Identity\Models\User;
 use Modules\Taxonomy\Models\Category;
 use Laravel\Sanctum\Sanctum;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Mockery\MockInterface;
 
 beforeEach(function () {
@@ -15,7 +15,7 @@ beforeEach(function () {
 it('lists categories', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -35,7 +35,7 @@ it('lists categories', function () {
 });
 
 it('stores a category', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/categories', ['name' => 'New Category']);
 
@@ -45,7 +45,7 @@ it('stores a category', function () {
 });
 
 it('validates store request', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/categories', []);
 
@@ -56,7 +56,7 @@ it('validates store request', function () {
 it('shows a category with stats', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -73,7 +73,7 @@ it('shows a category with stats', function () {
 it('updates a category', function () {
     $category = Category::factory()->create(['name' => 'Old', 'slug' => 'old']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -90,7 +90,7 @@ it('updates a category', function () {
 it('deletes a category', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->deleteJson("/api/admin/categories/{$category->id}");
 
@@ -102,7 +102,7 @@ it('forbids author from storing category', function () {
     $author->assignRole('author');
     Sanctum::actingAs($author, ['*']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/categories', ['name' => 'Forbidden']);
 

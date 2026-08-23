@@ -3,7 +3,7 @@
 use Modules\Identity\Models\User;
 use Modules\Taxonomy\Models\Tag;
 use Laravel\Sanctum\Sanctum;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Mockery\MockInterface;
 
 beforeEach(function () {
@@ -15,7 +15,7 @@ beforeEach(function () {
 it('lists tags', function () {
     $tag = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -35,7 +35,7 @@ it('lists tags', function () {
 });
 
 it('stores a tag', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/tags', ['name' => 'New Tag']);
 
@@ -45,7 +45,7 @@ it('stores a tag', function () {
 });
 
 it('validates store request', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/tags', []);
 
@@ -56,7 +56,7 @@ it('validates store request', function () {
 it('shows a tag with stats', function () {
     $tag = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -73,7 +73,7 @@ it('shows a tag with stats', function () {
 it('updates a tag', function () {
     $tag = Tag::factory()->create(['name' => 'Old', 'slug' => 'old']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -90,7 +90,7 @@ it('updates a tag', function () {
 it('deletes a tag', function () {
     $tag = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->deleteJson("/api/admin/tags/{$tag->id}");
 
@@ -102,7 +102,7 @@ it('forbids author from storing tag', function () {
     $author->assignRole('author');
     Sanctum::actingAs($author, ['*']);
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $response = $this->postJson('/api/admin/tags', ['name' => 'Forbidden']);
 

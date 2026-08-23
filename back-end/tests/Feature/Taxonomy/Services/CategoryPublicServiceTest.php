@@ -2,7 +2,7 @@
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\Services\CategoryPublicService;
-use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
+use Modules\Articles\Services\Contracts\PostStatsServiceInterface;
 use Mockery\MockInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -10,7 +10,7 @@ it('returns public categories with aggregate counts', function () {
     $cat1 = Category::factory()->create();
     $cat2 = Category::factory()->create();
 
-    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($cat1, $cat2) {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) use ($cat1, $cat2) {
         $mock->shouldReceive('getPublishedPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => count($ids) === 2)
@@ -36,10 +36,10 @@ it('returns public categories with aggregate counts', function () {
         ->and($items[0]->authors_count)->toBeIn([2, 3]);
 });
 
-it('returns public category by slug with aggregates', function () {
+it('returns public category meta by slug with aggregates', function () {
     $category = Category::factory()->create(['slug' => 'known-slug']);
 
-    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getPublishedPostCountsByCategories')
             ->once()
             ->with([$category->id])
@@ -51,19 +51,19 @@ it('returns public category by slug with aggregates', function () {
     });
 
     $service = app(CategoryPublicService::class);
-    $result = $service->getPublicCategoryBySlug('known-slug');
+    $result = $service->getCategoryMetaBySlug('known-slug');
 
-    expect($result->id)->toBe($category->id)
-        ->and($result->posts_count)->toBe(4)
-        ->and($result->authors_count)->toBe(1);
+    expect($result['id'])->toBe((string) $category->id)
+        ->and($result['posts_count'])->toBe(4)
+        ->and($result['authors_count'])->toBe(1);
 });
 
 it('throws ModelNotFoundException for missing category slug', function () {
-    $this->mock(PostPublicServiceInterface::class);
+    $this->mock(PostStatsServiceInterface::class);
 
     $service = app(CategoryPublicService::class);
 
-    expect(fn () => $service->getCategoryIdBySlug('missing'))->toThrow(ModelNotFoundException::class);
+    expect(fn () => $service->getCategoryMetaBySlug('missing'))->toThrow(ModelNotFoundException::class);
 });
 
 it('returns popular categories preserving order', function () {
@@ -75,7 +75,7 @@ it('returns popular categories preserving order', function () {
         ['category_id' => $cat1->id, 'posts_count' => 10],
     ];
 
-    $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($stats) {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) use ($stats) {
         $mock->shouldReceive('getPopularCategoryStats')
             ->once()
             ->with(2)
@@ -89,15 +89,4 @@ it('returns popular categories preserving order', function () {
         ->and($result[0]['id'])->toBe($cat2->id)
         ->and($result[0]['posts_count'])->toBe(20)
         ->and($result[1]['id'])->toBe($cat1->id);
-});
-
-it('returns category stats', function () {
-    Category::factory()->count(3)->create();
-
-    $this->mock(PostPublicServiceInterface::class);
-
-    $service = app(CategoryPublicService::class);
-    $stats = $service->getCategoryStats();
-
-    expect($stats['total_categories'])->toBe(3);
 });
