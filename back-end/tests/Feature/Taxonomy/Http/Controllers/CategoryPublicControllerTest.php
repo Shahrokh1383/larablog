@@ -73,3 +73,12 @@ it('returns 404 for missing category posts', function () {
 
     $response->assertStatus(404);
 });
+
+it('validates public categories index request', function () {
+    $this->mock(PostStatsServiceInterface::class);
+
+    $response = $this->getJson('/api/categories?per_page=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['per_page']);
+});

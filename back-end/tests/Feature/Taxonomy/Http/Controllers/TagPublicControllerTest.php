@@ -92,3 +92,26 @@ it('returns 404 for missing tag posts', function () {
 
     $response->assertStatus(404);
 });
+
+it('validates public tags index request', function () {
+    $this->mock(PostStatsServiceInterface::class);
+
+    $response = $this->getJson('/api/tags?per_page=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['per_page']);
+});
+
+it('returns empty data for popular tags when no stats', function () {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getPopularTagStats')
+            ->once()
+            ->with(10)
+            ->andReturn([]);
+    });
+
+    $response = $this->getJson('/api/tags/popular');
+
+    $response->assertOk()
+        ->assertJson(['data' => []]);
+});

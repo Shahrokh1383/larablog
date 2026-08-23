@@ -83,6 +83,30 @@ it('returns tag map by ids', function () {
         ]);
 });
 
+it('returns tag with stats', function () {
+    $tag = Tag::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 5]);
+    });
+
+    $service = app(TagService::class);
+    $result = $service->getWithStats($tag);
+
+    expect($result->posts_count)->toBe(5);
+});
+
+it('returns empty array for getByIds when ids empty', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $service = app(TagService::class);
+
+    expect($service->getByIds([]))->toBe([]);
+});
+
 it('deletes a tag', function () {
     $tag = Tag::factory()->create();
 

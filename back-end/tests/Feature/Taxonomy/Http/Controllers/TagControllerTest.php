@@ -108,3 +108,66 @@ it('forbids author from storing tag', function () {
 
     $response->assertStatus(403);
 });
+
+it('validates index request', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $response = $this->getJson('/api/admin/tags?per_page=invalid');
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['per_page']);
+});
+
+it('returns 404 for missing tag show', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $response = $this->getJson('/api/admin/tags/00000000-0000-0000-0000-000000000000');
+
+    $response->assertStatus(404);
+});
+
+it('allows editor to store tag', function () {
+    $editor = User::factory()->create();
+    $editor->assignRole('editor');
+    Sanctum::actingAs($editor, ['*']);
+
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $response = $this->postJson('/api/admin/tags', ['name' => 'Editor Tag']);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.name', 'Editor Tag');
+});
+
+it('forbids author from updating tag', function () {
+    $author = User::factory()->create();
+    $author->assignRole('author');
+    Sanctum::actingAs($author, ['*']);
+
+    $tag = Tag::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $response = $this->putJson("/api/admin/tags/{$tag->id}", ['name' => 'Updated']);
+
+    $response->assertStatus(403);
+});
+
+it('allows author to view tags', function () {
+    $author = User::factory()->create();
+    $author->assignRole('author');
+    Sanctum::actingAs($author, ['*']);
+
+    $tag = Tag::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 0]);
+    });
+
+    $response = $this->getJson('/api/admin/tags');
+
+    $response->assertOk();
+});

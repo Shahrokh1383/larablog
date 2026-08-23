@@ -83,6 +83,30 @@ it('returns category map by ids', function () {
         ]);
 });
 
+it('returns category with stats', function () {
+    $category = Category::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
+        $mock->shouldReceive('getTotalPostCountsByCategories')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$category->id])
+            ->andReturn([$category->id => 5]);
+    });
+
+    $service = app(CategoryService::class);
+    $result = $service->getWithStats($category);
+
+    expect($result->posts_count)->toBe(5);
+});
+
+it('returns empty array for getByIds when ids empty', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $service = app(CategoryService::class);
+
+    expect($service->getByIds([]))->toBe([]);
+});
+
 it('deletes a category', function () {
     $category = Category::factory()->create();
 

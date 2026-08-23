@@ -90,3 +90,70 @@ it('returns popular categories preserving order', function () {
         ->and($result[0]['posts_count'])->toBe(20)
         ->and($result[1]['id'])->toBe($cat1->id);
 });
+
+it('returns category map by ids', function () {
+    $cat1 = Category::factory()->create();
+    $cat2 = Category::factory()->create();
+
+    $this->mock(PostStatsServiceInterface::class);
+
+    $service = app(CategoryPublicService::class);
+    $result = $service->getCategoriesByIds([$cat1->id, $cat2->id]);
+
+    expect($result)->toHaveKeys([$cat1->id, $cat2->id])
+        ->and($result[$cat1->id])->toMatchArray([
+            'id' => $cat1->id,
+            'name' => $cat1->name,
+            'slug' => $cat1->slug,
+        ]);
+});
+
+it('returns empty array for getCategoriesByIds with empty ids', function () {
+    $this->mock(PostStatsServiceInterface::class);
+
+    $service = app(CategoryPublicService::class);
+
+    expect($service->getCategoriesByIds([]))->toBe([]);
+});
+
+it('returns true for categoryIdsExist with empty ids', function () {
+    $this->mock(PostStatsServiceInterface::class);
+
+    $service = app(CategoryPublicService::class);
+
+    expect($service->categoryIdsExist([]))->toBeTrue();
+});
+
+it('returns true when all category ids exist', function () {
+    $cat1 = Category::factory()->create();
+    $cat2 = Category::factory()->create();
+
+    $this->mock(PostStatsServiceInterface::class);
+
+    $service = app(CategoryPublicService::class);
+
+    expect($service->categoryIdsExist([$cat1->id, $cat2->id]))->toBeTrue();
+});
+
+it('returns false when some category ids missing', function () {
+    $cat1 = Category::factory()->create();
+
+    $this->mock(PostStatsServiceInterface::class);
+
+    $service = app(CategoryPublicService::class);
+
+    expect($service->categoryIdsExist([$cat1->id, 'missing-id']))->toBeFalse();
+});
+
+it('returns empty array for getPopularCategories when no stats', function () {
+    $this->mock(PostStatsServiceInterface::class, function (MockInterface $mock) {
+        $mock->shouldReceive('getPopularCategoryStats')
+            ->once()
+            ->with(5)
+            ->andReturn([]);
+    });
+
+    $service = app(CategoryPublicService::class);
+
+    expect($service->getPopularCategories(5))->toBe([]);
+});
