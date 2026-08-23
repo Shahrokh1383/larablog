@@ -20,4 +20,9 @@ interface CategoryPublicServiceInterface
      * @return array{id: string, name: string, slug: string, posts_count: int, authors_count: int}
      */
     public function getCategoryMetaBySlug(string $slug): array;
+
+     /**
+     * @param array<string> $ids
+     */
+    public function categoryIdsExist(array $ids): bool;
 }

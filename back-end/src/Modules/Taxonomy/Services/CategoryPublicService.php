@@ -91,4 +91,14 @@ class CategoryPublicService implements CategoryPublicServiceInterface
             'authors_count' => $authorCounts[$category->id] ?? 0,
         ];
     }
+
+    public function categoryIdsExist(array $ids): bool
+    {
+        if (empty($ids)) {
+            return true;
+        }
+
+        $uniqueIds = array_unique($ids);
+        return Category::whereIn('id', $uniqueIds)->count() === count($uniqueIds);
+    }
 }

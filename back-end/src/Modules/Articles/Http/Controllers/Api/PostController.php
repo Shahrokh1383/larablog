@@ -64,13 +64,9 @@ class PostController extends Controller
 
     public function show(Post $post): PostResource
     {
-        $enrichedPost = $this->postService->find($post->id);
-        
-        if (!$enrichedPost) {
-            abort(404);
-        }
+        $this->postService->enrich($post);
 
-        return new PostResource($enrichedPost);
+        return new PostResource($post);
     }
 
     public function update(UpdatePostRequest $request, Post $post): PostResource
@@ -80,8 +76,8 @@ class PostController extends Controller
             body: $request->validated('body'),
             excerpt: $request->validated('excerpt'),
             featuredImage: $request->validated('featured_image'),
-            isPublished: $request->boolean('is_published'),
-            isEditorsPick: $request->boolean('is_editors_pick'),
+            isPublished: $request->has('is_published') ? $request->boolean('is_published') : null,
+            isEditorsPick: $request->has('is_editors_pick') ? $request->boolean('is_editors_pick') : null,
             categoryId: $request->validated('category_id'),
             tagIds: $request->validated('tag_ids'),
         );

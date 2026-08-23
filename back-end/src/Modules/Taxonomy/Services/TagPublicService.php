@@ -107,4 +107,14 @@ class TagPublicService implements TagPublicServiceInterface
             'posts_count' => $postCounts[$tag->id] ?? 0,
         ];
     }
+
+    public function tagIdsExist(array $ids): bool
+    {
+        if (empty($ids)) {
+            return true;
+        }
+
+        $uniqueIds = array_unique($ids);
+        return Tag::whereIn('id', $uniqueIds)->count() === count($uniqueIds);
+    }
 }

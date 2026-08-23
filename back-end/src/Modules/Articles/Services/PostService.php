@@ -152,4 +152,12 @@ class PostService implements PostAdminServiceInterface
     {
         return $this->deleteImageAction->execute($url);
     }
+
+    public function enrich(Post $post): Post
+    {
+        $post->load('user');
+        $this->mapPostRelations->execute([$post], self::ADMIN_RELATIONS);
+
+        return $post;
+    }
 }
