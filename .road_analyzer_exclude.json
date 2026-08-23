@@ -88,12 +88,13 @@
     "User\\app\\(public)\\terms",
     "User\\src\\features\\comments",
     "User",
-    "back-end\\src\\Modules\\Engagement"
+    "back-end\\src\\Modules\\Engagement",
+    "back-end\\src\\Modules\\Articles"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-22T22:01:01.243Z",
+  "lastModified": "2026-08-23T01:13:20.412Z",
   "version": 1
 }
