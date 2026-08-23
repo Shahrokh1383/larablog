@@ -13,10 +13,6 @@ interface PostPublicServiceInterface
 
     public function getRelatedPosts(string $slug, int $limit = 3): array;
 
-    public function getPostsByCategory(string $categoryId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator;
-
-    public function getPostsByTag(string $tagId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator;
-
     public function getPostsByAuthor(string $username, ?string $sort = 'newest', int $perPage = 6): LengthAwarePaginator;
 
     public function searchPosts(?string $term, int $perpage = 10): LengthAwarePaginator;
@@ -27,13 +23,7 @@ interface PostPublicServiceInterface
 
     /**
      * @return array{
-     *     category: array{
-     *         id: string,
-     *         name: string,
-     *         slug: string,
-     *         posts_count: int,
-     *         authors_count: int
-     *     },
+     *     category: array{id: string, name: string, slug: string, posts_count: int, authors_count: int},
      *     posts: LengthAwarePaginator
      * }
      */
@@ -45,12 +35,7 @@ interface PostPublicServiceInterface
 
     /**
      * @return array{
-     *     tag: array{
-     *         id: string,
-     *         name: string,
-     *         slug: string,
-     *         posts_count: int
-     *     },
+     *     tag: array{id: string, name: string, slug: string, posts_count: int},
      *     posts: LengthAwarePaginator
      * }
      */

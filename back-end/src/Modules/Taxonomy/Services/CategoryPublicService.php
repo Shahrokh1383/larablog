@@ -29,9 +29,22 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         return $categories;
     }
 
-    public function getCategoryIdBySlug(string $slug): string
+    public function getCategoriesByIds(array $ids): array
     {
-        return Category::where('slug', $slug)->firstOrFail()->id;
+        if (empty($ids)) {
+            return [];
+        }
+
+        return Category::whereIn('id', $ids)
+            ->get(['id', 'name', 'slug'])
+            ->mapWithKeys(fn($c) => [
+                $c->id => [
+                    'id'   => $c->id,
+                    'name' => $c->name,
+                    'slug' => $c->slug,
+                ]
+            ])
+            ->all();
     }
 
     public function getPopularCategories(int $limit): array
@@ -43,7 +56,8 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         }
 
         $categoryIds = array_column($stats, 'category_id');
-        $categories = Category::whereIn('id', $categoryIds)->get()->keyBy('id');
+        // Optimized: Select only required columns instead of fetching all
+        $categories = Category::whereIn('id', $categoryIds)->get(['id', 'name', 'slug'])->keyBy('id');
 
         $result = [];
         foreach ($stats as $stat) {
@@ -60,31 +74,6 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         }
 
         return $result;
-    }
-
-    public function getCategoryStats(): array
-    {
-        return [
-            'total_categories' => Category::count(),
-        ];
-    }
-
-    public function getCategoriesByIds(array $ids): array
-    {
-        if (empty($ids)) {
-            return [];
-        }
-
-        return Category::whereIn('id', $ids)
-            ->get()
-            ->mapWithKeys(fn($c) => [
-                $c->id => [
-                    'id'   => $c->id,
-                    'name' => $c->name,
-                    'slug' => $c->slug,
-                ]
-            ])
-            ->all();
     }
 
     public function getCategoryMetaBySlug(string $slug): array

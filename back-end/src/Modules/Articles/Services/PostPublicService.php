@@ -66,29 +66,6 @@ class PostPublicService implements PostPublicServiceInterface
         return $related->all();
     }
 
-    public function getPostsByCategory(string $categoryId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
-    {
-        $query = Post::published()->byCategory($categoryId);
-        $this->applyPublicSort($query, $sort);
-
-        $posts = $query->paginate($perPage);
-        $this->mapPostRelations->execute($posts);
-
-        return $posts;
-    }
-
-    public function getPostsByTag(string $tagId, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
-    {
-        $query = Post::published();
-        $query = $this->tagService->applyTagPostFilter($query, $tagId);
-        $this->applyPublicSort($query, $sort);
-
-        $posts = $query->paginate($perPage);
-        $this->mapPostRelations->execute($posts);
-
-        return $posts;
-    }
-
     public function getPostsByAuthor(string $username, ?string $sort = 'newest', int $perPage = 6): LengthAwarePaginator
     {
         $user = \Shared\Models\User::where('username', $username)->firstOrFail();
@@ -140,11 +117,6 @@ class PostPublicService implements PostPublicServiceInterface
         return $posts;
     }
 
-    /**
-     * Fetches category metadata and its published posts for the public API.
-     * 
-     * @return array{category: array{id: string, name: string, slug: string, posts_count: int, authors_count: int}, posts: LengthAwarePaginator}
-     */
     public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): array
     {
         $categoryMeta = $this->categoryService->getCategoryMetaBySlug($categorySlug);
@@ -162,11 +134,6 @@ class PostPublicService implements PostPublicServiceInterface
         ];
     }
 
-    /**
-     * Fetches tag metadata and its published posts for the public API.
-     * 
-     * @return array{tag: array{id: string, name: string, slug: string, posts_count: int}, posts: LengthAwarePaginator}
-     */
     public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): array
     {
         $tagMeta = $this->tagService->getTagMetaBySlug($tagSlug);

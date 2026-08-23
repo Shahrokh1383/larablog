@@ -3,7 +3,8 @@
 namespace Modules\Articles\Http\Controllers\Api;
 
 use Modules\Articles\Models\Post;
-use Modules\Articles\Services\PostService;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Http\Requests\IndexPostRequest;
 use Modules\Articles\Http\Requests\StorePostRequest;
 use Modules\Articles\Http\Requests\UpdatePostRequest;
 use Modules\Articles\Http\Requests\UploadImageRequest;
@@ -12,7 +13,6 @@ use Modules\Articles\Http\Resources\PostResource;
 use Modules\Articles\DTOs\PostCreateDTO;
 use Modules\Articles\DTOs\PostUpdateDTO;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -21,21 +21,25 @@ class PostController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private PostService $postService
+        private PostAdminServiceInterface $postService
     ) {
         $this->authorizeResource(Post::class, 'post');
     }
 
-    public function index(Request $request)
+    public function index(IndexPostRequest $request)
     {
-        $perPage = $request->query('per_page', 15);
-        $page = $request->query('page', 1);
-        $search = $request->query('search');
         $isEditorsPick = $request->has('is_editors_pick') 
             ? $request->boolean('is_editors_pick') 
             : null;
             
-        $posts = $this->postService->getAll($search, $request->user(), $perPage, $page, $isEditorsPick);
+        $posts = $this->postService->getAll(
+            $request->validated('search'), 
+            $request->user(), 
+            $request->validated('per_page', 15), 
+            $request->validated('page', 1), 
+            $isEditorsPick
+        );
+        
         return PostResource::collection($posts);
     }
 
@@ -53,12 +57,13 @@ class PostController extends Controller
         );
 
         $post = $this->postService->create($dto);
-        return new PostResource($post->load(['user', 'category', 'tags']));
+        
+        return new PostResource($post);
     }
 
     public function show(Post $post): PostResource
     {
-        return new PostResource($post->load(['user', 'category', 'tags']));
+        return new PostResource($post);
     }
 
     public function update(UpdatePostRequest $request, Post $post): PostResource
@@ -68,14 +73,15 @@ class PostController extends Controller
             body: $request->validated('body'),
             excerpt: $request->validated('excerpt'),
             featuredImage: $request->validated('featured_image'),
-            isPublished: $request->validated('is_published'),
-            isEditorsPick: $request->validated('is_editors_pick'),
+            isPublished: $request->boolean('is_published'),
+            isEditorsPick: $request->boolean('is_editors_pick'),
             categoryId: $request->validated('category_id'),
             tagIds: $request->validated('tag_ids'),
         );
 
         $post = $this->postService->update($post, $dto);
-        return new PostResource($post->load(['user', 'category', 'tags']));
+        
+        return new PostResource($post);
     }
 
     public function destroy(Post $post): JsonResponse

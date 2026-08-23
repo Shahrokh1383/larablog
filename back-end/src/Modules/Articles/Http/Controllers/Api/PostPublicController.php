@@ -3,7 +3,7 @@
 namespace Modules\Articles\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Articles\Services\PostPublicService;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Articles\Http\Requests\IndexPostsByCategoryRequest;
 use Modules\Articles\Http\Requests\IndexPostsByTagRequest;
@@ -11,7 +11,9 @@ use Illuminate\Routing\Controller;
 
 class PostPublicController extends Controller
 {
-    public function __construct(private PostPublicService $postPublicService) {}
+    public function __construct(
+        private PostPublicServiceInterface $postPublicService
+    ) {}
 
     public function index(): JsonResponse
     {

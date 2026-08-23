@@ -43,7 +43,6 @@
     "back-end\\src\\Modules\\Profile",
     "back-end\\src\\Modules\\Notification",
     "back-end\\src\\Modules\\Marketing",
-    "back-end\\src\\Modules\\Home",
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\ReaderExperience",
     "User\\app\\(dashboard)",
@@ -91,12 +90,14 @@
     "User\\next-env.d.ts.example",
     "User\\src\\features\\posts",
     "User\\app\\(public)\\post",
-    "User"
+    "User",
+    "back-end\\src\\Modules\\Taxonomy",
+    "back-end\\src\\Modules\\Home"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T02:05:17.642Z",
+  "lastModified": "2026-08-23T02:33:48.914Z",
   "version": 1
 }
