@@ -61,7 +61,7 @@ class PostService implements PostAdminServiceInterface
         $post = DB::transaction(function () use ($dto, $slug, $readingTime, $publishedAt) {
             $post = Post::create([
                 'title'           => $dto->title,
-                'slug'            => $slug,
+                'slug'            => (string) $slug,
                 'body'            => $dto->body,
                 'excerpt'         => $dto->excerpt,
                 'featured_image'  => $dto->featuredImage,

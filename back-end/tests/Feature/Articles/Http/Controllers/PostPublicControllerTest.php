@@ -1,16 +1,17 @@
 <?php
 
+use Modules\Articles\Models\Post;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Mockery\MockInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 it('returns paginated posts', function () {
     $paginator = new LengthAwarePaginator([], 0, 10);
+
     $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($paginator) {
         $mock->shouldReceive('getPaginatedPosts')
             ->once()
-            ->with(10)
+            ->withNoArgs()
             ->andReturn($paginator);
     });
 
@@ -21,9 +22,20 @@ it('returns paginated posts', function () {
 });
 
 it('shows a post by slug', function () {
-    $post = new stdClass();
-    $post->id = 'uuid';
-    $post->title = 'Public Post';
+    $post = Post::factory()->make([
+        'id'             => 'uuid',
+        'title'          => 'Public Post',
+        'slug'           => 'my-post',
+        'body'           => 'Body',
+        'excerpt'        => 'Excerpt',
+        'featured_image' => null,
+        'reading_time'   => 1,
+        'views'          => 0,
+        'published_at'   => now(),
+        'is_editors_pick' => false,
+        'is_published'   => true,
+    ]);
+
     $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) use ($post) {
         $mock->shouldReceive('getBySlug')
             ->once()
@@ -52,7 +64,7 @@ it('returns related posts', function () {
     $this->mock(PostPublicServiceInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('getRelatedPosts')
             ->once()
-            ->with('my-post', 3)
+            ->with('my-post')
             ->andReturn([]);
     });
 

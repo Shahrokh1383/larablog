@@ -2,6 +2,7 @@
 
 use Modules\Identity\Models\User;
 use Modules\Articles\Models\Post;
+use Modules\Taxonomy\Models\Category;
 use Modules\Articles\Actions\MapPostRelationsAction;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
@@ -14,7 +15,11 @@ use Illuminate\Support\Collection;
 
 it('maps relations onto posts', function () {
     $author = User::factory()->create();
-    $post = Post::factory()->create(['user_id' => $author->id]);
+    $category = Category::factory()->create();
+    $post = Post::factory()->create([
+        'user_id'     => $author->id,
+        'category_id' => $category->id,
+    ]);
 
     $this->mock(FetchesPublicProfiles::class, function (MockInterface $mock) use ($author) {
         $mock->shouldReceive('getPublicProfilesMap')
@@ -37,11 +42,17 @@ it('maps relations onto posts', function () {
             ->andReturn([$post->id]);
     });
 
-    $this->mock(CategoryPublicServiceInterface::class, function (MockInterface $mock) use ($post) {
+    $this->mock(CategoryPublicServiceInterface::class, function (MockInterface $mock) use ($post, $category) {
         $mock->shouldReceive('getCategoriesByIds')
             ->once()
-            ->with([$post->category_id])
-            ->andReturn([]);
+            ->with([$category->id])
+            ->andReturn([
+                $category->id => [
+                    'id'   => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                ],
+            ]);
     });
 
     $this->mock(TagPublicServiceInterface::class, function (MockInterface $mock) use ($post) {
@@ -58,7 +69,11 @@ it('maps relations onto posts', function () {
     expect($post->author)->toMatchArray(['id' => $author->id])
         ->and($post->comments_count)->toBe(3)
         ->and($post->is_saved)->toBeTrue()
-        ->and($post->category_detail)->toBe([])
+        ->and($post->category_detail)->toMatchArray([
+            'id'   => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
+        ])
         ->and($post->tags_detail)->toBe([]);
 });
 

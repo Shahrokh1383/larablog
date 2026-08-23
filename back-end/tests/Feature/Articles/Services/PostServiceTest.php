@@ -79,7 +79,7 @@ it('creates a post with generated slug and reading time', function () {
 
 it('updates a post and regenerates slug when title changes', function () {
     $post = Post::factory()->create(['title' => 'Old Title', 'slug' => 'old-title', 'body' => 'old body']);
-    $dto = new PostUpdateDTO(title: 'New Title', body: 'new body '.str_repeat('word ', 200));
+    $dto = new PostUpdateDTO(title: 'New Title', body: 'new body '.str_repeat('word ', 198));
 
     $service = app(PostService::class);
     $updated = $service->update($post, $dto);

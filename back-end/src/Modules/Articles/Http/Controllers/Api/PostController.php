@@ -28,22 +28,22 @@ class PostController extends Controller
 
     public function index(IndexPostRequest $request)
     {
-        $isEditorsPick = $request->has('is_editors_pick') 
-            ? $request->boolean('is_editors_pick') 
+        $isEditorsPick = $request->has('is_editors_pick')
+            ? $request->boolean('is_editors_pick')
             : null;
-            
+
         $posts = $this->postService->getAll(
-            $request->validated('search'), 
-            $request->user(), 
-            $request->validated('per_page', 15), 
-            $request->validated('page', 1), 
+            $request->validated('search'),
+            $request->user(),
+            $request->validated('per_page', 15),
+            $request->validated('page', 1),
             $isEditorsPick
         );
-        
+
         return PostResource::collection($posts);
     }
 
-    public function store(StorePostRequest $request): PostResource
+    public function store(StorePostRequest $request): JsonResponse
     {
         $dto = new PostCreateDTO(
             title: $request->validated('title'),
@@ -58,8 +58,8 @@ class PostController extends Controller
         );
 
         $post = $this->postService->create($dto);
-        
-        return new PostResource($post);
+
+        return (new PostResource($post))->response()->setStatusCode(201);
     }
 
     public function show(Post $post): PostResource
@@ -69,7 +69,7 @@ class PostController extends Controller
         return new PostResource($post);
     }
 
-    public function update(UpdatePostRequest $request, Post $post): PostResource
+    public function update(UpdatePostRequest $request, Post $post): JsonResponse
     {
         $dto = new PostUpdateDTO(
             title: $request->validated('title'),
@@ -83,8 +83,8 @@ class PostController extends Controller
         );
 
         $post = $this->postService->update($post, $dto);
-        
-        return new PostResource($post);
+
+        return (new PostResource($post))->response()->setStatusCode(200);
     }
 
     public function destroy(Post $post): JsonResponse
@@ -102,7 +102,7 @@ class PostController extends Controller
     public function deleteImage(DeleteImageRequest $request): JsonResponse
     {
         $deleted = $this->postService->deleteImage($request->input('url'));
-        
+
         return response()->json(['success' => $deleted], 200);
     }
 }

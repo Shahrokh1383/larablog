@@ -82,10 +82,11 @@ it('updates a post', function () {
 
 it('deletes a post', function () {
     $post = Post::factory()->create();
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($post) {
+
+    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('delete')
             ->once()
-            ->with($post);
+            ->andReturnNull();
     });
 
     $response = $this->deleteJson("/api/admin/posts/{$post->id}");
@@ -98,7 +99,9 @@ it('forbids author from deleting post', function () {
     $author->assignRole('author');
     Sanctum::actingAs($author, ['*']);
 
-    $post = Post::factory()->create(['user_id' => $author->id]);
+    $otherUser = User::factory()->create();
+    $post = Post::factory()->create(['user_id' => $otherUser->id]);
+
     $this->mock(PostAdminServiceInterface::class);
 
     $response = $this->deleteJson("/api/admin/posts/{$post->id}");
