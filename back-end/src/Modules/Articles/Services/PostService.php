@@ -80,6 +80,7 @@ class PostService implements PostAdminServiceInterface
             return $post;
         });
 
+        $post->load('user');
         $this->mapPostRelations->execute([$post], self::ADMIN_RELATIONS);
         
         return $post;
@@ -120,6 +121,7 @@ class PostService implements PostAdminServiceInterface
         });
 
         $updatedPost = $post->fresh();
+        $updatedPost->load('user');
         $this->mapPostRelations->execute([$updatedPost], self::ADMIN_RELATIONS);
         
         return $updatedPost;

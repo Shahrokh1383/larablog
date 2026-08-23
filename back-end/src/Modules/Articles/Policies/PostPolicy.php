@@ -42,4 +42,9 @@ class PostPolicy
     {
         return $this->update($user, $post);
     }
+
+    public function deleteImage(HasRolesContract $user): bool
+    {
+        return $user->hasAnyRole(['admin', 'editor']);
+    }
 }

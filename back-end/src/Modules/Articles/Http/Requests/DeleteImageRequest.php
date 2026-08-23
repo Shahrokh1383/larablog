@@ -9,7 +9,7 @@ class DeleteImageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->can('create', Post::class);
+        return $this->user() && $this->user()->can('deleteImage', Post::class);
     }
 
     public function rules(): array
