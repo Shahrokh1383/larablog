@@ -72,7 +72,6 @@
     "User\\src\\providers",
     "back-end\\src\\Modules\\Identity",
     "back-end\\tests\\Feature\\Identity",
-    "back-end\\database",
     "User\\app\\(public)\\search",
     "User\\app\\(public)\\privacy",
     "User\\app\\(public)\\contact",
@@ -94,12 +93,13 @@
     "Admin\\src\\features\\categories",
     "Admin\\src\\features\\users",
     "Admin",
-    "back-end\\src\\Modules\\Articles"
+    "back-end\\src\\Modules\\Taxonomy",
+    "back-end\\tests\\Feature\\Taxonomy"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T05:35:27.337Z",
+  "lastModified": "2026-08-23T05:57:51.956Z",
   "version": 1
 }
