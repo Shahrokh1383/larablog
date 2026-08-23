@@ -83,21 +83,22 @@
     "User\\app\\(public)\\author",
     "User\\app\\(public)\\about",
     "User\\app\\(public)\\terms",
-    "User\\src\\features\\comments",
     "back-end\\src\\Modules\\Engagement",
     "User\\src\\shared",
     "User\\env.local.example",
     "User\\next-env.d.ts.example",
-    "User\\src\\features\\posts",
-    "User\\app\\(public)\\post",
-    "User",
     "back-end\\src\\Modules\\Taxonomy",
-    "back-end\\src\\Modules\\Home"
+    "back-end\\src\\Modules\\Home",
+    "User\\app\\(public)\\category",
+    "User\\app\\(public)\\tags",
+    "User\\src\\features\\categories",
+    "User\\src\\features\\tags",
+    "back-end"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T02:33:48.914Z",
+  "lastModified": "2026-08-23T03:29:09.452Z",
   "version": 1
 }

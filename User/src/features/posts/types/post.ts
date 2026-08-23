@@ -1,17 +1,10 @@
-export interface SocialLinks {
-  twitter?: string;
-  github?: string;
-  linkedin?: string;
-  instagram?: string;
-  dribbble?: string;
-}
 export interface Author {
   id: string;
   name: string;
   username?: string;
   avatar?: string;
   bio?: string;
-  social_links?: SocialLinks;
+  social_links?: Record<string, string>;
 }
 
 export interface Category {
@@ -31,16 +24,17 @@ export interface Post {
   title: string;
   slug: string;
   body: string;
-  excerpt: string | null;
-  featured_image: string | null;
-  reading_time: number | null;
+  excerpt?: string | null;
+  featured_image?: string | null;
+  reading_time: number;
   views: number;
-  published_at: string | null;
+  comments_count: number;
+  is_saved: boolean;
+  published_at: string;
+  is_editors_pick: boolean;
+  category?: Category | null;
+  tags?: Tag[];
+  author?: Author | null;
   created_at: string;
   updated_at: string;
-  category: Category | null;
-  tags: Tag[];
-  author: Author;
-  comments_count?: number;
-  is_saved?: boolean;
 }

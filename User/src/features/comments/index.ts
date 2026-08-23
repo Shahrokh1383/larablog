@@ -1,0 +1,4 @@
+export { useComments, commentKeys } from './hooks/useComments';
+export { useLoadMoreReplies } from './hooks/useLoadMoreReplies';
+export { default as CommentsSection } from './components/CommentsSection';
+export type { Comment, CommentAuthor, CreateCommentPayload } from './types/comment';
