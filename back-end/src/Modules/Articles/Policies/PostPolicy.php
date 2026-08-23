@@ -14,7 +14,15 @@ class PostPolicy
 
     public function view(HasRolesContract $user, Post $post): bool
     {
-        return $user->hasAnyRole(['admin', 'editor', 'author']);
+        if ($user->hasAnyRole(['admin', 'editor'])) {
+            return true;
+        }
+
+        if ($user->hasRole('author')) {
+            return $post->user_id === $user->id;
+        }
+
+        return false;
     }
 
     public function create(HasRolesContract $user): bool

@@ -1,6 +1,0 @@
-فایل های زیر دارای متد های جدیدی هستن و باید تست نویسیشون رو تکمیل کنیم :
-
-back-end/src/Modules/Taxonomy/Services/TagPublicService.php
-back-end/src/Modules/Taxonomy/Services/CategoryPublicService.php
-back-end/src/Modules/Taxonomy/Http/Controllers/Api/CategoryPublicController.php
-back-end/src/Modules/Taxonomy/Http/Controllers/Api/TagPublicController.php

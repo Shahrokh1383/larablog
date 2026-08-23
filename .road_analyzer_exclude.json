@@ -92,12 +92,13 @@
     "User\\src\\features\\categories",
     "User\\src\\features\\tags",
     "User",
-    "back-end\\src\\Modules\\Articles"
+    "back-end\\src\\Modules\\Taxonomy",
+    "back-end\\tests"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T03:49:51.401Z",
+  "lastModified": "2026-08-23T04:11:12.295Z",
   "version": 1
 }

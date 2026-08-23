@@ -11,6 +11,7 @@ final class PostCreateDTO
         public readonly ?string $excerpt = null,
         public readonly ?string $featuredImage = null,
         public readonly bool $isPublished = false,
+        public readonly bool $isEditorsPick = false,
         public readonly ?string $publishedAt = null,
         public readonly ?string $categoryId = null,
         public readonly array $tagIds = [],

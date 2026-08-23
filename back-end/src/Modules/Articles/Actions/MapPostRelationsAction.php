@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 
 class MapPostRelationsAction
 {
+    private const ALL_RELATIONS = ['authors', 'comments', 'savedStatus', 'categories', 'tags'];
+
     public function __construct(
         private FetchesPublicProfiles $profileService,
         private CommentServiceInterface $commentService,
@@ -22,7 +24,7 @@ class MapPostRelationsAction
         private TagPublicServiceInterface $tagService,
     ) {}
 
-    public function execute(LengthAwarePaginator|Collection|array $posts): void
+    public function execute(LengthAwarePaginator|Collection|array $posts, array $relations = self::ALL_RELATIONS): void
     {
         $postsCollection = $posts instanceof LengthAwarePaginator 
             ? collect($posts->items()) 
@@ -30,11 +32,11 @@ class MapPostRelationsAction
 
         if ($postsCollection->isEmpty()) return;
 
-        $this->mapAuthors($postsCollection);
-        $this->mapComments($postsCollection);
-        $this->mapSavedStatus($postsCollection);
-        $this->mapCategories($postsCollection);
-        $this->mapTags($postsCollection);
+        if (in_array('authors', $relations, true)) $this->mapAuthors($postsCollection);
+        if (in_array('comments', $relations, true)) $this->mapComments($postsCollection);
+        if (in_array('savedStatus', $relations, true)) $this->mapSavedStatus($postsCollection);
+        if (in_array('categories', $relations, true)) $this->mapCategories($postsCollection);
+        if (in_array('tags', $relations, true)) $this->mapTags($postsCollection);
     }
 
     private function mapAuthors(Collection $posts): void

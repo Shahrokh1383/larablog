@@ -19,6 +19,8 @@ use Illuminate\Http\UploadedFile;
 
 class PostService implements PostAdminServiceInterface
 {
+    private const ADMIN_RELATIONS = ['comments', 'categories', 'tags'];
+
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
         private CalculateReadingTimeAction $calculateReadingTimeAction,
@@ -34,17 +36,14 @@ class PostService implements PostAdminServiceInterface
             ->when($user && $user->hasRole('author'), function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->when($search, function ($query) use ($search) {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('excerpt', 'like', "%{$search}%");
-            })
+            ->search($search)
             ->when($isEditorPick !== null, function ($query) use ($isEditorPick) {
                 $query->where('is_editors_pick', $isEditorPick);
             })
             ->latest()
             ->paginate($perPage, ['*'], 'page', $page);
 
-        $this->mapPostRelations->execute($posts);
+        $this->mapPostRelations->execute($posts, self::ADMIN_RELATIONS);
         
         return $posts;
     }
@@ -67,6 +66,7 @@ class PostService implements PostAdminServiceInterface
                 'excerpt'         => $dto->excerpt,
                 'featured_image'  => $dto->featuredImage,
                 'is_published'    => $dto->isPublished,
+                'is_editors_pick' => $dto->isEditorsPick,
                 'published_at'    => $publishedAt,
                 'reading_time'    => $readingTime,
                 'user_id'         => $dto->userId,
@@ -80,7 +80,7 @@ class PostService implements PostAdminServiceInterface
             return $post;
         });
 
-        $this->mapPostRelations->execute([$post]);
+        $this->mapPostRelations->execute([$post], self::ADMIN_RELATIONS);
         
         return $post;
     }
@@ -120,7 +120,7 @@ class PostService implements PostAdminServiceInterface
         });
 
         $updatedPost = $post->fresh();
-        $this->mapPostRelations->execute([$updatedPost]);
+        $this->mapPostRelations->execute([$updatedPost], self::ADMIN_RELATIONS);
         
         return $updatedPost;
     }
@@ -135,7 +135,7 @@ class PostService implements PostAdminServiceInterface
         $post = Post::with(['user'])->find($id);
         
         if ($post) {
-            $this->mapPostRelations->execute([$post]);
+            $this->mapPostRelations->execute([$post], self::ADMIN_RELATIONS);
         }
         
         return $post;

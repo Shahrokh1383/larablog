@@ -10,12 +10,14 @@ class DeleteImageAction
     {
         $path = parse_url($url, PHP_URL_PATH);
         
-        if ($path && str_starts_with($path, '/storage/')) {
-            $relativePath = str_replace('/storage/', '', $path);
-            
-            if (Storage::disk('public')->exists($relativePath)) {
-                return Storage::disk('public')->delete($relativePath);
-            }
+        if (!$path || !str_starts_with($path, '/storage/posts/images/')) {
+            return false;
+        }
+
+        $relativePath = 'posts/images/' . basename($path);
+
+        if (Storage::disk('public')->exists($relativePath)) {
+            return Storage::disk('public')->delete($relativePath);
         }
         
         return false;
