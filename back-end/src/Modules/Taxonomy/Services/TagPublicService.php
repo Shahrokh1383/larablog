@@ -58,9 +58,9 @@ class TagPublicService implements TagPublicServiceInterface
         return $result;
     }
 
-    public function getTagIdBySlug(string $slug): ?string
+    public function getTagIdBySlug(string $slug): string
     {
-        return Tag::where('slug', $slug)->value('id');
+        return Tag::where('slug', $slug)->firstOrFail()->id;
     }
 
     public function getPopularTagsAsArray(int $limit = 10): array

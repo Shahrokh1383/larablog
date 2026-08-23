@@ -7,8 +7,15 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface CategoryPublicServiceInterface
 {
     public function getPublicCategories(?string $search = null, int $perPage = 10): LengthAwarePaginator;
-    public function getCategoryIdBySlug(string $slug): ?string;
+
+    /**
+     * Returns the category UUID for a given slug.
+     * Throws ModelNotFoundException (mapped to 404) if the slug does not exist.
+     */
+    public function getCategoryIdBySlug(string $slug): string;
+
     public function getPopularCategories(int $limit): array;
+
     public function getCategoryStats(): array;
 
     /**

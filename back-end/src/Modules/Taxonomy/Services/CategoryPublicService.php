@@ -29,9 +29,9 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         return $categories;
     }
 
-    public function getCategoryIdBySlug(string $slug): ?string
+    public function getCategoryIdBySlug(string $slug): string
     {
-        return Category::where('slug', $slug)->value('id');
+        return Category::where('slug', $slug)->firstOrFail()->id;
     }
 
     public function getPopularCategories(int $limit): array

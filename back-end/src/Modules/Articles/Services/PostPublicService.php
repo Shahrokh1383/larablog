@@ -8,7 +8,6 @@ use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Modules\Taxonomy\Services\Contracts\CategoryPublicServiceInterface;
 use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\LengthAwarePaginator as Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -145,10 +144,6 @@ class PostPublicService implements PostPublicServiceInterface
     {
         $categoryId = $this->categoryService->getCategoryIdBySlug($categorySlug);
 
-        if ($categoryId === null) {
-            return new Paginator([], 0, $perPage);
-        }
-
         $query = Post::published()->byCategory($categoryId);
         $this->applyPublicSort($query, $sort);
 
@@ -161,10 +156,6 @@ class PostPublicService implements PostPublicServiceInterface
     public function getPublishedPostsByTagForPublic(string $tagSlug, ?string $sort = 'newest', int $perPage = 10): LengthAwarePaginator
     {
         $tagId = $this->tagService->getTagIdBySlug($tagSlug);
-
-        if ($tagId === null) {
-            return new Paginator([], 0, $perPage);
-        }
 
         $query = Post::published();
         $query = $this->tagService->applyTagPostFilter($query, $tagId);

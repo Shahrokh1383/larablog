@@ -15,7 +15,7 @@ class IndexPostsByCategoryRequest extends FormRequest
     {
         return [
             'sort'     => ['nullable', 'string', 'in:newest,oldest,most_popular'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
+            'per_page' => ['integer', 'min:1', 'max:50'],
         ];
     }
 }
