@@ -5,6 +5,8 @@ namespace Modules\Articles\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Modules\Articles\Services\PostPublicService;
 use Modules\Articles\Http\Resources\PostPublicResource;
+use Modules\Taxonomy\Http\Requests\ShowCategoryPostsRequest;
+use Modules\Taxonomy\Http\Requests\ShowTagPostsRequest;
 use Illuminate\Routing\Controller;
 
 class PostPublicController extends Controller
@@ -30,5 +32,27 @@ class PostPublicController extends Controller
     {
         $related = $this->postPublicService->getRelatedPosts($slug);
         return PostPublicResource::collection($related)->response();
+    }
+
+    public function postsByCategory(string $categorySlug, ShowCategoryPostsRequest $request): JsonResponse
+    {
+        $posts = $this->postPublicService->getPublishedPostsByCategoryForPublic(
+            categorySlug: $categorySlug,
+            sort: $request->validated('sort', 'newest'),
+            perPage: $request->validated('per_page', 10)
+        );
+
+        return PostPublicResource::collection($posts)->response();
+    }
+
+    public function postsByTag(string $tagSlug, ShowTagPostsRequest $request): JsonResponse
+    {
+        $posts = $this->postPublicService->getPublishedPostsByTagForPublic(
+            tagSlug: $tagSlug,
+            sort: $request->validated('sort', 'newest'),
+            perPage: $request->validated('per_page', 10)
+        );
+
+        return PostPublicResource::collection($posts)->response();
     }
 }

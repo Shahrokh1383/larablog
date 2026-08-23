@@ -2,13 +2,20 @@
 
 namespace Modules\Taxonomy\Services\Contracts;
 
+use Modules\Taxonomy\Models\Tag;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 interface TagAdminServiceInterface
 {
+    public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator;
+    public function create(string $name): Tag;
+    public function getWithStats(Tag $tag): Tag;
+    public function update(Tag $tag, string $name): Tag;
+    public function delete(Tag $tag): void;
+    
     /**
-     * Get tags by IDs. Returns an array of arrays to avoid leaking Eloquent Models across boundaries.
-     * 
      * @param array<int|string> $ids
-     * @return array<string, array{id: string, name: string, slug: string}> Keyed by ID
+     * @return array<string, array{id: string, name: string, slug: string}>
      */
     public function getByIds(array $ids): array;
 }

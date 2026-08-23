@@ -29,19 +29,6 @@ class CategoryPublicService implements CategoryPublicServiceInterface
         return $categories;
     }
 
-    public function getPublicCategoryBySlug(string $slug): Category
-    {
-        $category = Category::where('slug', $slug)->firstOrFail();
-
-        $postCounts = $this->postStatsService->getPublishedPostCountsByCategories([$category->id]);
-        $authorCounts = $this->postStatsService->getDistinctAuthorCountsByCategories([$category->id]);
-
-        $category->posts_count = $postCounts[$category->id] ?? 0;
-        $category->authors_count = $authorCounts[$category->id] ?? 0;
-
-        return $category;
-    }
-
     public function getCategoryIdBySlug(string $slug): ?string
     {
         return Category::where('slug', $slug)->value('id');

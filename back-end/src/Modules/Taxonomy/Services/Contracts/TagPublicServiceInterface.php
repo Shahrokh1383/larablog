@@ -3,17 +3,14 @@
 namespace Modules\Taxonomy\Services\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface TagPublicServiceInterface
 {
-    /**
-     * Returns the tag UUID for a given slug, or null if not found.
-     * Callers must handle the null case explicitly.
-     */
+    public function getPublicTags(?string $search = null, int $perPage = 12): LengthAwarePaginator;
+    public function getPopularTags(int $limit = 10): array;
     public function getTagIdBySlug(string $slug): ?string;
-
     public function getPopularTagsAsArray(int $limit): array;
-
     public function getTagStats(): array;
 
     /**

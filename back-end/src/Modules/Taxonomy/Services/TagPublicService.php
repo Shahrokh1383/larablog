@@ -58,16 +58,6 @@ class TagPublicService implements TagPublicServiceInterface
         return $result;
     }
 
-    public function getPublicTagBySlug(string $slug): Tag
-    {
-        $tag = Tag::where('slug', $slug)->firstOrFail();
-
-        $postCounts = $this->postStatsService->getPublishedPostCountsByTags([$tag->id]);
-        $tag->posts_count = $postCounts[$tag->id] ?? 0;
-
-        return $tag;
-    }
-
     public function getTagIdBySlug(string $slug): ?string
     {
         return Tag::where('slug', $slug)->value('id');

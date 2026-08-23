@@ -3,7 +3,7 @@
 namespace Modules\Taxonomy\Http\Controllers\Api;
 
 use Modules\Taxonomy\Models\Category;
-use Modules\Taxonomy\Services\CategoryService;
+use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Modules\Taxonomy\Http\Requests\IndexCategoryRequest;
 use Modules\Taxonomy\Http\Requests\StoreCategoryRequest;
 use Modules\Taxonomy\Http\Requests\UpdateCategoryRequest;
@@ -17,7 +17,7 @@ class CategoryController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private CategoryService $categoryService
+        private CategoryAdminServiceInterface $categoryService
     ) {
         $this->authorizeResource(Category::class, 'category');
     }

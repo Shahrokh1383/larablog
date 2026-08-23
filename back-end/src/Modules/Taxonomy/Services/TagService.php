@@ -3,15 +3,16 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Tag;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 class TagService implements TagAdminServiceInterface
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
-        private PostAdminServiceInterface $postAdminService
+        private PostAdminStatsServiceInterface $postAdminStatsService
     ) {}
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
@@ -19,7 +20,7 @@ class TagService implements TagAdminServiceInterface
         $tags = Tag::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
         $tagIds = $tags->pluck('id')->toArray();
 
-        $counts = $this->postAdminService->getTotalPostCountsByTags($tagIds);
+        $counts = $this->postAdminStatsService->getTotalPostCountsByTags($tagIds);
 
         $tags->each(function ($tag) use ($counts) {
             $tag->posts_count = $counts[$tag->id] ?? 0;
@@ -30,7 +31,7 @@ class TagService implements TagAdminServiceInterface
 
     public function getWithStats(Tag $tag): Tag
     {
-        $counts = $this->postAdminService->getTotalPostCountsByTags([$tag->id]);
+        $counts = $this->postAdminStatsService->getTotalPostCountsByTags([$tag->id]);
         $tag->posts_count = $counts[$tag->id] ?? 0;
 
         return $tag;
