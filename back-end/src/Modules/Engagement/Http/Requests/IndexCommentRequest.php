@@ -4,6 +4,8 @@ namespace Modules\Engagement\Http\Requests;
 
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Pagination\Cursor;
+use Modules\Engagement\Services\CommentPublicService;
 
 class IndexCommentRequest extends FormRequest
 {
@@ -21,15 +23,27 @@ class IndexCommentRequest extends FormRequest
         ];
     }
 
-    /**
-     * Cursors we hand out are base64-encoded JSON. Reject anything else with a
-     * 422 instead of delegating malformed input to paginator internals.
-     */
     private function validCursor(): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail): void {
-            if (!is_string($value) || !is_object(json_decode((string) base64_decode($value, true)))) {
-                $fail('The :attribute field is malformed.');
+            if (! is_string($value)) {
+                $fail('The :attribute field must be a string.');
+                return;
+            }
+
+            $cursor = Cursor::fromEncoded($value);
+
+            if ($cursor === null) {
+                $fail('The :attribute field is not a valid cursor.');
+                return;
+            }
+            foreach (CommentPublicService::ORDER_COLUMNS as $column) {
+                $cursorValue = $cursor->parameter($column);
+
+                if ($cursorValue === null || ! is_scalar($cursorValue)) {
+                    $fail('The :attribute field is not a valid cursor.');
+                    return;
+                }
             }
         };
     }

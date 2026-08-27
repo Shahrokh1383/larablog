@@ -2,19 +2,18 @@
 
 namespace Modules\Engagement\Services;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\CursorPaginator;
 use Modules\Engagement\Models\Comment;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
-use Illuminate\Pagination\CursorPaginator;
 
 class CommentPublicService
 {
     /** Top-level comments per cursor page. */
     public const COMMENTS_PER_PAGE = 15;
-
     public const PRELOADED_REPLIES_LIMIT = 2;
-
-    /** Page size of the replies endpoint. */
     public const REPLIES_PER_PAGE = 10;
+    public const ORDER_COLUMNS = ['created_at', 'id'];
 
     public function __construct(
         private FetchesPublicProfiles $profileFetcher
@@ -22,13 +21,15 @@ class CommentPublicService
 
     public function getCommentsForPost(string $postId, ?string $cursor = null): CursorPaginator
     {
-        $paginator = Comment::where('post_id', $postId)
+        $query = Comment::where('post_id', $postId)
             ->approved()
             ->whereNull('parent_id')
             ->with('user')
-            ->withCount(['replies as replies_count' => fn ($query) => $query->approved()])
-            ->latest()
-            ->cursorPaginate(self::COMMENTS_PER_PAGE, ['*'], 'cursor', $cursor);
+            ->withCount(['replies as replies_count' => fn ($countQuery) => $countQuery->approved()]);
+
+        $this->applyDeterministicOrder($query);
+
+        $paginator = $query->cursorPaginate(self::COMMENTS_PER_PAGE, ['*'], 'cursor', $cursor);
 
         $comments = $paginator->items();
         $this->preloadLatestReplies($comments);
@@ -64,14 +65,14 @@ class CommentPublicService
         int $skip = self::PRELOADED_REPLIES_LIMIT,
         int $take = self::REPLIES_PER_PAGE,
     ): array {
-        // Fetch one extra row to detect whether another page exists.
-        $replies = Comment::where('parent_id', $commentId)
+        $query = Comment::where('parent_id', $commentId)
             ->approved()
-            ->with('user')
-            ->latest()
-            ->skip($skip)
-            ->take($take + 1)
-            ->get();
+            ->with('user');
+
+        $this->applyDeterministicOrder($query);
+
+        // Fetch one extra row to detect whether another page exists.
+        $replies = $query->skip($skip)->take($take + 1)->get();
 
         $hasMore = $replies->count() > $take;
         $data = $hasMore ? $replies->slice(0, $take) : $replies;
@@ -92,11 +93,52 @@ class CommentPublicService
 
     private function preloadLatestReplies(array $comments): void
     {
+        $parentIds = array_map(fn (Comment $comment) => $comment->id, $comments);
+
+        if ($parentIds === []) {
+            return;
+        }
+
+        $windowOrder = implode(', ', array_map(
+            fn (string $column) => "engagement_comments.{$column} DESC",
+            self::ORDER_COLUMNS
+        ));
+
+        $ranked = Comment::query()
+            ->select('engagement_comments.*')
+            ->selectRaw(
+                "ROW_NUMBER() OVER ("
+                    . "PARTITION BY engagement_comments.parent_id "
+                    . "ORDER BY {$windowOrder}"
+                    . ") AS reply_rank"
+            )
+            ->approved()
+            ->whereIn('engagement_comments.parent_id', $parentIds);
+
+        $outer = Comment::query()
+            ->fromSub($ranked, 'ranked_replies')
+            ->where('reply_rank', '<=', self::PRELOADED_REPLIES_LIMIT)
+            ->with('user');
+
+        // Preserves per-parent recency order after grouping; matches the
+        // ordering of getRepliesForComment so expanding a thread never
+        // reorders already-rendered replies.
+        $this->applyDeterministicOrder($outer);
+
+        $replies = $outer->get()->groupBy('parent_id');
+
         foreach ($comments as $comment) {
             $comment->setRelation(
                 'replies',
-                $comment->replies()->with('user')->limit(self::PRELOADED_REPLIES_LIMIT)->get()
+                $replies->get($comment->id, collect())->values()
             );
+        }
+    }
+
+    private function applyDeterministicOrder(Builder $query): void
+    {
+        foreach (self::ORDER_COLUMNS as $column) {
+            $query->orderByDesc($column);
         }
     }
 
