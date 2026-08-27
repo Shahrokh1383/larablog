@@ -2,13 +2,13 @@
 
 use Modules\Taxonomy\Models\Tag;
 use Modules\Taxonomy\Services\TagService;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Mockery\MockInterface;
 
 it('paginates tags with post counts', function () {
     $tag = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -23,7 +23,7 @@ it('paginates tags with post counts', function () {
 });
 
 it('creates a tag with generated slug', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(TagService::class);
     $tag = $service->create('Laravel Tips');
@@ -36,7 +36,7 @@ it('creates a tag with generated slug', function () {
 it('regenerates slug when name changes', function () {
     $tag = Tag::factory()->create(['name' => 'Old Tag', 'slug' => 'old-tag']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -53,7 +53,7 @@ it('regenerates slug when name changes', function () {
 it('keeps slug when name unchanged', function () {
     $tag = Tag::factory()->create(['name' => 'Same Tag', 'slug' => 'same-tag']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($tag) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
         $mock->shouldReceive('getTotalPostCountsByTags')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$tag->id])
@@ -70,7 +70,7 @@ it('returns tag map by ids', function () {
     $tag1 = Tag::factory()->create();
     $tag2 = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(TagService::class);
     $result = $service->getByIds([$tag1->id, $tag2->id]);
@@ -83,10 +83,34 @@ it('returns tag map by ids', function () {
         ]);
 });
 
+it('returns tag with stats', function () {
+    $tag = Tag::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($tag) {
+        $mock->shouldReceive('getTotalPostCountsByTags')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$tag->id])
+            ->andReturn([$tag->id => 5]);
+    });
+
+    $service = app(TagService::class);
+    $result = $service->getWithStats($tag);
+
+    expect($result->posts_count)->toBe(5);
+});
+
+it('returns empty array for getByIds when ids empty', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $service = app(TagService::class);
+
+    expect($service->getByIds([]))->toBe([]);
+});
+
 it('deletes a tag', function () {
     $tag = Tag::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(TagService::class);
     $service->delete($tag);

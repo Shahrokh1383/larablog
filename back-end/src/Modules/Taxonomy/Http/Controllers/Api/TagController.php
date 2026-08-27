@@ -3,7 +3,7 @@
 namespace Modules\Taxonomy\Http\Controllers\Api;
 
 use Modules\Taxonomy\Models\Tag;
-use Modules\Taxonomy\Services\TagService;
+use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
 use Modules\Taxonomy\Http\Requests\IndexTagRequest;
 use Modules\Taxonomy\Http\Requests\StoreTagRequest;
 use Modules\Taxonomy\Http\Requests\UpdateTagRequest;
@@ -17,7 +17,7 @@ class TagController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private TagService $tagService
+        private TagAdminServiceInterface $tagService
     ) {
         $this->authorizeResource(Tag::class, 'tag');
     }

@@ -13,7 +13,7 @@ class Post extends Model
 {
     use HasUuid, HasFactory;
 
-    protected $table = 'content_posts'; // Kept for DB pragmatism
+    protected $table = 'content_posts';
 
     protected $fillable = [
         'title', 'slug', 'body', 'excerpt', 'featured_image',
@@ -56,18 +56,6 @@ class Post extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function category()
-    {
-        // Respecting Article III: No cross-module Model imports
-        return $this->belongsTo(\Modules\Taxonomy\Models\Category::class);
-    }
-
-    public function tags()
-    {
-        // Respecting Article III: No cross-module Model imports
-        return $this->belongsToMany(\Modules\Taxonomy\Models\Tag::class, 'content_post_tag', 'post_id', 'tag_id');
     }
 
     protected static function newFactory(): PostFactory

@@ -1,11 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePostDetail, usePostMutations, postsApi } from '@/features/posts';
-import PostForm from '@/features/posts/components/PostForm';
+import { usePostDetail, usePostForm } from '@/features/posts';
 import { useCategories } from '@/features/categories';
 import { useTags } from '@/features/tags';
-import type { PostFormData } from '@/features/posts';
-import { AxiosError } from 'axios';
-import { useState } from 'react';
+import PostForm from '@/features/posts/components/PostForm';
 
 export default function PostEditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,57 +11,22 @@ export default function PostEditorPage() {
 
   const { data: post, isLoading: postLoading } = usePostDetail(id);
 
-  // Fetch all categories and tags for the form dropdowns
-  const { data: categoriesPaginated } = useCategories({ perPage: 1000 });
+  const {
+    fieldErrors,
+    serverError,
+    handleSubmit,
+    handleUploadImage,
+    handleRemoveImage,
+    isSubmitting,
+    isUploadingImage,
+    isRemovingImage,
+  } = usePostForm({ postId: id });
+
+  const { data: categoriesPaginated } = useCategories({ perPage: 100 });
   const categories = categoriesPaginated?.data ?? [];
 
-  const { data: tagsPaginated } = useTags({ perPage: 1000 });
+  const { data: tagsPaginated } = useTags({ perPage: 100 });
   const tags = tagsPaginated?.data ?? [];
-
-  const { createPost, updatePost, uploadImage, deleteImage } = usePostMutations();
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const handleSubmit = (data: PostFormData) => {
-    setServerError(null);
-    if (isEditing) {
-      updatePost.mutate(
-        { id: id!, data },
-        {
-          onSuccess: () => navigate('/posts'),
-          onError: (err) => {
-            const axiosErr = err as AxiosError<{ message: string }>;
-            setServerError(axiosErr.response?.data?.message ?? 'Update failed');
-          },
-        }
-      );
-    } else {
-      createPost.mutate(data, {
-        onSuccess: () => navigate('/posts'),
-        onError: (err) => {
-          const axiosErr = err as AxiosError<{ message: string }>;
-          setServerError(axiosErr.response?.data?.message ?? 'Create failed');
-        },
-      });
-    }
-  };
-
-  const handleUploadImage = async (file: File) => {
-    try {
-      return await uploadImage.mutateAsync(file);
-    } catch {
-      setServerError('Failed to upload image.');
-      return undefined;
-    }
-  };
-
-  const handleRemoveImage = async (url: string) => {
-    try {
-      await deleteImage.mutateAsync(url);
-      setServerError(null);
-    } catch {
-      setServerError('Failed to remove image from server.');
-    }
-  };
 
   if (isEditing && postLoading) {
     return (
@@ -101,16 +63,18 @@ export default function PostEditorPage() {
           <div className="card shadow-sm border-0">
             <div className="card-body p-4 p-md-5">
               <PostForm
+                key={post?.id ?? 'new'}
                 initialData={initialData}
                 categories={categories}
                 tags={tags}
                 onSubmit={handleSubmit}
-                isLoading={createPost.isPending || updatePost.isPending}
+                isLoading={isSubmitting}
                 serverError={serverError}
+                fieldErrors={fieldErrors}
                 onUploadImage={handleUploadImage}
                 onRemoveImage={handleRemoveImage}
-                isUploadingImage={uploadImage.isPending}
-                isRemovingImage={deleteImage.isPending}
+                isUploadingImage={isUploadingImage}
+                isRemovingImage={isRemovingImage}
               />
             </div>
           </div>

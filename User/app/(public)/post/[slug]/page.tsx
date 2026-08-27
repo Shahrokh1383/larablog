@@ -1,17 +1,22 @@
 'use client';
 
+import '@/styles/post.css';
 import { useParams } from 'next/navigation';
 import { usePost, useRelatedPosts } from '@/features/posts';
-import { useCategories } from '@/features/categories/hooks/useCategories';
-import { useComments } from '@/features/comments/hooks/useComments';
-import { useLoadMoreReplies } from '@/features/comments/hooks/useLoadMoreReplies';
-import CommentsSection from '@/features/comments/components/CommentsSection';
-import { useTrackPostRead } from '@/features/reader/hooks/useTrackPostRead';
-import { useToggleSavedPost } from '@/features/reader/hooks/useToggleSavedPost';
-import SavePostButton from '@/features/reader/components/SavePostButton';
-import { useSubscribeNewsletter } from '@/features/newsletter/hooks/useSubscribeNewsletter';
+import { useCategories } from '@/features/categories';
+import { 
+  useComments, 
+  useLoadMoreReplies, 
+  CommentsSection 
+} from '@/features/comments';
+import { 
+  useTrackPostRead, 
+  useToggleSavedPost, 
+  SavePostButton 
+} from '@/features/reader';
+import { useSubscribeNewsletter } from '@/features/newsletter';
 
-// Component imports
+// Internal Post components
 import PostBreadcrumb from '@/features/posts/components/PostBreadcrumb';
 import PostHeader from '@/features/posts/components/PostHeader';
 import PostFeaturedImage from '@/features/posts/components/PostFeaturedImage';
@@ -26,20 +31,24 @@ export default function PostPage() {
 
   const { data: post, isLoading, isError } = usePost(slug);
   const { data: relatedPosts } = useRelatedPosts(slug);
-  const { data: categories } = useCategories();
+
+  const categoriesQuery = useCategories();
+  const categories = categoriesQuery.data?.data;
 
   const commentsQuery = useComments(post?.id || '');
   const loadMoreReplies = useLoadMoreReplies(post?.id || '');
-  
-  // Reader Experience Hooks
+
   useTrackPostRead(post?.id);
   const toggleSaveMutation = useToggleSavedPost(post?.id || '', slug);
-  
-  // Newsletter Hook at the page level (Article V compliance)
+
   const newsletterState = useSubscribeNewsletter();
 
   if (isLoading) {
-    return <div className="container py-5 text-center"><div className="spinner-border text-primary"></div></div>;
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
   }
 
   if (isError || !post) {
@@ -52,12 +61,12 @@ export default function PostPage() {
         <div className="row g-5">
           <div className="col-lg-8">
             <article className="post-article">
-              <PostBreadcrumb category={post.category} title={post.title} />
-              
-              <PostHeader 
-                post={post} 
+              <PostBreadcrumb category={post.category || null} title={post.title} />
+
+              <PostHeader
+                post={post}
                 action={
-                  <SavePostButton 
+                  <SavePostButton
                     isSaved={post.is_saved || false}
                     isLoading={toggleSaveMutation.isPending}
                     onToggle={() => toggleSaveMutation.mutate()}
@@ -67,22 +76,21 @@ export default function PostPage() {
 
               <PostFeaturedImage src={post.featured_image || ''} alt={post.title} />
               <PostBody post={post} />
-              <PostTags tags={post.tags} />
-              <AuthorBioCard author={post.author} />
+              <PostTags tags={post.tags || []} />
+              <AuthorBioCard author={post.author!} />
             </article>
 
-            <CommentsSection 
-              postId={post.id} 
-              commentsQuery={commentsQuery} 
+            <CommentsSection
+              postId={post.id}
+              commentsQuery={commentsQuery}
               onLoadMoreReplies={loadMoreReplies.mutate}
               fetchingReplyId={loadMoreReplies.isPending ? loadMoreReplies.variables : null}
             />
           </div>
 
-          {/* Spread the exact state shape returned by the hook */}
-          <PostSidebar 
-            author={post.author} 
-            relatedPosts={relatedPosts} 
+          <PostSidebar
+            author={post.author!}
+            relatedPosts={relatedPosts}
             categories={categories}
             newsletterState={newsletterState}
           />

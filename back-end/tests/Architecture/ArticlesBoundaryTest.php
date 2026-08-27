@@ -1,0 +1,30 @@
+<?php
+
+test('Articles module does not depend on other modules internal classes')
+    ->expect('Modules\Articles')
+    ->not->toUse('Modules\Identity')
+    ->not->toUse('Modules\Profile\Services')
+    ->not->toUse('Modules\Engagement\Services')
+    ->not->toUse('Modules\ReaderExperience\Services')
+    ->not->toUse('Modules\Taxonomy\Models')
+    ->not->toUse('Modules\Taxonomy\Services\CategoryService')
+    ->not->toUse('Modules\Taxonomy\Services\TagService')
+    ->not->toUse('Modules\Taxonomy\Http')
+    ->not->toUse('Modules\Marketing')
+    ->not->toUse('Modules\About')
+    ->not->toUse('Modules\AdminStats')
+    ->not->toUse('Modules\Home')
+    ->not->toUse('Modules\Notification')
+    ->not->toUse('Modules\Search')
+    ->and('Modules\Articles')
+    ->toOnlyUse([
+        'App',
+        'Illuminate',
+        'Shared',
+        'Carbon',
+        'Modules\Articles',
+        'Modules\Taxonomy\Services\Contracts',
+        'Modules\Profile\Services\Contracts',
+        'Modules\Engagement\Services\Contracts',
+        'Modules\ReaderExperience\Services\Contracts',
+    ]);

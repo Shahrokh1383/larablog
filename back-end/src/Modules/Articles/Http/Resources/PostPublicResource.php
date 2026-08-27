@@ -22,16 +22,8 @@ class PostPublicResource extends JsonResource
             'is_saved'       => $this->is_saved ?? false,
             'published_at'   => $this->published_at,
             'is_editors_pick'=> $this->is_editors_pick,
-            'category'       => $this->whenLoaded('category', fn($c) => [
-                'id'   => $c->id,
-                'name' => $c->name,
-                'slug' => $c->slug,
-            ]),
-            'tags'           => $this->whenLoaded('tags', fn($tags) => $tags->map(fn($t) => [
-                'id'   => $t->id,
-                'name' => $t->name,
-                'slug' => $t->slug,
-            ])),
+            'category'       => $this->when(isset($this->category_detail), $this->category_detail),
+            'tags'           => $this->when(isset($this->tags_detail), $this->tags_detail),
             'author'         => $this->when(isset($this->author), $this->author),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,

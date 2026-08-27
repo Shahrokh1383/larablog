@@ -2,13 +2,13 @@
 
 use Modules\Taxonomy\Models\Category;
 use Modules\Taxonomy\Services\CategoryService;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Mockery\MockInterface;
 
 it('paginates categories with post counts', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -23,7 +23,7 @@ it('paginates categories with post counts', function () {
 });
 
 it('creates a category with generated slug', function () {
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(CategoryService::class);
     $category = $service->create('Hello World');
@@ -36,7 +36,7 @@ it('creates a category with generated slug', function () {
 it('regenerates slug when name changes', function () {
     $category = Category::factory()->create(['name' => 'Old Name', 'slug' => 'old-name']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -53,7 +53,7 @@ it('regenerates slug when name changes', function () {
 it('keeps slug when name unchanged', function () {
     $category = Category::factory()->create(['name' => 'Same Name', 'slug' => 'same-name']);
 
-    $this->mock(PostAdminServiceInterface::class, function (MockInterface $mock) use ($category) {
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
         $mock->shouldReceive('getTotalPostCountsByCategories')
             ->once()
             ->withArgs(fn ($ids) => $ids === [$category->id])
@@ -70,7 +70,7 @@ it('returns category map by ids', function () {
     $cat1 = Category::factory()->create();
     $cat2 = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(CategoryService::class);
     $result = $service->getByIds([$cat1->id, $cat2->id]);
@@ -83,10 +83,34 @@ it('returns category map by ids', function () {
         ]);
 });
 
+it('returns category with stats', function () {
+    $category = Category::factory()->create();
+
+    $this->mock(PostAdminStatsServiceInterface::class, function (MockInterface $mock) use ($category) {
+        $mock->shouldReceive('getTotalPostCountsByCategories')
+            ->once()
+            ->withArgs(fn ($ids) => $ids === [$category->id])
+            ->andReturn([$category->id => 5]);
+    });
+
+    $service = app(CategoryService::class);
+    $result = $service->getWithStats($category);
+
+    expect($result->posts_count)->toBe(5);
+});
+
+it('returns empty array for getByIds when ids empty', function () {
+    $this->mock(PostAdminStatsServiceInterface::class);
+
+    $service = app(CategoryService::class);
+
+    expect($service->getByIds([]))->toBe([]);
+});
+
 it('deletes a category', function () {
     $category = Category::factory()->create();
 
-    $this->mock(PostAdminServiceInterface::class);
+    $this->mock(PostAdminStatsServiceInterface::class);
 
     $service = app(CategoryService::class);
     $service->delete($category);

@@ -7,6 +7,10 @@ require base_path('src/Modules/Identity/Routes/admin.php');
 require base_path('src/Modules/Taxonomy/Routes/admin.php');
 require base_path('src/Modules/Taxonomy/Routes/api.php');
 
+// Articles Module Routes
+require base_path('src/Modules/Articles/Routes/api.php');
+require base_path('src/Modules/Articles/Routes/admin.php');
+
 // AdminStats Module Routes
 require base_path('src/Modules/AdminStats/Routes/admin.php');
 

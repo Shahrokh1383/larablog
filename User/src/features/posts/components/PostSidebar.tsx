@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { Author, Category, Post } from '../types/post';
-import NewsletterSidebar from '@/features/newsletter/components/NewsletterSidebar';
+import { NewsletterSidebar } from '@/features/newsletter';
 
-// Fixed: Interface exactly matches the object returned by useSubscribeNewsletter()
 export interface NewsletterStateShape {
   email: string;
   onEmailChange: (value: string) => void;
@@ -17,14 +16,13 @@ interface PostSidebarProps {
   author: Author;
   relatedPosts: Post[] | undefined;
   categories: Category[] | undefined;
-  newsletterState: NewsletterStateShape; // Passed down from page.tsx
+  newsletterState: NewsletterStateShape;
 }
 
 export default function PostSidebar({ author, relatedPosts, categories, newsletterState }: PostSidebarProps) {
   return (
     <aside className="col-lg-4">
       <div className="sidebar">
-        {/* Author Card */}
         <div className="sidebar-card author-sidebar-card">
           <div className="text-center">
             <img 
@@ -40,7 +38,6 @@ export default function PostSidebar({ author, relatedPosts, categories, newslett
           </div>
         </div>
 
-        {/* Related Posts */}
         <div className="sidebar-card">
           <h4 className="sidebar-title">Related Posts</h4>
           <ul className="related-posts-list">
@@ -55,7 +52,6 @@ export default function PostSidebar({ author, relatedPosts, categories, newslett
           </ul>
         </div>
 
-        {/* Categories */}
         <div className="sidebar-card">
           <h4 className="sidebar-title">Categories</h4>
           <div className="category-cloud">

@@ -1,9 +1,14 @@
-import { useState, useRef } from 'react';
+import { usePostFormState } from '../hooks/usePostFormState';
 import type { PostFormData } from '../types/post';
 import type { Category } from '@/features/categories/types/category';
 import type { Tag } from '@/features/tags/types/tag';
-import RichTextEditor from './RichTextEditor';
-import MultiSelectTags from './MultiSelectTags';
+import TitleField from './TitleField';
+import BodyField from './BodyField';
+import ExcerptField from './ExcerptField';
+import FeaturedImageField from './FeaturedImageField';
+import PublishSettings from './PublishSettings';
+import CategorySelect from './CategorySelect';
+import TagSelect from './TagSelect';
 
 interface PostFormProps {
   initialData?: Partial<PostFormData>;
@@ -12,6 +17,7 @@ interface PostFormProps {
   onSubmit: (data: PostFormData) => void;
   isLoading: boolean;
   serverError: string | null;
+  fieldErrors: Record<string, string>;
   onUploadImage: (file: File) => Promise<string | undefined>;
   onRemoveImage: (url: string) => Promise<void>;
   isUploadingImage: boolean;
@@ -25,37 +31,30 @@ export default function PostForm({
   onSubmit,
   isLoading,
   serverError,
+  fieldErrors,
   onUploadImage,
   onRemoveImage,
   isUploadingImage,
   isRemovingImage,
 }: PostFormProps) {
-  const [title, setTitle] = useState(initialData?.title ?? '');
-  const [body, setBody] = useState(initialData?.body ?? '');
-  const [excerpt, setExcerpt] = useState(initialData?.excerpt ?? '');
-  const [featuredImage, setFeaturedImage] = useState(initialData?.featured_image ?? '');
-  const [isPublished, setIsPublished] = useState(initialData?.is_published ?? false);
-  const [isEditorsPick, setIsEditorsPick] = useState(initialData?.is_editors_pick ?? false);
-  const [categoryId, setCategoryId] = useState(initialData?.category_id ?? '');
-  const [tagIds, setTagIds] = useState<string[]>(initialData?.tag_ids ?? []);
-  
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFeaturedImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    const url = await onUploadImage(file);
-    if (url) {
-      setFeaturedImage(url);
-    }
-  };
-
-  const handleRemoveFeaturedImage = async () => {
-    if (!featuredImage) return;
-    await onRemoveImage(featuredImage);
-    setFeaturedImage('');
-  };
+  const {
+    title,
+    setTitle,
+    body,
+    setBody,
+    excerpt,
+    setExcerpt,
+    featuredImage,
+    setFeaturedImage,
+    isPublished,
+    setIsPublished,
+    isEditorsPick,
+    setIsEditorsPick,
+    categoryId,
+    setCategoryId,
+    tagIds,
+    setTagIds,
+  } = usePostFormState(initialData);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,98 +70,83 @@ export default function PostForm({
     });
   };
 
+  const handleRemoveFeaturedImage = async () => {
+    if (!featuredImage) return;
+    await onRemoveImage(featuredImage);
+    setFeaturedImage('');
+  };
+
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+
   return (
     <form onSubmit={handleSubmit}>
-      {serverError && <div className="alert alert-danger">{serverError}</div>}
+      {serverError && !hasFieldErrors && (
+        <div className="alert alert-danger">{serverError}</div>
+      )}
 
-      <div className="mb-3">
-        <label className="form-label">Title</label>
-        <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required />
-      </div>
+      <TitleField
+        value={title}
+        onChange={setTitle}
+        error={fieldErrors.title}
+      />
 
-      <div className="mb-3">
-        <label className="form-label">Body</label>
-        <RichTextEditor value={body} onChange={setBody} />
+      <BodyField
+        value={body}
+        onChange={setBody}
+        onImageUpload={onUploadImage}
+        isUploadingImage={isUploadingImage}
+        error={fieldErrors.body}
+      />
+
+      <div className="row mb-3">
+        <ExcerptField
+          value={excerpt}
+          onChange={setExcerpt}
+          error={fieldErrors.excerpt}
+        />
+        <FeaturedImageField
+          value={featuredImage}
+          onChange={setFeaturedImage}
+          onUpload={onUploadImage}
+          onRemove={handleRemoveFeaturedImage}
+          isUploading={isUploadingImage}
+          isRemoving={isRemovingImage}
+          error={fieldErrors.featured_image}
+        />
       </div>
 
       <div className="row mb-3">
-        <div className="col-md-6">
-          <label className="form-label">Excerpt</label>
-          <textarea className="form-control" rows={3} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} />
-        </div>
-        <div className="col-md-6">
-          <label className="form-label">Featured Image</label>
-          <input type="url" className="form-control mb-2" value={featuredImage} onChange={(e) => setFeaturedImage(e.target.value)} placeholder="Image URL" disabled={isUploadingImage} />
-          
-          <div className="d-flex align-items-center gap-2">
-            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImage}>
-              {isUploadingImage ? (
-                <span className="spinner-border spinner-border-sm" />
-              ) : (
-                <><i className="fas fa-upload me-1"></i> Upload Image</>
-              )}
-            </button>
-            {featuredImage && (
-              <button 
-                type="button" 
-                className="btn btn-sm btn-outline-danger" 
-                onClick={handleRemoveFeaturedImage}
-                disabled={isRemovingImage}
-              >
-                {isRemovingImage ? (
-                  <span className="spinner-border spinner-border-sm" />
-                ) : (
-                  <><i className="fas fa-trash me-1"></i> Remove</>
-                )}
-              </button>
-            )}
-            <input type="file" ref={fileInputRef} className="d-none" accept="image/*" onChange={handleFeaturedImageUpload} />
-          </div>
-          
-          {featuredImage && (
-            <div className="mt-2 position-relative">
-              <img src={featuredImage} alt="Featured" className="img-fluid rounded" style={{ maxHeight: '100px' }} />
-            </div>
-          )}
-        </div>
+        <CategorySelect
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+          error={fieldErrors.category_id}
+        />
+        <PublishSettings
+          isPublished={isPublished}
+          onPublishedChange={setIsPublished}
+          isEditorsPick={isEditorsPick}
+          onEditorsPickChange={setIsEditorsPick}
+        />
       </div>
 
-      <div className="row mb-3">
-        <div className="col-md-4">
-          <label className="form-label">Category</label>
-          <select className="form-select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-            <option value="">None</option>
-            {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-          </select>
-        </div>
-        <div className="col-md-4">
-          <div className="form-check mt-4">
-            <input type="checkbox" className="form-check-input" id="is_published" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
-            <label className="form-check-label" htmlFor="is_published">Publish immediately</label>
-          </div>
-          <div className="form-check mt-2">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="is_editors_pick"
-              checked={isEditorsPick}
-              onChange={(e) => setIsEditorsPick(e.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="is_editors_pick">
-              Editor’s Pick
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Tags</label>
-        <MultiSelectTags tags={tags} selectedIds={tagIds} onChange={setTagIds} />
-      </div>
+      <TagSelect
+        tags={tags}
+        selectedIds={tagIds}
+        onChange={setTagIds}
+        error={fieldErrors.tag_ids}
+      />
 
       <div className="d-flex justify-content-end">
         <button type="submit" className="btn btn-primary" disabled={isLoading}>
-          {isLoading ? (<><span className="spinner-border spinner-border-sm me-2" />Saving...</>) : 'Save Post'}
+          {isLoading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" />
+              Saving...
+            </>
+          ) : (
+            'Save Post'
+          )}
         </button>
       </div>
     </form>

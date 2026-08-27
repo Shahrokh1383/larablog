@@ -3,15 +3,16 @@
 namespace Modules\Taxonomy\Services;
 
 use Modules\Taxonomy\Models\Category;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Shared\Actions\GenerateSlugAction;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 class CategoryService implements CategoryAdminServiceInterface
 {
     public function __construct(
         private GenerateSlugAction $generateSlugAction,
-        private PostAdminServiceInterface $postAdminService
+        private PostAdminStatsServiceInterface $postAdminStatsService
     ) {}
 
     public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
@@ -19,7 +20,7 @@ class CategoryService implements CategoryAdminServiceInterface
         $categories = Category::orderBy('name')->paginate($perPage, ['*'], 'page', $page);
         $categoryIds = $categories->pluck('id')->toArray();
 
-        $counts = $this->postAdminService->getTotalPostCountsByCategories($categoryIds);
+        $counts = $this->postAdminStatsService->getTotalPostCountsByCategories($categoryIds);
 
         $categories->each(function ($category) use ($counts) {
             $category->posts_count = $counts[$category->id] ?? 0;
@@ -30,7 +31,7 @@ class CategoryService implements CategoryAdminServiceInterface
 
     public function getWithStats(Category $category): Category
     {
-        $counts = $this->postAdminService->getTotalPostCountsByCategories([$category->id]);
+        $counts = $this->postAdminStatsService->getTotalPostCountsByCategories([$category->id]);
         $category->posts_count = $counts[$category->id] ?? 0;
 
         return $category;

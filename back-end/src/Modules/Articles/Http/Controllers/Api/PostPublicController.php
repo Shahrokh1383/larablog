@@ -3,13 +3,17 @@
 namespace Modules\Articles\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Articles\Services\PostPublicService;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Modules\Articles\Http\Resources\PostPublicResource;
+use Modules\Articles\Http\Requests\IndexPostsByCategoryRequest;
+use Modules\Articles\Http\Requests\IndexPostsByTagRequest;
 use Illuminate\Routing\Controller;
 
 class PostPublicController extends Controller
 {
-    public function __construct(private PostPublicService $postPublicService) {}
+    public function __construct(
+        private PostPublicServiceInterface $postPublicService
+    ) {}
 
     public function index(): JsonResponse
     {
@@ -30,5 +34,37 @@ class PostPublicController extends Controller
     {
         $related = $this->postPublicService->getRelatedPosts($slug);
         return PostPublicResource::collection($related)->response();
+    }
+
+    public function postsByCategory(string $categorySlug, IndexPostsByCategoryRequest $request): JsonResponse
+    {
+        $result = $this->postPublicService->getPublishedPostsByCategoryForPublic(
+            categorySlug: $categorySlug,
+            sort: $request->validated('sort', 'newest'),
+            perPage: $request->validated('per_page', 10)
+        );
+
+        $postsJson = PostPublicResource::collection($result['posts'])->response()->getData(true);
+
+        return response()->json([
+            'category' => $result['category'],
+            'posts' => $postsJson,
+        ]);
+    }
+
+    public function postsByTag(string $tagSlug, IndexPostsByTagRequest $request): JsonResponse
+    {
+        $result = $this->postPublicService->getPublishedPostsByTagForPublic(
+            tagSlug: $tagSlug,
+            sort: $request->validated('sort', 'newest'),
+            perPage: $request->validated('per_page', 10)
+        );
+
+        $postsJson = PostPublicResource::collection($result['posts'])->response()->getData(true);
+
+        return response()->json([
+            'tag' => $result['tag'],
+            'posts' => $postsJson,
+        ]);
     }
 }
