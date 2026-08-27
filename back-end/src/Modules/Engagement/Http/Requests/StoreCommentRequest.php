@@ -16,9 +16,16 @@ class StoreCommentRequest extends FormRequest
     {
         return [
             'post_id'   => ['required', 'uuid', 'exists:content_posts,id'],
-            'parent_id' => ['nullable', 'uuid', 'exists:engagement_comments,id'],
+            'parent_id' => [
+                'nullable',
+                'uuid',
+                Rule::exists('engagement_comments', 'id')->where(function ($query) {
+                    $query->where('post_id', $this->input('post_id'))
+                        ->where('is_approved', true);
+                }),
+            ],
             'body'      => ['required', 'string', 'max:2000'],
-            
+
             'name'      => [
                 'nullable',
                 'string',

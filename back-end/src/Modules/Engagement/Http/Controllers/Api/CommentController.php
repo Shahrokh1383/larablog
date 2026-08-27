@@ -18,7 +18,7 @@ class CommentController extends Controller
 
     public function unreadCount(): JsonResponse
     {
-        $count = Comment::where('is_approved', false)->count();
+        $count = $this->commentService->getUnreadCount();
         return response()->json(['unread_count' => $count]);
     }
 
@@ -31,7 +31,7 @@ class CommentController extends Controller
 
     public function destroy(Comment $comment): JsonResponse
     {
-        $this->authorize('manage', $comment);
+        $this->authorize('delete', $comment);
         $this->commentService->delete($comment);
         return response()->json(null, 204);
     }

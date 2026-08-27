@@ -8,6 +8,14 @@ use Illuminate\Pagination\CursorPaginator;
 
 class CommentPublicService
 {
+    /** Top-level comments per cursor page. */
+    public const COMMENTS_PER_PAGE = 15;
+
+    public const PRELOADED_REPLIES_LIMIT = 2;
+
+    /** Page size of the replies endpoint. */
+    public const REPLIES_PER_PAGE = 10;
+
     public function __construct(
         private FetchesPublicProfiles $profileFetcher
     ) {}
@@ -17,18 +25,16 @@ class CommentPublicService
         $paginator = Comment::where('post_id', $postId)
             ->approved()
             ->whereNull('parent_id')
-            ->with([
-                'user',
-                'replies' => fn($query) => $query->with('user')->latest()->limit(2),
-            ])
-            ->withCount(['replies as replies_count' => fn($query) => $query->approved()])
+            ->with('user')
+            ->withCount(['replies as replies_count' => fn ($query) => $query->approved()])
             ->latest()
-            ->cursorPaginate(15, ['*'], 'cursor', $cursor);
+            ->cursorPaginate(self::COMMENTS_PER_PAGE, ['*'], 'cursor', $cursor);
 
-        // Gather all user IDs from comments and replies, fetch their profile avatars
+        $comments = $paginator->items();
+        $this->preloadLatestReplies($comments);
+
         $userIds = collect();
-
-        foreach ($paginator->items() as $comment) {
+        foreach ($comments as $comment) {
             if ($comment->user_id) $userIds->push($comment->user_id);
             foreach ($comment->replies as $reply) {
                 if ($reply->user_id) $userIds->push($reply->user_id);
@@ -37,8 +43,8 @@ class CommentPublicService
 
         $profiles = $this->profileFetcher->getPublicProfilesMap($userIds->unique()->toArray());
 
-        // Attach avatar to each comment
-        foreach ($paginator->items() as $comment) {
+        foreach ($comments as $comment) {
+            $comment->replies_has_more = $comment->replies_count > self::PRELOADED_REPLIES_LIMIT;
             $this->attachAvatar($comment, $profiles);
             foreach ($comment->replies as $reply) {
                 $this->attachAvatar($reply, $profiles);
@@ -53,8 +59,12 @@ class CommentPublicService
         return Comment::where('post_id', $postId)->approved()->count();
     }
 
-    public function getRepliesForComment(string $commentId, int $skip = 2, int $take = 10): array
-    {
+    public function getRepliesForComment(
+        string $commentId,
+        int $skip = self::PRELOADED_REPLIES_LIMIT,
+        int $take = self::REPLIES_PER_PAGE,
+    ): array {
+        // Fetch one extra row to detect whether another page exists.
         $replies = Comment::where('parent_id', $commentId)
             ->approved()
             ->with('user')
@@ -66,7 +76,6 @@ class CommentPublicService
         $hasMore = $replies->count() > $take;
         $data = $hasMore ? $replies->slice(0, $take) : $replies;
 
-        // Fetch avatars for loaded replies
         $userIds = $data->pluck('user_id')->filter()->unique()->toArray();
         $profiles = $this->profileFetcher->getPublicProfilesMap($userIds);
         foreach ($data as $reply) {
@@ -79,6 +88,16 @@ class CommentPublicService
                 'has_more' => $hasMore,
             ]
         ];
+    }
+
+    private function preloadLatestReplies(array $comments): void
+    {
+        foreach ($comments as $comment) {
+            $comment->setRelation(
+                'replies',
+                $comment->replies()->with('user')->limit(self::PRELOADED_REPLIES_LIMIT)->get()
+            );
+        }
     }
 
     private function attachAvatar(Comment $comment, array $profiles): void

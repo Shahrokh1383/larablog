@@ -38,7 +38,7 @@ class CommentService implements CommentServiceInterface
                 'name'        => $dto->name,
                 'email'       => $dto->email,
                 'body'        => $dto->body,
-                'is_approved' => $dto->isApproved,
+                'is_approved' => $dto->userId !== null,
             ]);
 
             DB::afterCommit(function () use ($comment) {
@@ -56,7 +56,18 @@ class CommentService implements CommentServiceInterface
 
     public function delete(Comment $comment): void
     {
-        $comment->delete();
+        DB::transaction(function () use ($comment): void {
+            if ($comment->parent_id === null) {
+                Comment::where('parent_id', $comment->id)->delete();
+            }
+
+            $comment->delete();
+        });
+    }
+
+    public function getUnreadCount(): int
+    {
+        return Comment::where('is_approved', false)->count();
     }
 
     public function getCommentCountsForPosts(array $postIds): array

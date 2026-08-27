@@ -8,6 +8,11 @@ Route::prefix('posts/{post}/comments')->group(function () {
 });
 
 Route::prefix('comments')->group(function () {
-    Route::post('/', [CommentPublicController::class, 'store']);
+    Route::post('/', [CommentPublicController::class, 'store'])
+        ->middleware('throttle:engagement-comments');
+
     Route::get('/{comment}/replies', [CommentPublicController::class, 'replies']);
+
+    Route::delete('/{comment}', [CommentPublicController::class, 'destroy'])
+        ->middleware('auth:sanctum');
 });
