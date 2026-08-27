@@ -47,7 +47,6 @@
     "back-end\\src\\Modules\\ReaderExperience",
     "User\\app\\(dashboard)",
     "User\\app\\(auth)",
-    "User\\src\\styles",
     "User\\src\\features\\terms",
     "User\\src\\features\\search",
     "User\\src\\features\\reader",
@@ -87,7 +86,6 @@
     "User\\app\\(public)\\tags",
     "User\\src\\features\\categories",
     "User\\src\\features\\tags",
-    "User",
     "Admin\\src\\shared",
     "Admin\\src\\features\\users",
     "back-end\\tests\\Feature\\Taxonomy",
@@ -97,12 +95,13 @@
     "Admin\\src\\main.tsx",
     "Admin\\src\\index.css",
     "Admin\\src\\features\\tags",
-    "Admin\\src\\features\\categories"
+    "Admin\\src\\features\\categories",
+    "User\\src\\features\\comments"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-27T17:16:40.774Z",
+  "lastModified": "2026-08-27T17:47:01.236Z",
   "version": 1
 }
