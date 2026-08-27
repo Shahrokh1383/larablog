@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Pagination\Cursor;
 use Modules\Engagement\Services\CommentPublicService;
+use Throwable;
 
 class IndexCommentRequest extends FormRequest
 {
@@ -30,10 +31,14 @@ class IndexCommentRequest extends FormRequest
                 $fail('The :attribute field must be a string.');
                 return;
             }
+            try {
+                $cursor = Cursor::fromEncoded($value);
+            } catch (Throwable) {
+                $fail('The :attribute field is not a valid cursor.');
+                return;
+            }
 
-            $cursor = Cursor::fromEncoded($value);
-
-            if ($cursor === null) {
+            if (! $cursor instanceof Cursor) {
                 $fail('The :attribute field is not a valid cursor.');
                 return;
             }
