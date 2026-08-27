@@ -95,12 +95,14 @@
     "back-end\\tests",
     "Admin\\src\\app",
     "Admin\\src\\main.tsx",
-    "Admin\\src\\index.css"
+    "Admin\\src\\index.css",
+    "Admin\\src\\features\\tags",
+    "Admin\\src\\features\\categories"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-27T16:37:41.234Z",
+  "lastModified": "2026-08-27T17:16:40.774Z",
   "version": 1
 }
