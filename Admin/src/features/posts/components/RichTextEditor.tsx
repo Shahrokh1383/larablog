@@ -75,8 +75,40 @@ export default function RichTextEditor({ value, onChange, onImageUpload, isUploa
     setActiveStates(states);
   }, []);
 
+  const saveScrollPosition = () => {
+    return {
+      x: window.scrollX,
+      y: window.scrollY,
+    };
+  };
+
+  const restoreScrollPosition = (pos: { x: number; y: number }) => {
+    window.scrollTo(pos.x, pos.y);
+  };
+
   const exec = (command: string, val?: string) => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0).cloneRange();
+    const scrollPos = saveScrollPosition();
+
+    // Temporarily focus the editor to ensure execCommand works
+    editorRef.current?.focus();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
     document.execCommand(command, false, val);
+
+    // Restore selection and scroll position after command
+    const newSelection = window.getSelection();
+    if (newSelection) {
+      newSelection.removeAllRanges();
+      newSelection.addRange(range);
+    }
+    editorRef.current?.focus();
+    restoreScrollPosition(scrollPos);
+
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
       updateActiveStates();
@@ -89,41 +121,49 @@ export default function RichTextEditor({ value, onChange, onImageUpload, isUploa
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      const selection = window.getSelection();
-      if (!selection || !selection.rangeCount || !editorRef.current) return;
+    if (e.key !== 'Enter' || e.shiftKey) return;
 
-      let node = selection.anchorNode;
-      if (node && node.nodeType === 3) node = node.parentNode;
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount || !editorRef.current) return;
 
-      const blockTags = ['H2', 'BLOCKQUOTE', 'PRE'];
-      let currentBlock = node as Node | null;
-      
-      while (currentBlock && currentBlock !== editorRef.current) {
-        if (currentBlock.nodeName && blockTags.includes(currentBlock.nodeName)) break;
-        currentBlock = currentBlock.parentNode;
+    let node = selection.anchorNode;
+    if (node && node.nodeType === 3) node = node.parentNode;
+
+    const blockTags = ['H2', 'BLOCKQUOTE', 'PRE'];
+    let currentBlock = node as Node | null;
+
+    while (currentBlock && currentBlock !== editorRef.current) {
+      if (currentBlock.nodeName && blockTags.includes(currentBlock.nodeName)) {
+        break;
+      }
+      currentBlock = currentBlock.parentNode;
+    }
+
+    // Only intercept for H2, BLOCKQUOTE, PRE (lists are handled natively)
+    if (
+      currentBlock &&
+      currentBlock !== editorRef.current &&
+      blockTags.includes(currentBlock.nodeName)
+    ) {
+      e.preventDefault();
+
+      // Create a new block of the same tag
+      const newBlock = document.createElement(currentBlock.nodeName.toLowerCase());
+      newBlock.innerHTML = '<br>';
+
+      if (currentBlock.parentNode) {
+        currentBlock.parentNode.insertBefore(newBlock, currentBlock.nextSibling);
       }
 
-      if (currentBlock && currentBlock !== editorRef.current && blockTags.includes(currentBlock.nodeName)) {
-        e.preventDefault();
-        
-        const p = document.createElement('p');
-        p.innerHTML = '<br>';
-        
-        if (currentBlock.parentNode) {
-          currentBlock.parentNode.insertBefore(p, currentBlock.nextSibling);
-        }
-        
-        const range = document.createRange();
-        range.setStart(p, 0);
-        range.collapse(true);
-        
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
-        onChange(editorRef.current.innerHTML);
-        updateActiveStates();
-      }
+      const range = document.createRange();
+      range.setStart(newBlock, 0);
+      range.collapse(true);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      onChange(editorRef.current.innerHTML);
+      updateActiveStates();
     }
   };
 

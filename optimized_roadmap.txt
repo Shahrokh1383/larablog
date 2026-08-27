@@ -1,0 +1,32 @@
+# DYNAMIC ALIASES
+[A]=Admin/src/features/posts/components
+[B]=Admin/src/features/posts/hooks
+[C]=Admin/src/features/categories/hooks
+[D]=Admin/src/features/tags/hooks
+[E]=Admin/src/pages
+[F]=Admin/src/features/categories/components
+[G]=Admin/src/features/categories/types
+[H]=Admin/src/features/tags/components
+[I]=Admin/src/features/categories/api
+[J]=Admin/src/features/posts/types
+[K]=Admin/src/features/tags/types
+[L]=Admin/src/features/posts/api
+[M]=Admin/src/features/tags/api
+
+# MANIFEST
+Admin/src/features/categories(index.ts)
+[I](categoriesApi.ts)
+[F](CategoryDataTable.tsx)
+[C](useCategories.ts,useCategoryMutations.ts)
+[G](category.ts)
+Admin/src/features/posts(index.ts)
+[L](postsApi.ts)
+[A](BodyField.tsx,CategorySelect.tsx,ExcerptField.tsx,FeaturedImageField.tsx,MultiSelectTags.tsx,PostDataTable.tsx,PostForm.tsx,PublishSettings.tsx,RichTextEditor.tsx,TagSelect.tsx,TitleField.tsx)
+[B](usePostDetail.ts,usePostForm.ts,usePostFormState.ts,usePostMutations.ts,usePosts.ts)
+[J](post.ts)
+Admin/src/features/tags(index.ts)
+[M](tagsApi.ts)
+[H](TagDataTable.tsx)
+[D](useTagMutations.ts,useTags.ts)
+[K](tag.ts)
+[E](Categories.tsx,PostEditor.tsx,Posts.tsx,Tags.tsx)

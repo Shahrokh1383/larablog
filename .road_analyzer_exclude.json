@@ -67,7 +67,6 @@
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\about",
     "Admin\\src\\features\\comments",
-    "Admin\\src\\features\\tags",
     "User\\src\\features\\notifications",
     "User\\src\\providers",
     "back-end\\src\\Modules\\Identity",
@@ -90,16 +89,18 @@
     "User\\src\\features\\tags",
     "User",
     "Admin\\src\\shared",
-    "Admin\\src\\features\\categories",
     "Admin\\src\\features\\users",
-    "Admin",
-    "back-end\\src\\Modules\\Taxonomy",
-    "back-end\\tests\\Feature\\Taxonomy"
+    "back-end\\tests\\Feature\\Taxonomy",
+    "back-end\\database",
+    "back-end\\tests",
+    "Admin\\src\\app",
+    "Admin\\src\\main.tsx",
+    "Admin\\src\\index.css"
   ],
   "globalPatterns": [
     "public",
     "storage"
   ],
-  "lastModified": "2026-08-23T05:57:51.956Z",
+  "lastModified": "2026-08-27T16:37:41.234Z",
   "version": 1
 }

@@ -22,10 +22,10 @@ export default function PostEditorPage() {
     isRemovingImage,
   } = usePostForm({ postId: id });
 
-  const { data: categoriesPaginated } = useCategories({ perPage: 1000 });
+  const { data: categoriesPaginated } = useCategories({ perPage: 100 });
   const categories = categoriesPaginated?.data ?? [];
 
-  const { data: tagsPaginated } = useTags({ perPage: 1000 });
+  const { data: tagsPaginated } = useTags({ perPage: 100 });
   const tags = tagsPaginated?.data ?? [];
 
   if (isEditing && postLoading) {
@@ -63,6 +63,7 @@ export default function PostEditorPage() {
           <div className="card shadow-sm border-0">
             <div className="card-body p-4 p-md-5">
               <PostForm
+                key={post?.id ?? 'new'}
                 initialData={initialData}
                 categories={categories}
                 tags={tags}
