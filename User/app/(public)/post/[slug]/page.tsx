@@ -6,7 +6,8 @@ import { usePost, useRelatedPosts } from '@/features/posts';
 import { useCategories } from '@/features/categories';
 import { 
   useComments, 
-  useLoadMoreReplies, 
+  useLoadMoreReplies,
+  useDeleteComment,
   CommentsSection 
 } from '@/features/comments';
 import { 
@@ -37,6 +38,7 @@ export default function PostPage() {
 
   const commentsQuery = useComments(post?.id || '');
   const loadMoreReplies = useLoadMoreReplies(post?.id || '');
+  const deleteComment = useDeleteComment(post?.id || '');
 
   useTrackPostRead(post?.id);
   const toggleSaveMutation = useToggleSavedPost(post?.id || '', slug);
@@ -85,6 +87,8 @@ export default function PostPage() {
               commentsQuery={commentsQuery}
               onLoadMoreReplies={loadMoreReplies.mutate}
               fetchingReplyId={loadMoreReplies.isPending ? loadMoreReplies.variables : null}
+              onDeleteComment={deleteComment.mutate}
+              deletingCommentId={deleteComment.isPending ? deleteComment.variables : null}
             />
           </div>
 

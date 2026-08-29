@@ -11,9 +11,11 @@ interface CommentsSectionProps {
   commentsQuery: UseInfiniteQueryResult<InfiniteData<CommentsResponse>, Error>;
   onLoadMoreReplies: (commentId: string) => void;
   fetchingReplyId?: string | null;
+  onDeleteComment: (commentId: string) => void;
+  deletingCommentId?: string | null;
 }
 
-export default function CommentsSection({ postId, commentsQuery, onLoadMoreReplies, fetchingReplyId }: CommentsSectionProps) {
+export default function CommentsSection({ postId, commentsQuery, onLoadMoreReplies, fetchingReplyId, onDeleteComment, deletingCommentId }: CommentsSectionProps) {
   const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = commentsQuery;
@@ -24,6 +26,11 @@ export default function CommentsSection({ postId, commentsQuery, onLoadMoreRepli
   const handleReply = (id: string, name: string) => {
     setReplyTo({ id, name });
     document.getElementById('commentFormWrapper')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    setReplyTo((prev) => (prev?.id === commentId ? null : prev));
+    onDeleteComment(commentId);
   };
 
   return (
@@ -47,6 +54,8 @@ export default function CommentsSection({ postId, commentsQuery, onLoadMoreRepli
                 onReply={handleReply} 
                 onLoadMoreReplies={onLoadMoreReplies}
                 fetchingReplyId={fetchingReplyId}
+                onDeleteComment={handleDeleteComment}
+                deletingCommentId={deletingCommentId}
               />
             ))}
             {comments.length === 0 && <p className="text-muted text-center py-4">No comments yet. Be the first to comment!</p>}
