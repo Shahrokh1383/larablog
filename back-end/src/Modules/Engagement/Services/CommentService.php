@@ -5,20 +5,16 @@ namespace Modules\Engagement\Services;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\DTOs\CommentCreateDTO;
 use Modules\Engagement\Events\CommentCreated;
-use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
-use Modules\Articles\Services\Contracts\PostInfoContract;
 use Shared\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Carbon\Carbon;
 
-class CommentService implements CommentServiceInterface
+class CommentService
 {
     public function __construct(
-        private readonly PostInfoContract $postInfoService
+        private readonly PostAdminServiceInterface $postAdminService,
     ) {}
 
     public function create(CommentCreateDTO $dto): Comment
@@ -72,18 +68,6 @@ class CommentService implements CommentServiceInterface
         return Comment::where('is_approved', false)->count();
     }
 
-    public function getCommentCountsForPosts(array $postIds): array
-    {
-        if (empty($postIds)) return [];
-
-        return Comment::whereIn('post_id', $postIds)
-            ->approved()
-            ->selectRaw('post_id, count(*) as aggregate')
-            ->groupBy('post_id')
-            ->pluck('aggregate', 'post_id')
-            ->toArray();
-    }
-
     public function getCommentsForPostAdmin(string $postIdentifier, User $user, int $perPage = 20): LengthAwarePaginator
     {
         $postId = $this->resolveViewablePostId($postIdentifier, $user);
@@ -94,6 +78,10 @@ class CommentService implements CommentServiceInterface
             ->paginate($perPage);
     }
 
+    /**
+     * Staff reply to a post. Staff replies carry an attributable identity;
+     * is_approved is derived from a non-null userId, so they publish instantly.
+     */
     public function createCommentForPost(
         string $postIdentifier,
         User $user,
@@ -112,70 +100,14 @@ class CommentService implements CommentServiceInterface
         ));
     }
 
-    public function getUserCommentsPaginated(string $userId, int $perPage = 15): LengthAwarePaginator
-    {
-        $paginated = Comment::where('user_id', $userId)
-            ->approved()
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
-
-        $postIds = $paginated->getCollection()->pluck('post_id')->unique()->toArray();
-        $postsMap = $this->postInfoService->getPostsByIds($postIds);
-
-        $paginated->getCollection()->transform(function (Comment $comment) use ($postsMap) {
-            $postInfo = $postsMap[$comment->post_id] ?? null;
-            $comment->post_slug = $postInfo->slug ?? null;
-            $comment->post_title = $postInfo->title ?? null;
-            return $comment;
-        });
-
-        return $paginated;
-    }
-
-    public function getWeeklyTopCommenters(int $limit = 10): Collection
-    {
-        $startOfWeek = Carbon::now()->startOfWeek();
-
-        return Comment::where('created_at', '>=', $startOfWeek)
-            ->approved()
-            ->whereNotNull('user_id')
-            ->selectRaw('user_id, count(*) as comments_count')
-            ->groupBy('user_id')
-            ->orderByDesc('comments_count')
-            ->limit($limit)
-            ->get();
-    }
-
-    public function getWeeklyCommentCountForUser(string $userId): int
-    {
-        $startOfWeek = Carbon::now()->startOfWeek();
-
-        return Comment::where('user_id', $userId)
-            ->where('created_at', '>=', $startOfWeek)
-            ->approved()
-            ->count();
-    }
-
-    public function getTotalCommentCountForUser(string $userId): int
-    {
-        return Comment::where('user_id', $userId)
-            ->approved()
-            ->count();
-    }
-
     private function resolveViewablePostId(string $postIdentifier, User $user): string
     {
-        $postId = $this->postAdminService()->findViewablePostId($postIdentifier, $user);
+        $postId = $this->postAdminService->findViewablePostId($postIdentifier, $user);
 
         if ($postId === null) {
             throw new NotFoundHttpException;
         }
 
         return $postId;
-    }
-
-    private function postAdminService(): PostAdminServiceInterface
-    {
-        return app(PostAdminServiceInterface::class);
     }
 }

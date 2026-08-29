@@ -12,14 +12,18 @@ use Modules\Engagement\Events\CommentCreated;
 use Modules\Engagement\Listeners\SendCommentNotifications;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\Policies\CommentPolicy;
-use Modules\Engagement\Services\CommentService;
+use Modules\Engagement\Services\CommentStatsService;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
 
 class EngagementServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(CommentServiceInterface::class, CommentService::class);
+        // Read-side contract for cross-module consumers (Articles'
+        // MapPostRelationsAction, ReaderExperience's DashboardService).
+        // The write side (CommentService) stays concrete and module-internal
+        // so it can depend on PostAdminServiceInterface without cycling.
+        $this->app->bind(CommentServiceInterface::class, CommentStatsService::class);
     }
 
     public function boot(): void
