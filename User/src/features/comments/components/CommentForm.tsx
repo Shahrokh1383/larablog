@@ -80,19 +80,19 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
             <>
               <div className="col-md-6">
                 <label htmlFor="commentName" className="form-label">Name *</label>
-                <input type="text" className="form-control" id="commentName" value={name} onChange={(e) => setName(e.target.value)} required />
+                <input type="text" className="form-control" id="commentName" value={name} onChange={(e) => setName(e.target.value)} maxLength={255} required />
                 <div className="invalid-feedback">Please enter your name.</div>
               </div>
               <div className="col-md-6">
                 <label htmlFor="commentEmail" className="form-label">Email *</label>
-                <input type="email" className="form-control" id="commentEmail" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input type="email" className="form-control" id="commentEmail" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={255} required />
                 <div className="invalid-feedback">Please enter a valid email address.</div>
               </div>
             </>
           )}
           <div className="col-12">
             <label htmlFor="commentText" className="form-label">Comment *</label>
-            <textarea ref={textareaRef} className="form-control" id="commentText" rows={5} value={comment} onChange={(e) => setComment(e.target.value)} required></textarea>
+            <textarea ref={textareaRef} className="form-control" id="commentText" rows={5} value={comment} onChange={(e) => setComment(e.target.value)} maxLength={2000} required></textarea>
             <div className="invalid-feedback">Please write a comment.</div>
           </div>
           <div className="col-12">

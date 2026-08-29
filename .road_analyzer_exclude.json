@@ -95,15 +95,23 @@
     "Admin\\src\\index.css",
     "Admin\\src\\features\\tags",
     "Admin\\src\\features\\categories",
-    "User\\src\\features\\comments",
     "roadmap_content.txt",
     "back-end\\src\\Modules\\Articles",
-    "back-end\\src\\Modules\\Taxonomy"
+    "back-end\\src\\Modules\\Taxonomy",
+    "User\\src\\styles"
   ],
   "globalPatterns": [
     "public",
-    "storage"
+    "storage",
+    "todo",
+    "roadmap.txt",
+    "optimized_roadmap.txt",
+    "roadmap_content.txt",
+    "fix.txt",
+    "fix2.txt",
+    "content.txt",
+    "doc"
   ],
-  "lastModified": "2026-08-27T18:10:10.319Z",
+  "lastModified": "2026-08-29T13:07:55.402Z",
   "version": 1
 }

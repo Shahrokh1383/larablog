@@ -1,7 +1,6 @@
 export interface CommentAuthor {
   id?: string;
   name: string;
-  username?: string;
   avatar?: string | null;
 }
 
@@ -10,6 +9,7 @@ export interface Comment {
   post_id: string;
   parent_id: string | null;
   body: string;
+  is_approved: boolean;
   author: CommentAuthor;
   replies?: Comment[];
   replies_count?: number;
