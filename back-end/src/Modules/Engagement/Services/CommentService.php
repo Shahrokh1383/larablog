@@ -6,15 +6,17 @@ use Modules\Engagement\Models\Comment;
 use Modules\Engagement\DTOs\CommentCreateDTO;
 use Modules\Engagement\Events\CommentCreated;
 use Modules\Engagement\Services\Contracts\CommentServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Modules\Articles\Services\Contracts\PostInfoContract;
+use Shared\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Carbon\Carbon;
 
 class CommentService implements CommentServiceInterface
 {
-    // Inject the Content module contract to respect bounded contexts
     public function __construct(
         private readonly PostInfoContract $postInfoService
     ) {}
@@ -82,12 +84,32 @@ class CommentService implements CommentServiceInterface
             ->toArray();
     }
 
-    public function getCommentsForPostAdmin(string $postId, int $perPage = 20): LengthAwarePaginator
+    public function getCommentsForPostAdmin(string $postIdentifier, User $user, int $perPage = 20): LengthAwarePaginator
     {
+        $postId = $this->resolveViewablePostId($postIdentifier, $user);
+
         return Comment::with('user')
             ->where('post_id', $postId)
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
+    }
+
+    public function createCommentForPost(
+        string $postIdentifier,
+        User $user,
+        string $body,
+        ?string $parentId = null,
+    ): Comment {
+        $postId = $this->resolveViewablePostId($postIdentifier, $user);
+
+        return $this->create(new CommentCreateDTO(
+            postId: $postId,
+            body: $body,
+            parentId: $parentId,
+            userId: $user->id,
+            name: $user->name,
+            email: $user->email,
+        ));
     }
 
     public function getUserCommentsPaginated(string $userId, int $perPage = 15): LengthAwarePaginator
@@ -97,11 +119,9 @@ class CommentService implements CommentServiceInterface
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
-        // Pragmatic Boundary Respect: Resolve Post data via Content Service Contract
         $postIds = $paginated->getCollection()->pluck('post_id')->unique()->toArray();
         $postsMap = $this->postInfoService->getPostsByIds($postIds);
 
-        // Append post info to each comment item dynamically without leaking models
         $paginated->getCollection()->transform(function (Comment $comment) use ($postsMap) {
             $postInfo = $postsMap[$comment->post_id] ?? null;
             $comment->post_slug = $postInfo->slug ?? null;
@@ -118,6 +138,7 @@ class CommentService implements CommentServiceInterface
 
         return Comment::where('created_at', '>=', $startOfWeek)
             ->approved()
+            ->whereNotNull('user_id')
             ->selectRaw('user_id, count(*) as comments_count')
             ->groupBy('user_id')
             ->orderByDesc('comments_count')
@@ -140,5 +161,21 @@ class CommentService implements CommentServiceInterface
         return Comment::where('user_id', $userId)
             ->approved()
             ->count();
+    }
+
+    private function resolveViewablePostId(string $postIdentifier, User $user): string
+    {
+        $postId = $this->postAdminService()->findViewablePostId($postIdentifier, $user);
+
+        if ($postId === null) {
+            throw new NotFoundHttpException;
+        }
+
+        return $postId;
+    }
+
+    private function postAdminService(): PostAdminServiceInterface
+    {
+        return app(PostAdminServiceInterface::class);
     }
 }
