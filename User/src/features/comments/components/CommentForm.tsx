@@ -21,19 +21,29 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (replyTo) {
-      const mention = `@${replyTo.name} `;
-      if (!comment.startsWith(mention)) {
-        setComment(mention);
+    if (!replyTo) return;
+
+    const mention = `@${replyTo.name} `;
+
+    // Runs once per reply-target change. The functional updater reads the
+    // latest comment without depending on it: previously this effect re-ran
+    // on every keystroke and its timer reset the caret to mention.length
+    // after each character, so each new character was inserted before the
+    // previous one and typed text appeared reversed ("hello" -> "olleh").
+    setComment((prev) => (prev.startsWith(mention) ? prev : mention));
+
+    // One-shot caret placement after the prefilled value has committed.
+    // Cleaned up so a dep change or unmount can't fire a stale reset.
+    const timer = setTimeout(() => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = mention.length;
       }
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          textareaRef.current.selectionStart = textareaRef.current.selectionEnd = mention.length;
-        }
-      }, 10);
-    }
-  }, [replyTo, comment]);
+    }, 10);
+
+    return () => clearTimeout(timer);
+  }, [replyTo]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
