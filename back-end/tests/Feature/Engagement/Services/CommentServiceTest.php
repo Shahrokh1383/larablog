@@ -57,7 +57,12 @@ test('create as authenticated user creates approved comment and flattens nested 
 
     expect($comment->parent_id)->toBe($parent->id);
     expect($comment->is_approved)->toBeTrue();
-    Event::assertDispatched(CommentCreated::class);
+
+    // Verify that the event carries the original parent ID (the immediate reply)
+    Event::assertDispatched(CommentCreated::class, function (CommentCreated $event) use ($comment, $reply) {
+        return $event->comment->id === $comment->id &&
+               $event->originalParentId === $reply->id;
+    });
 });
 
 test('approve method updates comment', function () {

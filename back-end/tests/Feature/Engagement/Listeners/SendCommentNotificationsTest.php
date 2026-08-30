@@ -69,7 +69,7 @@ test('it does not notify post author if commenter is the author', function () {
     Notification::assertNothingSent();
 });
 
-test('it sends reply notification to parent comment author', function () {
+test('it sends reply notification to parent comment author for direct reply', function () {
     Notification::fake();
 
     $authorId = User::factory()->create()->getKey();
@@ -92,10 +92,47 @@ test('it sends reply notification to parent comment author', function () {
             'slug'     => 'post-slug',
         ]);
 
+    // Direct reply: event created without originalParentId, listener falls back to comment->parent_id
     $this->listener->handle(new CommentCreated($reply));
 
     Notification::assertSentTo($parentCommenter, NewReplyToComment::class);
     Notification::assertNotSentTo($replier, NewReplyToComment::class);
+});
+
+test('it sends reply notification to immediate parent author for nested reply', function () {
+    Notification::fake();
+
+    $authorId = User::factory()->create()->getKey();
+    $topLevelCommenterId = User::factory()->create()->getKey();
+    $firstReplierId = User::factory()->create()->getKey();
+    $nestedReplierId = User::factory()->create()->getKey();
+
+    $author = User::query()->findOrFail($authorId);
+    $topLevelCommenter = User::query()->findOrFail($topLevelCommenterId);
+    $firstReplier = User::query()->findOrFail($firstReplierId);
+    $nestedReplier = User::query()->findOrFail($nestedReplierId);
+
+    // Top-level comment by topLevelCommenter
+    $topLevel = Comment::factory()->byUser($topLevelCommenter)->create(['post_id' => $this->post->id]);
+    // First reply (direct) by firstReplier
+    $firstReply = Comment::factory()->byUser($firstReplier)->replyTo($topLevel)->create();
+    // Nested reply to firstReply (would be flattened by service), but event preserves originalParentId
+    $nestedReply = Comment::factory()->byUser($nestedReplier)->replyTo($firstReply)->create();
+
+    $this->postInfoService->shouldReceive('getPostInfo')
+        ->once()
+        ->with($this->post->id)
+        ->andReturn((object)[
+            'authorId' => $author->id,
+            'title'    => 'Post',
+            'slug'     => 'post-slug',
+        ]);
+
+    // Simulate event with originalParentId = firstReply->id
+    $this->listener->handle(new CommentCreated($nestedReply, $firstReply->id));
+
+    Notification::assertSentTo($firstReplier, NewReplyToComment::class);
+    Notification::assertNotSentTo($topLevelCommenter, NewReplyToComment::class);
 });
 
 test('it aborts if post info not found', function () {
