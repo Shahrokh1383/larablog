@@ -32,8 +32,10 @@ class SendCommentNotifications
         }
 
         // 2. Notify Parent Comment Author (if registered and not the replier)
-        if ($comment->parent_id) {
-            $parentComment = Comment::find($comment->parent_id);
+        $parentIdForNotification = $event->originalParentId ?? $comment->parent_id;
+
+        if ($parentIdForNotification) {
+            $parentComment = Comment::find($parentIdForNotification);
             if ($parentComment && $parentComment->user_id && $parentComment->user_id !== $comment->user_id) {
                 $parentAuthor = User::find($parentComment->user_id);
                 if ($parentAuthor) {

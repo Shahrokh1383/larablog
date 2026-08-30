@@ -10,5 +10,8 @@ class CommentCreated
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public Comment $comment) {}
+    public function __construct(
+        public Comment $comment,
+        public ?string $originalParentId = null
+    ) {}
 }

@@ -21,6 +21,7 @@ class CommentService
     {
         return DB::transaction(function () use ($dto) {
             $parentId = $dto->parentId;
+            $originalParentId = $dto->parentId;
 
             if ($parentId) {
                 $parentComment = Comment::find($parentId);
@@ -39,7 +40,7 @@ class CommentService
                 'is_approved' => $dto->userId !== null,
             ]);
 
-            event(new CommentCreated($comment));
+            event(new CommentCreated($comment, $originalParentId));
 
             return $comment;
         });
