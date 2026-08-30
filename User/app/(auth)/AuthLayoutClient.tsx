@@ -15,10 +15,10 @@ export default function AuthLayoutClient({ children }: { children: React.ReactNo
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!isLoading && isAuthenticated && !pathname.includes('verify-email')) {
       router.replace('/dashboard');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, pathname]);
 
   // Show a loading spinner while checking auth state or redirecting
   if (isLoading || isAuthenticated) {
