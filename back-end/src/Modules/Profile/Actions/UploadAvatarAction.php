@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Storage;
 
 class UploadAvatarAction
 {
-    public function execute(UploadedFile $file): string
+    public function execute(UploadedFile $file, string $userId): string
     {
-        // Store in a dedicated directory to maintain strict Bounded Contexts
-        $path = $file->store('profiles/avatars', 'public');
+        // Store in a user-specific directory to enforce strict ownership
+        $path = $file->store("profiles/avatars/{$userId}", 'public');
         return Storage::disk('public')->url($path);
     }
 }

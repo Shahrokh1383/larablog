@@ -5,12 +5,12 @@ namespace Modules\Profile\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Modules\Profile\Actions\DeleteAvatarAction;
 use Modules\Profile\Actions\UploadAvatarAction;
 use Modules\Profile\Http\Requests\UpdateProfileRequest;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
-use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -33,7 +33,6 @@ class ProfileController extends Controller
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        // Pass only validated fields as an array to support true partial updates
         $profile = $this->profileService->updateProfile(
             $request->user()->id, 
             $request->validated()
@@ -48,7 +47,7 @@ class ProfileController extends Controller
             'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        $url = $this->uploadAvatarAction->execute($request->file('avatar'));
+        $url = $this->uploadAvatarAction->execute($request->file('avatar'), $request->user()->id);
         return response()->json(['url' => $url]);
     }
 
@@ -58,13 +57,14 @@ class ProfileController extends Controller
             'url' => ['required', 'string', 'url'],
         ]);
 
-        $profile = $this->profileService->getByUserId($request->user()->id);
+        $userId = $request->user()->id;
+        $profile = $this->profileService->getByUserId($userId);
         
         if (!$profile || $profile->avatar !== $request->input('url')) {
             return response()->json(['message' => 'Avatar not found or unauthorized'], 403);
         }
 
-        $deleted = $this->deleteAvatarAction->execute($profile->avatar);
+        $deleted = $this->deleteAvatarAction->execute($profile->avatar, $userId);
         
         if ($deleted) {
             $profile->update(['avatar' => null]);
@@ -80,13 +80,12 @@ class ProfileController extends Controller
         
         $profile = $this->profileService->getByUserId($userId);
         if ($profile && $profile->avatar) {
-            $deleted = $this->deleteAvatarAction->execute($profile->avatar);
+            $deleted = $this->deleteAvatarAction->execute($profile->avatar, $userId);
             if (!$deleted) {
-                Log::error('Failed to delete avatar file during account deletion.', [
-                    'user_id' => $userId, 
-                    'avatar' => $profile->avatar
+                Log::warning('Avatar deletion skipped during account destruction (ownership mismatch or missing file).', [
+                    'user_id' => $userId,
+                    'avatar'  => $profile->avatar,
                 ]);
-                return response()->json(['message' => 'Failed to delete avatar. Account deletion aborted.'], 500);
             }
         }
 

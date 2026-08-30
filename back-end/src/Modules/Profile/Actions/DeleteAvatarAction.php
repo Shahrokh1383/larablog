@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DeleteAvatarAction
 {
-    public function execute(string $url): bool
+    public function execute(string $url, string $userId): bool
     {
         $path = parse_url($url, PHP_URL_PATH);
         
@@ -16,17 +16,15 @@ class DeleteAvatarAction
 
         $relativePath = str_replace('/storage/', '', $path);
         
-        // Security: Prevent path traversal
         if (str_contains($relativePath, '..')) {
             return false;
         }
 
-        // Security: Restrict to specific directory
-        if (!str_starts_with($relativePath, 'profiles/avatars/')) {
+        $expectedPrefix = "profiles/avatars/{$userId}/";
+        if (!str_starts_with($relativePath, $expectedPrefix)) {
             return false;
         }
         
-        // Idempotency: If file is already gone, consider it successfully "deleted"
         if (!Storage::disk('public')->exists($relativePath)) {
             return true; 
         }
