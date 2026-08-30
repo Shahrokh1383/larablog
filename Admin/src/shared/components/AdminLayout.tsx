@@ -1,14 +1,15 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '@/features/auth/hooks/useAdminAuth';
+import { useLogout } from '@/features/auth/hooks/useLogout';
 import { Outlet } from 'react-router-dom';
 
 export default function AdminLayout() {
-  const { user, logout } = useAdminAuth();
+  const { user } = useAdminAuth();
+  const { logout } = useLogout();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
 
   const handleProfileClick = () => {
