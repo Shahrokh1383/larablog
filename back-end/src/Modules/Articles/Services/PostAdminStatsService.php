@@ -93,4 +93,39 @@ class PostAdminStatsService implements PostAdminStatsServiceInterface
             ])
             ->toArray();
     }
+
+    public function getAuthorStatsForUserIds(array $userIds): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        return Post::select('user_id', DB::raw('count(*) as posts_count'), DB::raw('COALESCE(sum(views), 0) as total_views'))
+            ->whereIn('user_id', $userIds)
+            ->published()
+            ->groupBy('user_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->user_id => [
+                        'posts_count' => (int) $item->posts_count,
+                        'total_views' => (int) $item->total_views,
+                    ]
+                ];
+            })
+            ->all();
+    }
+
+    public function getAuthorStatsForUserId(string $userId): array
+    {
+        $stats = Post::where('user_id', $userId)
+            ->published()
+            ->selectRaw('count(*) as posts_count, COALESCE(sum(views), 0) as total_views')
+            ->first();
+
+        return [
+            'posts_count' => (int) ($stats->posts_count ?? 0),
+            'total_views' => (int) ($stats->total_views ?? 0),
+        ];
+    }
 }

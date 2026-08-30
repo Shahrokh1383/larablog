@@ -6,7 +6,6 @@ use Modules\AdminStats\Services\Contracts\ContentStatsContract;
 use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
-use Illuminate\Support\Facades\DB;
 
 class ContentStatsService implements ContentStatsContract
 {
@@ -73,37 +72,11 @@ class ContentStatsService implements ContentStatsContract
 
     public function getAuthorStatsForUserIds(array $userIds): array
     {
-        if (empty($userIds)) {
-            return [];
-        }
-
-        // Adapt the query below to match your exact table/scopes structure
-        return \Modules\Articles\Models\Post::select('user_id', DB::raw('count(*) as posts_count'), DB::raw('sum(views) as total_views'))
-            ->whereIn('user_id', $userIds)
-            ->published() // Remove if this scope doesn't exist on your Post model
-            ->groupBy('user_id')
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [
-                    $item->user_id => [
-                        'posts_count' => (int) $item->posts_count,
-                        'total_views' => (int) $item->total_views,
-                    ]
-                ];
-            })
-            ->all();
+        return $this->postAdminService->getAuthorStatsForUserIds($userIds);
     }
 
     public function getAuthorStatsForUserId(string $userId): array
     {
-        $stats = \Modules\Articles\Models\Post::where('user_id', $userId)
-            ->published()
-            ->selectRaw('count(*) as posts_count, sum(views) as total_views')
-            ->first();
-
-        return [
-            'posts_count' => (int) ($stats->posts_count ?? 0),
-            'total_views' => (int) ($stats->total_views ?? 0),
-        ];
+        return $this->postAdminService->getAuthorStatsForUserId($userId);
     }
 }
