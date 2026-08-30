@@ -27,6 +27,7 @@ class NewReplyToComment extends Notification
         return [
             'type'       => 'new_reply',
             'message'    => "{$authorName} replied to your comment.",
+            'is_pending' => !$this->reply->is_approved,
             'post_id'    => $this->reply->post_id,
             'post_slug'  => $this->postSlug,
             'comment_id' => $this->reply->parent_id,

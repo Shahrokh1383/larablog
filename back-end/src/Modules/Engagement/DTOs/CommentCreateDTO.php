@@ -11,6 +11,5 @@ final class CommentCreateDTO
         public readonly ?string $userId = null,
         public readonly ?string $name = null,
         public readonly ?string $email = null,
-        public readonly bool $isApproved = false,
     ) {}
 }

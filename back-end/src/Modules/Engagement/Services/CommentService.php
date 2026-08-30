@@ -5,24 +5,23 @@ namespace Modules\Engagement\Services;
 use Modules\Engagement\Models\Comment;
 use Modules\Engagement\DTOs\CommentCreateDTO;
 use Modules\Engagement\Events\CommentCreated;
-use Modules\Engagement\Services\Contracts\CommentServiceInterface;
-use Modules\Articles\Services\Contracts\PostInfoContract;
+use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Shared\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Carbon\Carbon;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CommentService implements CommentServiceInterface
+class CommentService
 {
-    // Inject the Content module contract to respect bounded contexts
     public function __construct(
-        private readonly PostInfoContract $postInfoService
+        private readonly PostAdminServiceInterface $postAdminService,
     ) {}
 
     public function create(CommentCreateDTO $dto): Comment
     {
         return DB::transaction(function () use ($dto) {
             $parentId = $dto->parentId;
+            $originalParentId = $dto->parentId;
 
             if ($parentId) {
                 $parentComment = Comment::find($parentId);
@@ -38,12 +37,10 @@ class CommentService implements CommentServiceInterface
                 'name'        => $dto->name,
                 'email'       => $dto->email,
                 'body'        => $dto->body,
-                'is_approved' => $dto->isApproved,
+                'is_approved' => $dto->userId !== null,
             ]);
 
-            DB::afterCommit(function () use ($comment) {
-                event(new CommentCreated($comment));
-            });
+            event(new CommentCreated($comment, $originalParentId));
 
             return $comment;
         });
@@ -56,78 +53,60 @@ class CommentService implements CommentServiceInterface
 
     public function delete(Comment $comment): void
     {
-        $comment->delete();
+        DB::transaction(function () use ($comment): void {
+            if ($comment->parent_id === null) {
+                Comment::where('parent_id', $comment->id)->delete();
+            }
+
+            $comment->delete();
+        });
     }
 
-    public function getCommentCountsForPosts(array $postIds): array
+    public function getUnreadCount(): int
     {
-        if (empty($postIds)) return [];
-
-        return Comment::whereIn('post_id', $postIds)
-            ->approved()
-            ->selectRaw('post_id, count(*) as aggregate')
-            ->groupBy('post_id')
-            ->pluck('aggregate', 'post_id')
-            ->toArray();
+        return Comment::where('is_approved', false)->count();
     }
 
-    public function getCommentsForPostAdmin(string $postId, int $perPage = 20): LengthAwarePaginator
+    public function getCommentsForPostAdmin(string $postIdentifier, User $user, int $perPage = 20): LengthAwarePaginator
     {
+        $postId = $this->resolveViewablePostId($postIdentifier, $user);
+
         return Comment::with('user')
             ->where('post_id', $postId)
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
 
-    public function getUserCommentsPaginated(string $userId, int $perPage = 15): LengthAwarePaginator
-    {
-        $paginated = Comment::where('user_id', $userId)
-            ->approved()
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+    /**
+     * Staff reply to a post. Staff replies carry an attributable identity;
+     * is_approved is derived from a non-null userId, so they publish instantly.
+     */
+    public function createCommentForPost(
+        string $postIdentifier,
+        User $user,
+        string $body,
+        ?string $parentId = null,
+    ): Comment {
+        $postId = $this->resolveViewablePostId($postIdentifier, $user);
 
-        // Pragmatic Boundary Respect: Resolve Post data via Content Service Contract
-        $postIds = $paginated->getCollection()->pluck('post_id')->unique()->toArray();
-        $postsMap = $this->postInfoService->getPostsByIds($postIds);
-
-        // Append post info to each comment item dynamically without leaking models
-        $paginated->getCollection()->transform(function (Comment $comment) use ($postsMap) {
-            $postInfo = $postsMap[$comment->post_id] ?? null;
-            $comment->post_slug = $postInfo->slug ?? null;
-            $comment->post_title = $postInfo->title ?? null;
-            return $comment;
-        });
-
-        return $paginated;
+        return $this->create(new CommentCreateDTO(
+            postId: $postId,
+            body: $body,
+            parentId: $parentId,
+            userId: $user->id,
+            name: $user->name,
+            email: $user->email,
+        ));
     }
 
-    public function getWeeklyTopCommenters(int $limit = 10): Collection
+    private function resolveViewablePostId(string $postIdentifier, User $user): string
     {
-        $startOfWeek = Carbon::now()->startOfWeek();
+        $postId = $this->postAdminService->findViewablePostId($postIdentifier, $user);
 
-        return Comment::where('created_at', '>=', $startOfWeek)
-            ->approved()
-            ->selectRaw('user_id, count(*) as comments_count')
-            ->groupBy('user_id')
-            ->orderByDesc('comments_count')
-            ->limit($limit)
-            ->get();
-    }
+        if ($postId === null) {
+            throw new NotFoundHttpException;
+        }
 
-    public function getWeeklyCommentCountForUser(string $userId): int
-    {
-        $startOfWeek = Carbon::now()->startOfWeek();
-
-        return Comment::where('user_id', $userId)
-            ->where('created_at', '>=', $startOfWeek)
-            ->approved()
-            ->count();
-    }
-
-    public function getTotalCommentCountForUser(string $userId): int
-    {
-        return Comment::where('user_id', $userId)
-            ->approved()
-            ->count();
+        return $postId;
     }
 }

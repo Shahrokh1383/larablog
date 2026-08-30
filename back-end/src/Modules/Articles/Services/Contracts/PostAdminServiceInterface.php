@@ -16,6 +16,7 @@ interface PostAdminServiceInterface
     public function update(Post $post, PostUpdateDTO $dto): Post;
     public function delete(Post $post): void;
     public function find(string $id): ?Post;
+    public function findViewablePostId(string $id, HasRolesContract $user): ?string;
     public function enrich(Post $post): Post;
     public function uploadImage(UploadedFile $file): string;
     public function deleteImage(string $url): bool;

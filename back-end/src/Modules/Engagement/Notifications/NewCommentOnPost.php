@@ -26,6 +26,7 @@ class NewCommentOnPost extends Notification
         return [
             'type'       => 'new_comment',
             'message'    => "New comment on your post: {$this->postTitle}",
+            'is_pending' => !$this->comment->is_approved,
             'post_id'    => $this->comment->post_id,
             'post_slug'  => $this->postSlug,
             'comment_id' => $this->comment->id,

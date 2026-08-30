@@ -6,6 +6,7 @@ use Modules\Articles\Models\Post;
 use Shared\Actions\GenerateSlugAction;
 use Modules\Articles\Actions\CalculateReadingTimeAction;
 use Modules\Articles\Actions\AssignTagsToPostAction;
+use Modules\Articles\Policies\PostPolicy;
 use Modules\Articles\Actions\UploadImageAction;
 use Modules\Articles\Actions\DeleteImageAction;
 use Modules\Articles\Actions\MapPostRelationsAction;
@@ -14,8 +15,10 @@ use Modules\Articles\DTOs\PostUpdateDTO;
 use Shared\Contracts\HasRolesContract;
 use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\UploadedFile;
+use Override;
 
 class PostService implements PostAdminServiceInterface
 {
@@ -141,6 +144,21 @@ class PostService implements PostAdminServiceInterface
         }
         
         return $post;
+    }
+
+    #[Override]
+    public function findViewablePostId(string $id, HasRolesContract $user): ?string
+    {
+        $post = Post::find($id, ['id', 'user_id']);
+
+        if ($post === null) {
+            return null;
+        }
+
+        if (!(new PostPolicy())->view($user, $post)) {
+            throw new AuthorizationException('This action is unauthorized.');
+        }
+        return $post->id;
     }
 
     public function uploadImage(UploadedFile $file): string

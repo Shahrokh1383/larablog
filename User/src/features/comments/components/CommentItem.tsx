@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import type { Comment } from '../types/comment';
+import { useAuth } from '@/features/auth/context/AuthContext';
 
 interface CommentItemProps {
   comment: Comment;
   onReply: (id: string, name: string) => void;
   onLoadMoreReplies?: (commentId: string) => void;
   fetchingReplyId?: string | null;
+  onDeleteComment?: (commentId: string) => void;
+  deletingCommentId?: string | null;
 }
 
 function AvatarPlaceholder({ name }: { name: string }) {
@@ -17,14 +20,20 @@ function AvatarPlaceholder({ name }: { name: string }) {
   );
 }
 
-export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetchingReplyId }: CommentItemProps) {
+export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetchingReplyId, onDeleteComment, deletingCommentId }: CommentItemProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const { user, isAuthenticated } = useAuth();
 
   const formattedDate = new Date(comment.created_at).toLocaleDateString('en-US', {
     month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
   const isLoadingReplies = fetchingReplyId === comment.id;
+  const isDeleting = deletingCommentId === comment.id;
+
+  // Server enforces ownership via CommentPolicy::delete; this gate only
+  // hides the affordance. Guests have no author.id and no session.
+  const canDelete = isAuthenticated && !!user && comment.author.id === user.id;
   
   const allReplies = comment.replies || [];
   const previewLimit = 2;
@@ -41,6 +50,17 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
       setIsCollapsed(false);
     } else {
       setIsCollapsed(true);
+    }
+  };
+
+  const handleDelete = () => {
+    // CommentService::delete removes a top-level comment's replies too.
+    const message = !comment.parent_id && comment.replies_count > 0
+      ? 'Delete this comment? All of its replies will be removed too. This cannot be undone.'
+      : 'Delete this comment? This cannot be undone.';
+
+    if (window.confirm(message)) {
+      onDeleteComment?.(comment.id);
     }
   };
 
@@ -84,6 +104,23 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
             <button className="comment-reply-btn" onClick={() => onReply(comment.id, comment.author.name)}>
               <i className="fa-sharp fa-solid fa-reply"></i> Reply
             </button>
+
+            {canDelete && (
+              <button
+                className="comment-reply-btn delete-comment-btn"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Deleting...
+                  </>
+                ) : (
+                  <><i className="fa-sharp fa-solid fa-trash"></i> Delete</>
+                )}
+              </button>
+            )}
           </div>
           
           {visibleReplies.length > 0 && (
@@ -95,6 +132,8 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
                   onReply={onReply} 
                   onLoadMoreReplies={onLoadMoreReplies}
                   fetchingReplyId={fetchingReplyId}
+                  onDeleteComment={onDeleteComment}
+                  deletingCommentId={deletingCommentId}
                 />
               ))}
             </ul>

@@ -21,19 +21,29 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (replyTo) {
-      const mention = `@${replyTo.name} `;
-      if (!comment.startsWith(mention)) {
-        setComment(mention);
+    if (!replyTo) return;
+
+    const mention = `@${replyTo.name} `;
+
+    // Runs once per reply-target change. The functional updater reads the
+    // latest comment without depending on it: previously this effect re-ran
+    // on every keystroke and its timer reset the caret to mention.length
+    // after each character, so each new character was inserted before the
+    // previous one and typed text appeared reversed ("hello" -> "olleh").
+    setComment((prev) => (prev.startsWith(mention) ? prev : mention));
+
+    // One-shot caret placement after the prefilled value has committed.
+    // Cleaned up so a dep change or unmount can't fire a stale reset.
+    const timer = setTimeout(() => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = mention.length;
       }
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          textareaRef.current.selectionStart = textareaRef.current.selectionEnd = mention.length;
-        }
-      }, 10);
-    }
-  }, [replyTo, comment]);
+    }, 10);
+
+    return () => clearTimeout(timer);
+  }, [replyTo]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -80,19 +90,19 @@ export default function CommentForm({ postId, replyTo, onClearReply }: CommentFo
             <>
               <div className="col-md-6">
                 <label htmlFor="commentName" className="form-label">Name *</label>
-                <input type="text" className="form-control" id="commentName" value={name} onChange={(e) => setName(e.target.value)} required />
+                <input type="text" className="form-control" id="commentName" value={name} onChange={(e) => setName(e.target.value)} maxLength={255} required />
                 <div className="invalid-feedback">Please enter your name.</div>
               </div>
               <div className="col-md-6">
                 <label htmlFor="commentEmail" className="form-label">Email *</label>
-                <input type="email" className="form-control" id="commentEmail" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input type="email" className="form-control" id="commentEmail" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={255} required />
                 <div className="invalid-feedback">Please enter a valid email address.</div>
               </div>
             </>
           )}
           <div className="col-12">
             <label htmlFor="commentText" className="form-label">Comment *</label>
-            <textarea ref={textareaRef} className="form-control" id="commentText" rows={5} value={comment} onChange={(e) => setComment(e.target.value)} required></textarea>
+            <textarea ref={textareaRef} className="form-control" id="commentText" rows={5} value={comment} onChange={(e) => setComment(e.target.value)} maxLength={2000} required></textarea>
             <div className="invalid-feedback">Please write a comment.</div>
           </div>
           <div className="col-12">

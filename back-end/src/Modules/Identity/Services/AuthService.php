@@ -93,8 +93,6 @@ class AuthService
             $token->delete();
         }
 
-        Auth::logout();
-
         if (request()->hasSession()) {
             request()->session()->invalidate();
             request()->session()->regenerateToken();

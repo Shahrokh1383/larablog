@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Shared\Traits\HasUuid;
 use Shared\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Modules\Engagement\CommentFactory;
 
 class Comment extends Model
 {
-    use HasUuid;
+    use HasUuid, HasFactory;
 
     protected $table = 'engagement_comments';
 
@@ -42,5 +44,10 @@ class Comment extends Model
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->approved()->latest();
+    }
+
+    protected static function newFactory(): CommentFactory
+    {
+        return CommentFactory::new();
     }
 }
