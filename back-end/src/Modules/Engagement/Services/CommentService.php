@@ -39,9 +39,7 @@ class CommentService
                 'is_approved' => $dto->userId !== null,
             ]);
 
-            DB::afterCommit(function () use ($comment) {
-                event(new CommentCreated($comment));
-            });
+            event(new CommentCreated($comment));
 
             return $comment;
         });

@@ -41,7 +41,6 @@
     "back-end\\src\\Modules\\About",
     "back-end\\src\\Modules\\Administration",
     "back-end\\src\\Modules\\Profile",
-    "back-end\\src\\Modules\\Notification",
     "back-end\\src\\Modules\\Marketing",
     "back-end\\src\\Modules\\Search",
     "back-end\\src\\Modules\\ReaderExperience",
@@ -65,7 +64,6 @@
     "Admin\\src\\features\\dashboard",
     "Admin\\src\\features\\auth",
     "Admin\\src\\features\\about",
-    "Admin\\src\\features\\comments",
     "User\\src\\features\\notifications",
     "User\\src\\providers",
     "back-end\\src\\Modules\\Identity",
@@ -88,8 +86,6 @@
     "Admin\\src\\shared",
     "Admin\\src\\features\\users",
     "back-end\\tests\\Feature\\Taxonomy",
-    "back-end\\database",
-    "back-end\\tests",
     "Admin\\src\\app",
     "Admin\\src\\main.tsx",
     "Admin\\src\\index.css",
@@ -98,7 +94,10 @@
     "roadmap_content.txt",
     "back-end\\src\\Modules\\Articles",
     "back-end\\src\\Modules\\Taxonomy",
-    "User\\src\\styles"
+    "User\\src\\styles",
+    "back-end\\database\\seeders",
+    "back-end\\tests\\Unit",
+    "back-end\\tests\\Feature\\Articles"
   ],
   "globalPatterns": [
     "public",
@@ -112,6 +111,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-29T18:42:21.298Z",
+  "lastModified": "2026-08-29T23:27:51.609Z",
   "version": 1
 }
