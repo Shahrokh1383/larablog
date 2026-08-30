@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Profile\Actions\DeleteAvatarAction;
 use Modules\Profile\Actions\UploadAvatarAction;
-use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Http\Requests\UpdateProfileRequest;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
@@ -33,16 +32,11 @@ class ProfileController extends Controller
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $dto = new UpdateProfileDTO(
-            name:                 $request->validated('name'),
-            avatar:               $request->validated('avatar'),
-            bio:                  $request->validated('bio'),
-            expertise:            $request->validated('expertise'),
-            years_of_experience:  $request->validated('years_of_experience'),
-            social_links:         $request->validated('social_links'),
+        // Pass only validated fields as an array to support true partial updates
+        $profile = $this->profileService->updateProfile(
+            $request->user()->id, 
+            $request->validated()
         );
-
-        $profile = $this->profileService->updateProfile($request->user()->id, $dto);
 
         return (new ProfileResource($profile))->response();
     }
@@ -50,7 +44,7 @@ class ProfileController extends Controller
     public function uploadAvatar(Request $request): JsonResponse
     {
         $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], // Max 2MB
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
         $url = $this->uploadAvatarAction->execute($request->file('avatar'));
@@ -65,17 +59,18 @@ class ProfileController extends Controller
 
         $profile = $this->profileService->getByUserId($request->user()->id);
         
-        // Verify ownership: ensure the requested URL matches the user's current avatar
         if (!$profile || $profile->avatar !== $request->input('url')) {
             return response()->json(['message' => 'Avatar not found or unauthorized'], 403);
         }
 
-        $this->deleteAvatarAction->execute($profile->avatar);
+        $deleted = $this->deleteAvatarAction->execute($profile->avatar);
         
-        // Clear the avatar field in the database after successful deletion
-        $profile->update(['avatar' => null]);
+        if ($deleted) {
+            $profile->update(['avatar' => null]);
+            return response()->json(['message' => 'Avatar deleted successfully']);
+        }
 
-        return response()->json(['message' => 'Avatar deleted successfully']);
+        return response()->json(['message' => 'Failed to delete avatar file'], 500);
     }
 
     public function destroy(Request $request): JsonResponse

@@ -4,10 +4,8 @@ namespace Modules\Profile\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Modules\AdminStats\Services\Contracts\ContentStatsContract;
 use Modules\Identity\Services\Contracts\DeletesUserAccount;
 use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
-use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Models\Profile;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
@@ -18,7 +16,6 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function __construct(
         private UpdatesUserBasicInfo $identityService,
         private DeletesUserAccount $userDeletionService,
-        private ContentStatsContract $contentStatsService,
     ) {}
 
     public function getByUserId(string $userId): ?Profile
@@ -33,29 +30,30 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 
     public function getPublicProfileByUsername(string $username): ?Profile
     {
-        $user = User::where('username', $username)->first();
-        if (!$user) {
-            return null;
-        }
-
-        return Profile::where('user_id', $user->id)->first();
+        // Fix N+1: Eager load user relationship
+        return Profile::with('user')->whereHas('user', function ($q) use ($username) {
+            $q->where('username', $username);
+        })->first();
     }
 
-    public function updateProfile(string $userId, UpdateProfileDTO $dto): Profile
+    public function updateProfile(string $userId, array $data): Profile
     {
-        return DB::transaction(function () use ($userId, $dto) {
+        return DB::transaction(function () use ($userId, $data) {
             $user = User::findOrFail($userId);
-            $this->identityService->updateName($user, $dto->name);
+            
+            // Handle name update separately via Identity bounded context
+            if (array_key_exists('name', $data)) {
+                $this->identityService->updateName($user, $data['name']);
+            }
 
             $profile = $this->ensureProfileExists($userId);
-
-            $profile->update([
-                'avatar'              => $dto->avatar,
-                'bio'                 => $dto->bio,
-                'expertise'           => $dto->expertise,
-                'years_of_experience' => $dto->years_of_experience,
-                'social_links'        => $dto->social_links,
-            ]);
+            
+            // Filter out 'name' as it's handled above, update only provided fields
+            $profileData = collect($data)->except('name')->all();
+            
+            if (!empty($profileData)) {
+                $profile->update($profileData);
+            }
 
             return $profile->fresh();
         });
@@ -98,37 +96,6 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
                       });
             })
             ->paginate($perPage);
-    }
-
-    public function getPublicProfilesWithStats(?string $search, int $perPage): LengthAwarePaginator
-    {
-        $profiles = $this->getAllPublicProfiles($search, $perPage);
-        $stats = $this->contentStatsService->getAuthorStats();
-
-        $profiles->through(function ($profile) use ($stats) {
-            $userId = $profile->user_id;
-            $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
-            $profile->total_views = $stats[$userId]['total_views'] ?? 0;
-            return $profile;
-        });
-
-        return $profiles;
-    }
-
-    public function getPublicProfileWithStats(string $username): ?Profile
-    {
-        $profile = $this->getPublicProfileByUsername($username);
-        
-        if (!$profile) {
-            return null;
-        }
-
-        $stats = $this->contentStatsService->getAuthorStats();
-        $userId = $profile->user_id;
-        $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
-        $profile->total_views = $stats[$userId]['total_views'] ?? 0;
-
-        return $profile;
     }
 
     public function deleteAccount(string $userId): void
