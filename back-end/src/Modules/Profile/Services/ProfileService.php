@@ -4,6 +4,7 @@ namespace Modules\Profile\Services;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Modules\AdminStats\Services\Contracts\ContentStatsContract;
 use Modules\Identity\Services\Contracts\DeletesUserAccount;
 use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
 use Modules\Profile\DTOs\UpdateProfileDTO;
@@ -17,9 +18,15 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function __construct(
         private UpdatesUserBasicInfo $identityService,
         private DeletesUserAccount $userDeletionService,
+        private ContentStatsContract $contentStatsService,
     ) {}
 
     public function getByUserId(string $userId): ?Profile
+    {
+        return Profile::where('user_id', $userId)->first();
+    }
+
+    public function ensureProfileExists(string $userId): Profile
     {
         return Profile::firstOrCreate(['user_id' => $userId]);
     }
@@ -40,7 +47,7 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
             $user = User::findOrFail($userId);
             $this->identityService->updateName($user, $dto->name);
 
-            $profile = Profile::firstOrCreate(['user_id' => $userId]);
+            $profile = $this->ensureProfileExists($userId);
 
             $profile->update([
                 'avatar'              => $dto->avatar,
@@ -93,13 +100,41 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
             ->paginate($perPage);
     }
 
+    public function getPublicProfilesWithStats(?string $search, int $perPage): LengthAwarePaginator
+    {
+        $profiles = $this->getAllPublicProfiles($search, $perPage);
+        $stats = $this->contentStatsService->getAuthorStats();
+
+        $profiles->through(function ($profile) use ($stats) {
+            $userId = $profile->user_id;
+            $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
+            $profile->total_views = $stats[$userId]['total_views'] ?? 0;
+            return $profile;
+        });
+
+        return $profiles;
+    }
+
+    public function getPublicProfileWithStats(string $username): ?Profile
+    {
+        $profile = $this->getPublicProfileByUsername($username);
+        
+        if (!$profile) {
+            return null;
+        }
+
+        $stats = $this->contentStatsService->getAuthorStats();
+        $userId = $profile->user_id;
+        $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
+        $profile->total_views = $stats[$userId]['total_views'] ?? 0;
+
+        return $profile;
+    }
+
     public function deleteAccount(string $userId): void
     {
         DB::transaction(function () use ($userId) {
-            // Delete profile data first.
             Profile::where('user_id', $userId)->delete();
-
-            // Delegate user deletion to the Identity bounded context.
             $this->userDeletionService->deleteAccount($userId);
         });
     }

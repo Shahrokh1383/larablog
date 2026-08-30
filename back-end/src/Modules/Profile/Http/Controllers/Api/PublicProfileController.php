@@ -5,10 +5,9 @@ namespace Modules\Profile\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\AdminStats\Services\Contracts\ContentStatsContract;
-use Modules\Articles\Services\PostPublicService;
-use Modules\Articles\Http\Resources\PostPublicResource;
+use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
 use Modules\Profile\Http\Resources\AuthorResource;
+use Modules\Profile\Http\Resources\ProfilePostResource;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
 
@@ -18,43 +17,30 @@ class PublicProfileController extends Controller
         private ProfileServiceInterface $profileService
     ) {}
 
-    public function index(Request $request, ContentStatsContract $contentStatsService): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $profiles = $this->profileService->getAllPublicProfiles(
+        // Delegated aggregation logic to the service layer
+        $profiles = $this->profileService->getPublicProfilesWithStats(
             search: $request->input('search'),
             perPage: $request->integer('per_page', 12)
         );
 
-        $stats = $contentStatsService->getAuthorStats();
-
-        $profiles->through(function ($profile) use ($stats) {
-            $userId = $profile->user_id;
-            $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
-            $profile->total_views = $stats[$userId]['total_views'] ?? 0;
-            return $profile;
-        });
-
         return AuthorResource::collection($profiles)->response();
     }
 
-    public function show(string $username, ContentStatsContract $contentStatsService): JsonResponse
+    public function show(string $username): JsonResponse
     {
-        $profile = $this->profileService->getPublicProfileByUsername($username);
+        // Delegated aggregation logic to the service layer
+        $profile = $this->profileService->getPublicProfileWithStats($username);
         
         if (!$profile) {
             abort(404, 'Profile not found');
         }
 
-        // Append stats for the hero section
-        $stats = $contentStatsService->getAuthorStats();
-        $userId = $profile->user_id;
-        $profile->posts_count = $stats[$userId]['posts_count'] ?? 0;
-        $profile->total_views = $stats[$userId]['total_views'] ?? 0;
-
         return (new ProfileResource($profile))->response();
     }
 
-    public function posts(string $username, Request $request, PostPublicService $postPublicService): JsonResponse
+    public function posts(string $username, Request $request, PostPublicServiceInterface $postPublicService): JsonResponse
     {
         $posts = $postPublicService->getPostsByAuthor(
             username: $username,
@@ -62,6 +48,6 @@ class PublicProfileController extends Controller
             perPage: $request->integer('per_page', 6)
         );
 
-        return PostPublicResource::collection($posts)->response();
+        return ProfilePostResource::collection($posts)->response();
     }
 }

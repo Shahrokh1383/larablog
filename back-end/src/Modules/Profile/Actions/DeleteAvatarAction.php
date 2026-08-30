@@ -13,6 +13,10 @@ class DeleteAvatarAction
         if ($path && str_starts_with($path, '/storage/')) {
             $relativePath = str_replace('/storage/', '', $path);
             
+            if (!str_starts_with($relativePath, 'profiles/avatars/')) {
+                return false;
+            }
+            
             if (Storage::disk('public')->exists($relativePath)) {
                 return Storage::disk('public')->delete($relativePath);
             }

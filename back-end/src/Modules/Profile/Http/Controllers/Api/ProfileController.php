@@ -63,7 +63,18 @@ class ProfileController extends Controller
             'url' => ['required', 'string', 'url'],
         ]);
 
-        $this->deleteAvatarAction->execute($request->input('url'));
+        $profile = $this->profileService->getByUserId($request->user()->id);
+        
+        // Verify ownership: ensure the requested URL matches the user's current avatar
+        if (!$profile || $profile->avatar !== $request->input('url')) {
+            return response()->json(['message' => 'Avatar not found or unauthorized'], 403);
+        }
+
+        $this->deleteAvatarAction->execute($profile->avatar);
+        
+        // Clear the avatar field in the database after successful deletion
+        $profile->update(['avatar' => null]);
+
         return response()->json(['message' => 'Avatar deleted successfully']);
     }
 
@@ -71,7 +82,6 @@ class ProfileController extends Controller
     {
         $userId = $request->user()->id;
         
-        // Optional: Delete avatar file if exists
         $profile = $this->profileService->getByUserId($userId);
         if ($profile && $profile->avatar) {
             $this->deleteAvatarAction->execute($profile->avatar);
