@@ -20,7 +20,7 @@ class UpdateProfileRequest extends FormRequest
             'expertise' => ['nullable', 'string', 'max:255'],
             'years_of_experience' => ['nullable', 'integer', 'min:0', 'max:100'],
             'social_links' => ['nullable', 'array'],
-            'social_links.*' => ['url', 'max:255'],
+            'social_links.*' => ['nullable', 'url', 'max:255', 'regex:/^https?:\/\//i'],
         ];
     }
 }

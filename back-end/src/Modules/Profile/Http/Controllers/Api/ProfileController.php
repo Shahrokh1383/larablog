@@ -10,6 +10,7 @@ use Modules\Profile\Actions\UploadAvatarAction;
 use Modules\Profile\Http\Requests\UpdateProfileRequest;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -79,7 +80,14 @@ class ProfileController extends Controller
         
         $profile = $this->profileService->getByUserId($userId);
         if ($profile && $profile->avatar) {
-            $this->deleteAvatarAction->execute($profile->avatar);
+            $deleted = $this->deleteAvatarAction->execute($profile->avatar);
+            if (!$deleted) {
+                Log::error('Failed to delete avatar file during account deletion.', [
+                    'user_id' => $userId, 
+                    'avatar' => $profile->avatar
+                ]);
+                return response()->json(['message' => 'Failed to delete avatar. Account deletion aborted.'], 500);
+            }
         }
 
         $this->profileService->deleteAccount($userId);

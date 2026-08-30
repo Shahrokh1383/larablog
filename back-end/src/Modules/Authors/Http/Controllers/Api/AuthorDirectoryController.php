@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\AdminStats\Services\Contracts\ContentStatsContract;
 use Modules\Articles\Services\Contracts\PostPublicServiceInterface;
-use Modules\Profile\Http\Resources\AuthorResource;
-use Modules\Profile\Http\Resources\ProfilePostResource;
-use Modules\Profile\Http\Resources\ProfileResource;
+use Modules\Authors\Http\Resources\AuthorDirectoryResource;
+use Modules\Authors\Http\Resources\AuthorPostResource;
+use Modules\Authors\Http\Resources\AuthorProfileResource;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 
 class AuthorDirectoryController extends Controller
@@ -27,17 +27,19 @@ class AuthorDirectoryController extends Controller
             perPage: $request->integer('per_page', 12)
         );
 
-        $allStats = $this->contentStatsService->getAuthorStats();
+        // Optimization: Fetch stats only for the paginated user IDs
+        $profileUserIds = $profiles->pluck('user_id')->all();
+        $stats = $this->contentStatsService->getAuthorStatsForUserIds($profileUserIds);
         
-        $profiles->through(function ($profile) use ($allStats) {
+        $profiles->through(function ($profile) use ($stats) {
             $userId = $profile->user_id;
-            $stats = $allStats[$userId] ?? [];
-            $profile->posts_count = $stats['posts_count'] ?? 0;
-            $profile->total_views = $stats['total_views'] ?? 0;
+            $userStats = $stats[$userId] ?? [];
+            $profile->posts_count = $userStats['posts_count'] ?? 0;
+            $profile->total_views = $userStats['total_views'] ?? 0;
             return $profile;
         });
 
-        return AuthorResource::collection($profiles)->response();
+        return AuthorDirectoryResource::collection($profiles)->response();
     }
 
     public function show(string $username): JsonResponse
@@ -48,12 +50,12 @@ class AuthorDirectoryController extends Controller
             abort(404, 'Profile not found');
         }
 
-        $allStats = $this->contentStatsService->getAuthorStats();
-        $stats = $allStats[$profile->user_id] ?? [];
+        // Optimization: Fetch stats only for this specific user
+        $stats = $this->contentStatsService->getAuthorStatsForUserId($profile->user_id);
         $profile->posts_count = $stats['posts_count'] ?? 0;
         $profile->total_views = $stats['total_views'] ?? 0;
 
-        return (new ProfileResource($profile))->response();
+        return (new AuthorProfileResource($profile))->response();
     }
 
     public function posts(string $username, Request $request): JsonResponse
@@ -64,6 +66,6 @@ class AuthorDirectoryController extends Controller
             perPage: $request->integer('per_page', 6)
         );
 
-        return ProfilePostResource::collection($posts)->response();
+        return AuthorPostResource::collection($posts)->response();
     }
 }
