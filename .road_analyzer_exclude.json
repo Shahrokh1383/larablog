@@ -40,7 +40,8 @@
     "back-end\\routes",
     "back-end\\src\\Shared",
     "Admin",
-    "User"
+    "User",
+    "back-end\\tests"
   ],
   "globalPatterns": [
     "public",
@@ -54,6 +55,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-30T01:27:15.767Z",
+  "lastModified": "2026-08-30T02:37:18.566Z",
   "version": 1
 }

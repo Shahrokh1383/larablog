@@ -3,14 +3,14 @@
 namespace Modules\AdminStats\Services;
 
 use Modules\AdminStats\Services\Contracts\ContentStatsContract;
-use Modules\Articles\Services\Contracts\PostAdminServiceInterface;
+use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
 
 class ContentStatsService implements ContentStatsContract
 {
     public function __construct(
-        private PostAdminServiceInterface $postAdminService,
+        private PostAdminStatsServiceInterface $postAdminService,
         private CategoryAdminServiceInterface $categoryAdminService,
         private TagAdminServiceInterface $tagAdminService
     ) {}

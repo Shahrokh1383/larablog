@@ -5,7 +5,7 @@ namespace Modules\Profile\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Taxonomy\Services\Contracts\ContentStatsContract;
+use Modules\AdminStats\Services\Contracts\ContentStatsContract;
 use Modules\Articles\Services\PostPublicService;
 use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Profile\Http\Resources\AuthorResource;
