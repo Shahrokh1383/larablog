@@ -10,6 +10,7 @@ interface UseRichTextEditorProps {
 export function useRichTextEditor({ value, onChange, onImageUpload, isUploadingImage }: UseRichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const savedRangeRef = useRef<Range | null>(null);
   const [activeStates, setActiveStates] = useState<Record<string, boolean>>({});
 
   // Set initial content
@@ -46,6 +47,9 @@ export function useRichTextEditor({ value, onChange, onImageUpload, isUploadingI
       setActiveStates({});
       return;
     }
+
+    // Save the current range for later use (e.g., image insertion)
+    savedRangeRef.current = selection.getRangeAt(0).cloneRange();
 
     const states: Record<string, boolean> = {
       bold: document.queryCommandState('bold'),
@@ -198,8 +202,39 @@ export function useRichTextEditor({ value, onChange, onImageUpload, isUploadingI
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || isUploadingImage) return;
-    await onImageUpload(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+
+    try {
+      const url = await onImageUpload(file);
+      if (url && editorRef.current) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'img-fluid';
+        img.alt = 'Article body image';
+
+        const range = savedRangeRef.current;
+        if (range && editorRef.current.contains(range.commonAncestorContainer)) {
+          range.deleteContents();
+          range.insertNode(img);
+          range.setStartAfter(img);
+          range.collapse(true);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        } else {
+          const endRange = document.createRange();
+          endRange.selectNodeContents(editorRef.current);
+          endRange.collapse(false);
+          endRange.insertNode(img);
+        }
+
+        onChange(editorRef.current.innerHTML);
+        updateActiveStates();
+      }
+    } catch (error) {
+      console.error('Image upload failed:', error);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleImageButtonClick = (e: React.MouseEvent) => {
