@@ -22,12 +22,8 @@ class ProfileController extends Controller
 
     public function show(Request $request): JsonResponse
     {
-        $profile = $this->profileService->getByUserId($request->user()->id);
+        $profile = $this->profileService->ensureProfileExists($request->user()->id);
         
-        if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
-        }
-
         return (new ProfileResource($profile))->response();
     }
 
