@@ -40,7 +40,6 @@
     "back-end\\src\\Shared",
     "Admin",
     "back-end\\tests",
-    "back-end",
     "User\\src\\shared",
     "User\\app"
   ],
@@ -56,6 +55,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-31T12:46:34.312Z",
+  "lastModified": "2026-08-31T13:23:23.371Z",
   "version": 1
 }
