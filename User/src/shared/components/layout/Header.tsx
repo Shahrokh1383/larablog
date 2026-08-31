@@ -157,7 +157,7 @@ export default function Header() {
               <i className="fa-sharp fa-solid fa-xmark"></i>
             </button>
             <form className="search-form" action="/search" method="get">
-              <input type="text" name="q" className="search-input" placeholder="Search articles, topics, authors..." autoComplete="off" autoFocus={isSearchOpen} />
+              <input type="text" name="q" className="search-input" placeholder="Search articles, topics..." autoComplete="off" autoFocus={isSearchOpen} />
               <button type="submit" className="search-submit">
                 <i className="fa-sharp fa-solid fa-magnifying-glass"></i>
               </button>

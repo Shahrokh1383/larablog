@@ -14,9 +14,10 @@ class AuthorPostResource extends JsonResource
             'slug' => $this->slug,
             'title' => $this->title,
             'excerpt' => $this->excerpt,
+            'featured_image'=> $this->featured_image,
             'published_at' => $this->published_at?->toIso8601String(),
             'views' => $this->views ?? 0,
-            'read_time' => $this->read_time ?? 0,
+            'reading_time'  => $this->reading_time ?? 0,
         ];
     }
 }
