@@ -54,14 +54,7 @@ export default function CommentItem({ comment, onReply, onLoadMoreReplies, fetch
   };
 
   const handleDelete = () => {
-    // CommentService::delete removes a top-level comment's replies too.
-    const message = !comment.parent_id && comment.replies_count > 0
-      ? 'Delete this comment? All of its replies will be removed too. This cannot be undone.'
-      : 'Delete this comment? This cannot be undone.';
-
-    if (window.confirm(message)) {
-      onDeleteComment?.(comment.id);
-    }
+    onDeleteComment?.(comment.id);
   };
 
   return (
