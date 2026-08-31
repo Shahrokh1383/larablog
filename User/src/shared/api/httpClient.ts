@@ -3,8 +3,11 @@ import { env } from '@/shared/lib/env';
 
 // Main client for all /api routes
 const httpClient = axios.create({
-  baseURL: env.apiBaseUrl,      // usually "/api"
+  baseURL: env.apiBaseUrl,
   withCredentials: true,
+  withXSRFToken: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
