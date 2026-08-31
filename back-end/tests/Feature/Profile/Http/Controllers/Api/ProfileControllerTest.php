@@ -49,7 +49,7 @@ test('show creates profile if missing and returns it', function () {
     $response = $this->actingAs($this->user, 'sanctum')
         ->getJson('/api/profile');
 
-    $response->assertOk();
+    $response->assertStatus(201);
     $this->assertDatabaseHas('profiles', ['user_id' => $this->user->id]);
 });
 

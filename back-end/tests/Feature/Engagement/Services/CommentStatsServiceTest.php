@@ -11,6 +11,11 @@ beforeEach(function () {
     $this->postInfoService = Mockery::mock(PostInfoContract::class);
     $this->statsService = new CommentStatsService($this->postInfoService);
     $this->post = Post::factory()->create();
+    
+    // Travel to Thursday of the current week. 
+    // This ensures that relative dates like subDays(1) safely fall within the current calendar week 
+    // (>= startOfWeek()), aligning the test data with the source code's calendar week logic.
+    $this->travelTo(Carbon::now()->startOfWeek()->addDays(3));
 });
 
 test('getCommentCountsForPosts returns approved counts keyed by post_id', function () {
