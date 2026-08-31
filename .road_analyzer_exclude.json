@@ -35,13 +35,13 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "back-end\\database",
     "back-end\\routes",
     "back-end\\src\\Shared",
     "Admin",
-    "back-end\\tests",
     "User\\src\\shared",
-    "User\\app"
+    "User\\app",
+    "User",
+    "back-end\\database"
   ],
   "globalPatterns": [
     "public",
@@ -55,6 +55,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-31T13:23:23.371Z",
+  "lastModified": "2026-08-31T13:47:12.078Z",
   "version": 1
 }
