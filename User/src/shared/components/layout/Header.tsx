@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/features/auth/context/AuthContext';
 import { useLogout } from '@/features/auth/hooks/useLogout';
+import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import NotificationDropdown from '@/features/notifications/components/NotificationDropdown';
@@ -22,6 +23,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { data: profile } = useProfile({ enabled: isAuthenticated && !!user });
   const { logout } = useLogout();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -58,7 +60,7 @@ export default function Header() {
     setDropdownOpen(false);
   };
 
-  const avatarSrc = user?.avatar || DEFAULT_AVATAR;
+  const avatarSrc = profile?.avatar || user?.avatar || DEFAULT_AVATAR;
 
   return (
     <>

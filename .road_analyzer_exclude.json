@@ -16,7 +16,6 @@
     "User\\eslint.config.mjs",
     "User\\env.local.example",
     "User\\src\\styles",
-    "User\\src\\shared",
     "User\\src\\providers",
     "Admin\\vite.config.ts",
     "Admin\\vite-env.d.ts",
@@ -55,6 +54,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-30T04:53:55.446Z",
+  "lastModified": "2026-08-31T12:31:51.806Z",
   "version": 1
 }
