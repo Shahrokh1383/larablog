@@ -127,10 +127,7 @@ test('getRecentlyRead returns paginator with post info enriched', function () {
 });
 
 test('getRecentlyRead handles empty post list without calling post info service', function () {
-    $this->postInfoService->shouldReceive('getPostsByIds')
-        ->once()
-        ->with([])
-        ->andReturn([]);
+    $this->postInfoService->shouldNotReceive('getPostsByIds');
 
     $paginator = $this->service->getRecentlyRead($this->user->id);
 

@@ -23,26 +23,29 @@ test('getOverview composes all stats correctly', function () {
     $post1 = Post::factory()->create();
     $post2 = Post::factory()->create();
 
-    // Posts read this week
-    PostRead::factory()->create([
+    PostRead::create([
         'user_id' => $this->user->id,
         'post_id' => $post1->id,
         'read_at' => Carbon::now()->subDay(),
     ]);
-    PostRead::factory()->create([
+    PostRead::create([
         'user_id' => $this->user->id,
         'post_id' => $post2->id,
         'read_at' => Carbon::now()->subDays(2),
     ]);
     // Post read outside current week (should be ignored)
-    PostRead::factory()->create([
+    PostRead::create([
         'user_id' => $this->user->id,
         'post_id' => Post::factory()->create()->id,
         'read_at' => Carbon::now()->subWeeks(2),
     ]);
 
-    // Saved posts
-    SavedPost::factory()->count(3)->create(['user_id' => $this->user->id]);
+    $sp1 = Post::factory()->create();
+    $sp2 = Post::factory()->create();
+    $sp3 = Post::factory()->create();
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $sp1->id, 'saved_at' => now()]);
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $sp2->id, 'saved_at' => now()]);
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $sp3->id, 'saved_at' => now()]);
 
     // Mock comment service
     $this->commentService->shouldReceive('getWeeklyCommentCountForUser')
@@ -91,16 +94,13 @@ test('getOverview caches result for 5 minutes', function () {
     $second = $this->service->getOverview($this->user->id);
 
     expect($first)->toBe($second);
-    // The mock expectations ensure the underlying methods were called only once.
 });
 
 test('getRecentlyRead returns paginator with post info enriched', function () {
     $post = Post::factory()->create();
-    PostRead::factory()->count(3)->create([
-        'user_id' => $this->user->id,
-        'post_id' => $post->id,
-        'read_at' => now(),
-    ]);
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()]);
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()->subMinute()]);
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()->subMinutes(2)]);
 
     $this->postInfoService->shouldReceive('getPostsByIds')
         ->once()

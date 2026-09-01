@@ -109,5 +109,5 @@ test('comments returns user comments paginated', function () {
 
     $response->assertOk()
         ->assertJsonCount(2, 'data')
-        ->assertJsonPath('data.0.post_title', $post->title); 
+        ->assertJsonPath('data.0.post.title', $post->title); 
 });
