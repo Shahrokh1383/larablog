@@ -22,9 +22,10 @@ test('execute saves post when not saved', function () {
 });
 
 test('execute unsaves post when already saved', function () {
-    SavedPost::factory()->create([
+    SavedPost::create([
         'user_id' => $this->user->id,
         'post_id' => $this->post->id,
+        'saved_at' => now(),
     ]);
 
     $result = $this->action->execute($this->user->id, $this->post->id);

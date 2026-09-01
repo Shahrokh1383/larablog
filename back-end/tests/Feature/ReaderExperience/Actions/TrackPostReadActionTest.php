@@ -23,7 +23,7 @@ test('execute creates new post read if none exists', function () {
 });
 
 test('execute updates existing post read timestamp', function () {
-    $existing = PostRead::factory()->create([
+    $existing = PostRead::create([
         'user_id' => $this->user->id,
         'post_id' => $this->post->id,
         'read_at' => now()->subDay(),

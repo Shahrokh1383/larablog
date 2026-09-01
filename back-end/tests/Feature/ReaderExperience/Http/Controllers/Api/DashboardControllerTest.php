@@ -1,6 +1,5 @@
 <?php
 
-use Modules\ReaderExperience\Services\DashboardService;
 use Shared\Models\User;
 use Modules\Articles\Models\Post;
 use Modules\ReaderExperience\Models\PostRead;
@@ -25,12 +24,17 @@ beforeEach(function () {
 
 test('overview returns dashboard stats', function () {
     $post = Post::factory()->create();
-    PostRead::factory()->create([
+    
+    PostRead::create([
         'user_id' => $this->user->id,
         'post_id' => $post->id,
         'read_at' => now(),
     ]);
-    SavedPost::factory()->count(2)->create(['user_id' => $this->user->id]);
+    
+    $savedPost1 = Post::factory()->create();
+    $savedPost2 = Post::factory()->create();
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $savedPost1->id, 'saved_at' => now()]);
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $savedPost2->id, 'saved_at' => now()]);
 
     $this->postInfoService->shouldReceive('getTotalReadingTimeByIds')
         ->once()
@@ -56,11 +60,10 @@ test('overview returns dashboard stats', function () {
 
 test('recentlyRead returns paginated list with post info', function () {
     $post = Post::factory()->create();
-    PostRead::factory()->count(3)->create([
-        'user_id' => $this->user->id,
-        'post_id' => $post->id,
-        'read_at' => now(),
-    ]);
+    
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()]);
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()->subMinute()]);
+    PostRead::create(['user_id' => $this->user->id, 'post_id' => $post->id, 'read_at' => now()->subMinutes(2)]);
 
     $this->postInfoService->shouldReceive('getPostsByIds')
         ->once()
@@ -78,7 +81,7 @@ test('recentlyRead returns paginated list with post info', function () {
 
     $response->assertOk()
         ->assertJsonCount(3, 'data')
-        ->assertJsonPath('data.0.post.title', 'Test Post')
+        ->assertJsonPath('data.0.post.title', 'Test Post') 
         ->assertJsonPath('meta.total', 3);
 });
 
@@ -91,13 +94,20 @@ test('comments returns user comments paginated', function () {
     $this->commentService->shouldReceive('getUserCommentsPaginated')
         ->once()
         ->with($this->user->id, 15)
-        ->andReturnUsing(function ($userId, $perPage) {
-            return \Modules\Engagement\Models\Comment::where('user_id', $userId)->paginate($perPage);
+        ->andReturnUsing(function ($userId, $perPage) use ($post) {
+            $paginator = \Modules\Engagement\Models\Comment::where('user_id', $userId)->paginate($perPage);
+            
+            $paginator->getCollection()->transform(function ($comment) use ($post) {
+                $comment->post_title = $post->title;
+                $comment->post_slug = $post->slug;
+                return $comment;
+            });
+            return $paginator;
         });
 
     $response = $this->getJson('/api/dashboard/comments');
 
     $response->assertOk()
         ->assertJsonCount(2, 'data')
-        ->assertJsonPath('data.0.post.title', $post->title); // assuming post_slug/post_title attached by service
+        ->assertJsonPath('data.0.post_title', $post->title); 
 });

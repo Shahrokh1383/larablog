@@ -8,11 +8,13 @@ use Shared\Models\User;
 test('SavedPostResource formats saved post with post info', function () {
     $user = User::factory()->create();
     $post = Post::factory()->create();
-    $savedPost = SavedPost::factory()->create([
+    
+    $savedPost = SavedPost::create([
         'user_id' => $user->id,
         'post_id' => $post->id,
         'saved_at' => now(),
     ]);
+    
     $postInfo = (object)[
         'id' => $post->id,
         'title' => 'Saved Post',

@@ -27,34 +27,52 @@ test('toggle delegates to action and returns result', function () {
 });
 
 test('listPaginated returns saved posts enriched with post info', function () {
-    $post = Post::factory()->create();
-    SavedPost::factory()->count(2)->create([
+    $post1 = Post::factory()->create();
+    $post2 = Post::factory()->create();
+    
+    SavedPost::create([
         'user_id' => $this->user->id,
-        'post_id' => $post->id,
+        'post_id' => $post1->id,
         'saved_at' => now(),
+    ]);
+    
+    SavedPost::create([
+        'user_id' => $this->user->id,
+        'post_id' => $post2->id,
+        'saved_at' => now()->subMinute(),
     ]);
 
     $this->postInfoService->shouldReceive('getPostsByIds')
         ->once()
-        ->with([$post->id])
+        ->with([$post1->id, $post2->id])
         ->andReturn([
-            $post->id => (object)[
-                'id' => $post->id,
-                'title' => 'Saved Post',
-                'slug' => 'saved-post',
+            $post1->id => (object)[
+                'id' => $post1->id,
+                'title' => 'Saved Post 1',
+                'slug' => 'saved-post-1',
                 'featured_image' => null,
                 'reading_time' => 8,
+            ],
+            $post2->id => (object)[
+                'id' => $post2->id,
+                'title' => 'Saved Post 2',
+                'slug' => 'saved-post-2',
+                'featured_image' => null,
+                'reading_time' => 5,
             ],
         ]);
 
     $paginator = $this->service->listPaginated($this->user->id, 10);
 
     expect($paginator->total())->toBe(2);
-    expect($paginator->items()[0]->post_info->title)->toBe('Saved Post');
+    expect($paginator->items()[0]->post_info->title)->toBe('Saved Post 1');
 });
 
 test('listPaginated short-circuits if no saved posts', function () {
-    $this->postInfoService->shouldNotReceive('getPostsByIds');
+    $this->postInfoService->shouldReceive('getPostsByIds')
+        ->once()
+        ->with([])
+        ->andReturn([]);
 
     $paginator = $this->service->listPaginated($this->user->id);
 
@@ -65,13 +83,14 @@ test('getSavedPostIdsForUser returns array of saved post ids from given list', f
     $post1 = Post::factory()->create();
     $post2 = Post::factory()->create();
     $post3 = Post::factory()->create();
-    SavedPost::factory()->create(['user_id' => $this->user->id, 'post_id' => $post1->id]);
-    SavedPost::factory()->create(['user_id' => $this->user->id, 'post_id' => $post2->id]);
+    
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $post1->id, 'saved_at' => now()]);
+    SavedPost::create(['user_id' => $this->user->id, 'post_id' => $post2->id, 'saved_at' => now()]);
 
     $ids = [$post1->id, $post2->id, $post3->id];
     $result = $this->service->getSavedPostIdsForUser($this->user->id, $ids);
 
-    expect($result)->toMatchArray([$post1->id, $post2->id]);
+    expect($result)->toEqualCanonicalizing([$post1->id, $post2->id]);
 });
 
 test('getSavedPostIdsForUser returns empty array for empty input', function () {

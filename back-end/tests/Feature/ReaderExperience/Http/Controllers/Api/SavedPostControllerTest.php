@@ -1,6 +1,5 @@
 <?php
 
-use Modules\ReaderExperience\Services\SavedPostService;
 use Modules\ReaderExperience\Models\SavedPost;
 use Modules\Articles\Models\Post;
 use Shared\Models\User;
@@ -23,9 +22,10 @@ test('toggle saves post and returns saved true', function () {
 });
 
 test('toggle unsaves post and returns saved false', function () {
-    SavedPost::factory()->create([
+    SavedPost::create([
         'user_id' => $this->user->id,
         'post_id' => $this->post->id,
+        'saved_at' => now(),
     ]);
 
     $response = $this->postJson("/api/saved-posts/{$this->post->id}");
@@ -39,24 +39,36 @@ test('toggle unsaves post and returns saved false', function () {
 });
 
 test('index returns paginated saved posts with post info', function () {
-    SavedPost::factory()->count(2)->create([
+    SavedPost::create([
         'user_id' => $this->user->id,
         'post_id' => $this->post->id,
+        'saved_at' => now(),
+    ]);
+    
+    $post2 = Post::factory()->create();
+    SavedPost::create([
+        'user_id' => $this->user->id,
+        'post_id' => $post2->id,
+        'saved_at' => now()->subMinute(),
     ]);
 
     // Mock PostInfoContract in container
     $postInfoService = Mockery::mock(\Modules\Articles\Services\Contracts\PostInfoContract::class);
     $postInfoService->shouldReceive('getPostsByIds')
         ->once()
-        ->andReturn([
-            $this->post->id => (object)[
-                'id' => $this->post->id,
-                'title' => 'Saved Post',
-                'slug' => 'saved-post',
-                'featured_image' => null,
-                'reading_time' => 5,
-            ]
-        ]);
+        ->andReturnUsing(function ($ids) {
+            $map = [];
+            foreach ($ids as $id) {
+                $map[$id] = (object)[
+                    'id' => $id,
+                    'title' => 'Saved Post',
+                    'slug' => 'saved-post',
+                    'featured_image' => null,
+                    'reading_time' => 5,
+                ];
+            }
+            return $map;
+        });
     $this->app->instance(\Modules\Articles\Services\Contracts\PostInfoContract::class, $postInfoService);
 
     $response = $this->getJson('/api/saved-posts?per_page=10');

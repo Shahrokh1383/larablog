@@ -13,8 +13,15 @@ test('service provider binds SavedPostInteractionContract to SavedPostService', 
 });
 
 test('service provider listens to CommentCreated event', function () {
-    Event::assertListening(
-        CommentCreated::class,
-        ClearCommentDashboardCacheListener::class
-    );
+    $dispatcher = Event::getFacadeRoot();
+    $listeners = $dispatcher->getListeners(CommentCreated::class);
+
+    $found = collect($listeners)->contains(function ($listener) {
+        $reflection = new \ReflectionFunction($listener);
+        $staticVars = $reflection->getStaticVariables();
+        
+        return isset($staticVars['listener']) && $staticVars['listener'] === ClearCommentDashboardCacheListener::class;
+    });
+
+    expect($found)->toBeTrue('ClearCommentDashboardCacheListener is not registered for CommentCreated event.');
 });
