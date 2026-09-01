@@ -101,6 +101,16 @@ it('returns recent posts excluding ids', function () {
         ->and($result->first()->id)->toBe($post2->id);
 });
 
+it('returns the correct count of published posts', function () {
+    Post::factory()->count(3)->create(['is_published' => true]);
+    Post::factory()->count(2)->create(['is_published' => false]);
+
+    $service = app(PostPublicService::class);
+    $count = $service->getPublishedPostsCount();
+
+    expect($count)->toBe(3);
+});
+
 it('returns published posts by category slug', function () {
     $cat = Category::factory()->create(['slug' => 'my-category']);
     Post::factory()->create(['category_id' => $cat->id, 'is_published' => true]);
