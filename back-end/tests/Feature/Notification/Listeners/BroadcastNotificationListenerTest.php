@@ -2,7 +2,6 @@
 
 use Modules\Notification\Listeners\BroadcastNotificationListener;
 use Modules\Notification\Events\UserNotificationBroadcast;
-use Modules\Engagement\Models\Comment; // not needed, keep import only if used
 use Shared\Models\User;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Events\NotificationSent;
@@ -35,13 +34,10 @@ test('handle broadcasts UserNotificationBroadcast with correct payload for datab
         'updated_at' => Carbon::now(),
     ]);
 
-    // Build a fake NotificationSent event
     $notification = new class {
         public $id;
-        public function __construct() {
-            $this->id = $dbNotification->id;
-        }
     };
+    $notification->id = $dbNotification->id;
 
     $event = new NotificationSent(
         $user,
