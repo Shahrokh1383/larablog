@@ -85,7 +85,7 @@ export default function OverviewTab({ overview, recentlyRead, isLoading, onPageC
                   <i className="fa-sharp fa-solid fa-medal"></i>
                 </div>
                 <h4 className="achievement-title">Top Commenter</h4>
-                <p className="achievement-desc">You’re among the most active commenters this month!</p>
+                <p className="achievement-desc">You're among our most active commenters!</p>
               </div>
             </div>
           </div>
