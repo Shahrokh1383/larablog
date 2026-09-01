@@ -9,7 +9,6 @@ use Modules\Search\Services\SearchService;
 use Modules\Articles\Http\Resources\PostPublicResource;
 use Modules\Taxonomy\Http\Resources\CategoryPublicResource;
 use Modules\Taxonomy\Http\Resources\TagPublicResource;
-use Modules\Profile\Http\Resources\AuthorResource;
 
 class SearchController extends Controller
 {
@@ -27,7 +26,6 @@ class SearchController extends Controller
             'posts'      => PostPublicResource::collection($results['posts'])->response()->getData(true),
             'categories' => CategoryPublicResource::collection($results['categories']),
             'tags'       => TagPublicResource::collection($results['tags']),
-            'authors'    => AuthorResource::collection($results['authors']),
         ]);
     }
 }
