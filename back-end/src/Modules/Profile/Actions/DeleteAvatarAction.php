@@ -6,18 +6,29 @@ use Illuminate\Support\Facades\Storage;
 
 class DeleteAvatarAction
 {
-    public function execute(string $url): bool
+    public function execute(string $url, string $userId): bool
     {
         $path = parse_url($url, PHP_URL_PATH);
         
-        if ($path && str_starts_with($path, '/storage/')) {
-            $relativePath = str_replace('/storage/', '', $path);
-            
-            if (Storage::disk('public')->exists($relativePath)) {
-                return Storage::disk('public')->delete($relativePath);
-            }
+        if (!$path || !str_starts_with($path, '/storage/')) {
+            return false;
+        }
+
+        $relativePath = str_replace('/storage/', '', $path);
+        
+        if (str_contains($relativePath, '..')) {
+            return false;
+        }
+
+        $expectedPrefix = "profiles/avatars/{$userId}/";
+        if (!str_starts_with($relativePath, $expectedPrefix)) {
+            return false;
         }
         
-        return false;
+        if (!Storage::disk('public')->exists($relativePath)) {
+            return true; 
+        }
+
+        return Storage::disk('public')->delete($relativePath);
     }
 }

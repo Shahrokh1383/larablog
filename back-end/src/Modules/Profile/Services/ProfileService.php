@@ -6,7 +6,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Identity\Services\Contracts\DeletesUserAccount;
 use Modules\Identity\Services\Contracts\UpdatesUserBasicInfo;
-use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Models\Profile;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
@@ -21,34 +20,40 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
 
     public function getByUserId(string $userId): ?Profile
     {
+        return Profile::where('user_id', $userId)->first();
+    }
+
+    public function ensureProfileExists(string $userId): Profile
+    {
         return Profile::firstOrCreate(['user_id' => $userId]);
     }
 
     public function getPublicProfileByUsername(string $username): ?Profile
     {
-        $user = User::where('username', $username)->first();
-        if (!$user) {
-            return null;
-        }
-
-        return Profile::where('user_id', $user->id)->first();
+        // Fix N+1: Eager load user relationship
+        return Profile::with('user')->whereHas('user', function ($q) use ($username) {
+            $q->where('username', $username);
+        })->first();
     }
 
-    public function updateProfile(string $userId, UpdateProfileDTO $dto): Profile
+    public function updateProfile(string $userId, array $data): Profile
     {
-        return DB::transaction(function () use ($userId, $dto) {
+        return DB::transaction(function () use ($userId, $data) {
             $user = User::findOrFail($userId);
-            $this->identityService->updateName($user, $dto->name);
+            
+            // Handle name update separately via Identity bounded context
+            if (array_key_exists('name', $data)) {
+                $this->identityService->updateName($user, $data['name']);
+            }
 
-            $profile = Profile::firstOrCreate(['user_id' => $userId]);
-
-            $profile->update([
-                'avatar'              => $dto->avatar,
-                'bio'                 => $dto->bio,
-                'expertise'           => $dto->expertise,
-                'years_of_experience' => $dto->years_of_experience,
-                'social_links'        => $dto->social_links,
-            ]);
+            $profile = $this->ensureProfileExists($userId);
+            
+            // Filter out 'name' as it's handled above, update only provided fields
+            $profileData = collect($data)->except('name')->all();
+            
+            if (!empty($profileData)) {
+                $profile->update($profileData);
+            }
 
             return $profile->fresh();
         });
@@ -96,10 +101,7 @@ class ProfileService implements ProfileServiceInterface, FetchesPublicProfiles
     public function deleteAccount(string $userId): void
     {
         DB::transaction(function () use ($userId) {
-            // Delete profile data first.
             Profile::where('user_id', $userId)->delete();
-
-            // Delegate user deletion to the Identity bounded context.
             $this->userDeletionService->deleteAccount($userId);
         });
     }

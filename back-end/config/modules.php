@@ -14,5 +14,6 @@ return [
         \Modules\Marketing\MarketingServiceProvider::class,
         \Modules\Search\SearchServiceProvider::class,
         \Modules\About\AboutServiceProvider::class,
+        \Modules\Authors\AuthorsServiceProvider::class,
     ],
 ];

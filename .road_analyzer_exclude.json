@@ -16,7 +16,6 @@
     "User\\eslint.config.mjs",
     "User\\env.local.example",
     "User\\src\\styles",
-    "User\\src\\shared",
     "User\\src\\providers",
     "Admin\\vite.config.ts",
     "Admin\\vite-env.d.ts",
@@ -36,11 +35,14 @@
     "back-end\\composer.lock",
     "back-end\\composer.json",
     "back-end\\artisan",
-    "back-end\\database",
     "back-end\\routes",
     "back-end\\src\\Shared",
+    "User\\src\\shared",
+    "User\\app",
     "Admin",
-    "User"
+    "back-end\\database",
+    "User",
+    "back-end\\src"
   ],
   "globalPatterns": [
     "public",
@@ -54,6 +56,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-08-30T01:27:15.767Z",
+  "lastModified": "2026-09-01T10:42:15.725Z",
   "version": 1
 }

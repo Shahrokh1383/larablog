@@ -33,16 +33,17 @@ class DashboardService
                 ->toArray();
 
             $postsReadCount = count($postIds);
-            
+
             // 2. Pass array directly. PostInfoService will short-circuit if empty.
             $totalReadingTime = $this->postInfoService->getTotalReadingTimeByIds($postIds);
 
             $commentsCount = $this->commentService->getWeeklyCommentCountForUser($userId);
-
-            $topCommenters = Cache::remember('weekly_top_commenters', 3600, function () {
-                return $this->commentService->getWeeklyTopCommenters(10);
+            $topCommenters = Cache::remember('all_time_top_commenters', 300, function () {
+                return $this->commentService->getAllTimeTopCommenters(10);
             });
-            $isTopCommenter = $topCommenters->contains('user_id', $userId);
+            $isTopCommenter = collect($topCommenters)->contains(
+                fn (array $commenter): bool => $commenter['user_id'] === $userId
+            );
 
             $totalComments = $this->commentService->getTotalCommentCountForUser($userId);
             $totalSavedPosts = SavedPost::where('user_id', $userId)->count();

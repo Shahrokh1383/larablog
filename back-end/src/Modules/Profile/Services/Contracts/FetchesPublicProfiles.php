@@ -2,13 +2,26 @@
 
 namespace Modules\Profile\Services\Contracts;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Modules\Profile\Models\Profile;
+
 interface FetchesPublicProfiles
 {
     /**
-     * Fetches public profile data for a given list of user IDs.
+     * Get a paginated list of public profiles for the directory.
+     */
+    public function getAllPublicProfiles(?string $search = null, int $perPage = 12): LengthAwarePaginator;
+
+    /**
+     * Get a single public profile by username with eager-loaded user data.
+     */
+    public function getPublicProfileByUsername(string $username): ?Profile;
+
+    /**
+     * Get a map of profiles indexed by user ID (useful for cross-module aggregation).
      * 
-     * @param array<string|int> $userIds
-     * @return array<string|int, array> Map of user_id => ['id', 'name', 'username', 'avatar', 'bio', 'expertise', 'social_links']
+     * @param array<string> $userIds
+     * @return array<string, array<string, mixed>>
      */
     public function getPublicProfilesMap(array $userIds): array;
 }

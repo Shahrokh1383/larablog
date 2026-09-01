@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/features/auth/context/AuthContext';
+import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useDashboardOverview, dashboardKeys } from '@/features/dashboard/hooks/useDashboardOverview';
 import { dashboardApi } from '@/features/dashboard/api/dashboardApi';
 import { useRecentlyRead } from '@/features/dashboard/hooks/useRecentlyRead';
@@ -24,6 +25,7 @@ export default function DashboardPage() {
   const [settingsVisited, setSettingsVisited] = useState(false);
   
   const { user } = useAuth();
+  const { data: profile } = useProfile({ enabled: !user });
   const queryClient = useQueryClient();
   
   const [recentlyReadPage, setRecentlyReadPage] = useState(1);
@@ -88,7 +90,13 @@ export default function DashboardPage() {
   return (
     <main className="dashboard-page">
       <div className="container dashboard-container">
-        <DashboardHeader user={user} overview={overviewQuery.data} />
+
+        <DashboardHeader
+          user={user}
+          overview={overviewQuery.data}
+          avatar={profile?.avatar ?? user.avatar}
+          bio={profile?.bio ?? user.bio}
+        />
 
         <div className="dashboard-tabs">
           <button 

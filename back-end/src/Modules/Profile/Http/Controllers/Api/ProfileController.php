@@ -5,9 +5,9 @@ namespace Modules\Profile\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Modules\Profile\Actions\DeleteAvatarAction;
 use Modules\Profile\Actions\UploadAvatarAction;
-use Modules\Profile\DTOs\UpdateProfileDTO;
 use Modules\Profile\Http\Requests\UpdateProfileRequest;
 use Modules\Profile\Http\Resources\ProfileResource;
 use Modules\Profile\Services\Contracts\ProfileServiceInterface;
@@ -22,27 +22,17 @@ class ProfileController extends Controller
 
     public function show(Request $request): JsonResponse
     {
-        $profile = $this->profileService->getByUserId($request->user()->id);
+        $profile = $this->profileService->ensureProfileExists($request->user()->id);
         
-        if (!$profile) {
-            return response()->json(['message' => 'Profile not found'], 404);
-        }
-
         return (new ProfileResource($profile))->response();
     }
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $dto = new UpdateProfileDTO(
-            name:                 $request->validated('name'),
-            avatar:               $request->validated('avatar'),
-            bio:                  $request->validated('bio'),
-            expertise:            $request->validated('expertise'),
-            years_of_experience:  $request->validated('years_of_experience'),
-            social_links:         $request->validated('social_links'),
+        $profile = $this->profileService->updateProfile(
+            $request->user()->id, 
+            $request->validated()
         );
-
-        $profile = $this->profileService->updateProfile($request->user()->id, $dto);
 
         return (new ProfileResource($profile))->response();
     }
@@ -50,10 +40,10 @@ class ProfileController extends Controller
     public function uploadAvatar(Request $request): JsonResponse
     {
         $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], // Max 2MB
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
-        $url = $this->uploadAvatarAction->execute($request->file('avatar'));
+        $url = $this->uploadAvatarAction->execute($request->file('avatar'), $request->user()->id);
         return response()->json(['url' => $url]);
     }
 
@@ -63,18 +53,36 @@ class ProfileController extends Controller
             'url' => ['required', 'string', 'url'],
         ]);
 
-        $this->deleteAvatarAction->execute($request->input('url'));
-        return response()->json(['message' => 'Avatar deleted successfully']);
+        $userId = $request->user()->id;
+        $profile = $this->profileService->getByUserId($userId);
+        
+        if (!$profile || $profile->avatar !== $request->input('url')) {
+            return response()->json(['message' => 'Avatar not found or unauthorized'], 403);
+        }
+
+        $deleted = $this->deleteAvatarAction->execute($profile->avatar, $userId);
+        
+        if ($deleted) {
+            $profile->update(['avatar' => null]);
+            return response()->json(['message' => 'Avatar deleted successfully']);
+        }
+
+        return response()->json(['message' => 'Failed to delete avatar file'], 500);
     }
 
     public function destroy(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
         
-        // Optional: Delete avatar file if exists
         $profile = $this->profileService->getByUserId($userId);
         if ($profile && $profile->avatar) {
-            $this->deleteAvatarAction->execute($profile->avatar);
+            $deleted = $this->deleteAvatarAction->execute($profile->avatar, $userId);
+            if (!$deleted) {
+                Log::warning('Avatar deletion skipped during account destruction (ownership mismatch or missing file).', [
+                    'user_id' => $userId,
+                    'avatar'  => $profile->avatar,
+                ]);
+            }
         }
 
         $this->profileService->deleteAccount($userId);

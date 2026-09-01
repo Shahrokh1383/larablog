@@ -39,3 +39,6 @@ require base_path('src/Modules/Search/Routes/api.php');
 // About Module Routes
 require base_path('src/Modules/About/Routes/api.php');
 require base_path('src/Modules/About/Routes/admin.php');
+
+// Authors Module Routes
+require base_path('src/Modules/Authors/Routes/api.php');

@@ -63,6 +63,30 @@ class CommentStatsService implements CommentServiceInterface
             ->get();
     }
 
+    public function getAllTimeTopCommenters(int $limit = 10): array
+    {
+        return Comment::query()
+            ->approved()
+            ->leftJoin('users as u', 'u.id', '=', 'engagement_comments.user_id')
+            ->selectRaw(
+                'MAX(engagement_comments.user_id) as user_id, ' .
+                'COALESCE(MAX(u.name), MAX(engagement_comments.name)) as name, ' .
+                'COALESCE(MAX(u.email), MAX(engagement_comments.email)) as email, ' .
+                'COUNT(*) as comments_count'
+            )
+            ->groupByRaw('COALESCE(engagement_comments.user_id, engagement_comments.email)')
+            ->orderByDesc('comments_count')
+            ->limit($limit)
+            ->get()
+            ->map(fn (Comment $row): array => [
+                'user_id'        => $row->user_id,
+                'name'           => $row->name,
+                'email'          => $row->email,
+                'comments_count' => (int) $row->comments_count,
+            ])
+            ->all();
+    }
+
     public function getWeeklyCommentCountForUser(string $userId): int
     {
         $startOfWeek = Carbon::now()->startOfWeek();

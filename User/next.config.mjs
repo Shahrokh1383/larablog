@@ -29,6 +29,10 @@ const nextConfig = {
         source: '/broadcasting/:path*',
         destination: 'http://localhost:8000/broadcasting/:path*',
       },
+      {
+        source: '/storage/:path*',
+        destination: 'http://localhost:8000/storage/:path*',
+      },
     ];
   },
 };

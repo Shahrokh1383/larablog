@@ -15,4 +15,14 @@ class AdminStatsPolicy
     {
         return $user->hasAnyRole(['admin', 'editor']);
     }
+
+    public function viewAuthorDashboard(HasRolesContract $user): bool
+    {
+        return $user->hasAnyRole(['admin', 'editor', 'author']);
+    }
+
+    public function viewAdminTopCommenters(HasRolesContract $user): bool
+    {
+        return $user->hasAnyRole(['admin', 'editor']);
+    }
 }

@@ -10,7 +10,6 @@ export interface Profile {
   bio: string | null;
   expertise: string | null;
   years_of_experience: number | null;
-  social_links: Record<string, string>;
   posts_count: number;
   total_views: number;
   created_at: string;
