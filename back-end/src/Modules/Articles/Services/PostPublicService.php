@@ -10,6 +10,7 @@ use Modules\Taxonomy\Services\Contracts\TagPublicServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class PostPublicService implements PostPublicServiceInterface
 {
@@ -115,6 +116,12 @@ class PostPublicService implements PostPublicServiceInterface
         $this->mapPostRelations->execute($posts);
 
         return $posts;
+    }
+
+    #[Override]
+    public function getPublishedPostsCount(): int
+    {
+        return Post::published()->count();
     }
 
     public function getPublishedPostsByCategoryForPublic(string $categorySlug, ?string $sort = 'newest', int $perPage = 10): array

@@ -44,4 +44,9 @@ interface PostPublicServiceInterface
         ?string $sort = 'newest',
         int $perPage = 10
     ): array;
+
+    /**
+     * Total number of currently published posts.
+     */
+    public function getPublishedPostsCount(): int;
 }
