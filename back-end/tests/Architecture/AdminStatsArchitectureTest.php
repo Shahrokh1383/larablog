@@ -1,36 +1,43 @@
 <?php
 
-use Modules\AdminStats\Policies\AdminStatsPolicy;
-use Shared\Models\User;
+use Pest\Arch\Contracts\ArchExpectation;
 
-beforeEach(function () {
-    $this->policy = new AdminStatsPolicy();
-    $this->admin = User::factory()->create();
-    $this->admin->assignRole('admin');
-    $this->editor = User::factory()->create();
-    $this->editor->assignRole('editor');
-    $this->author = User::factory()->create();
-    $this->author->assignRole('author');
-    $this->regularUser = User::factory()->create();
-    $this->regularUser->assignRole('user');
+test('AdminStats module does not import other modules internal classes', function () {
+    arch()
+        ->expect('Modules\AdminStats')
+        ->toOnlyUse([
+            'Modules\AdminStats',
+            'Shared',
+            'Illuminate',
+            'Modules\Articles\Services\Contracts',
+            'Modules\Taxonomy\Services\Contracts',
+            'Modules\Engagement\Services\Contracts',
+            'Modules\Engagement\Events',
+        ])
+        ->ignoring([
+            'Modules\AdminStats\AdminStatsServiceProvider', // provider allowed to bind
+        ]);
 });
 
-test('viewDashboard allows admin and editor', function () {
-    expect($this->policy->viewDashboard($this->admin))->toBeTrue();
-    expect($this->policy->viewDashboard($this->editor))->toBeTrue();
+test('AdminStats Services do not import concrete cross-module services', function () {
+    arch()
+        ->expect('Modules\AdminStats\Services')
+        ->toOnlyUse([
+            'Modules\AdminStats\Services',
+            'Modules\AdminStats\Policies',
+            'Shared',
+            'Illuminate',
+            'Modules\Articles\Services\Contracts',
+            'Modules\Taxonomy\Services\Contracts',
+            'Modules\Engagement\Services\Contracts',
+            'Modules\Engagement\Events',
+        ]);
 });
 
-test('viewDashboard denies author and regular user', function () {
-    expect($this->policy->viewDashboard($this->author))->toBeFalse();
-    expect($this->policy->viewDashboard($this->regularUser))->toBeFalse();
-});
-
-test('viewAuthors allows admin and editor', function () {
-    expect($this->policy->viewAuthors($this->admin))->toBeTrue();
-    expect($this->policy->viewAuthors($this->editor))->toBeTrue();
-});
-
-test('viewAuthors denies author and regular user', function () {
-    expect($this->policy->viewAuthors($this->author))->toBeFalse();
-    expect($this->policy->viewAuthors($this->regularUser))->toBeFalse();
+test('AdminStats module does not import other module models', function () {
+    arch()
+        ->expect('Modules\AdminStats')
+        ->not->toUse('Modules\Articles\Models')
+        ->not->toUse('Modules\Taxonomy\Models')
+        ->not->toUse('Modules\Engagement\Models');
 });

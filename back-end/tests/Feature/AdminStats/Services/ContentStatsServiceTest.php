@@ -4,26 +4,30 @@ use Modules\AdminStats\Services\ContentStatsService;
 use Modules\Articles\Services\Contracts\PostAdminStatsServiceInterface;
 use Modules\Taxonomy\Services\Contracts\CategoryAdminServiceInterface;
 use Modules\Taxonomy\Services\Contracts\TagAdminServiceInterface;
+use Modules\Engagement\Services\Contracts\CommentServiceInterface;
+use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {
     $this->mockPostAdminStats = Mockery::mock(PostAdminStatsServiceInterface::class);
     $this->mockCategoryAdmin = Mockery::mock(CategoryAdminServiceInterface::class);
     $this->mockTagAdmin = Mockery::mock(TagAdminServiceInterface::class);
+    $this->mockCommentService = Mockery::mock(CommentServiceInterface::class);
 
     $this->service = new ContentStatsService(
         $this->mockPostAdminStats,
         $this->mockCategoryAdmin,
-        $this->mockTagAdmin
+        $this->mockTagAdmin,
+        $this->mockCommentService
     );
+
+    Cache::flush();
 });
 
 test('getDashboardStats composes stats from post, category, and tag services', function () {
-    // Mock post stats
     $this->mockPostAdminStats->shouldReceive('getTotalPostsCount')->once()->andReturn(10);
     $this->mockPostAdminStats->shouldReceive('getPublishedPostsCount')->once()->andReturn(7);
     $this->mockPostAdminStats->shouldReceive('getTotalViews')->once()->andReturn(1500);
 
-    // Popular categories
     $catStats = [
         ['category_id' => 'cat-1', 'posts_count' => 3],
         ['category_id' => 'cat-2', 'posts_count' => 2],
@@ -34,7 +38,6 @@ test('getDashboardStats composes stats from post, category, and tag services', f
         'cat-2' => ['id' => 'cat-2', 'name' => 'PHP', 'slug' => 'php'],
     ]);
 
-    // Popular tags
     $tagStats = [
         ['tag_id' => 'tag-1', 'posts_count' => 4],
     ];
@@ -81,6 +84,44 @@ test('getDashboardStats handles empty popular stats', function () {
 
     expect($result['popular_categories'])->toBe([]);
     expect($result['popular_tags'])->toBe([]);
+});
+
+test('getAuthorDashboardStats extracts and casts stats from post service', function () {
+    $userId = 'user-123';
+    $stats = ['posts_count' => 5, 'total_views' => 120];
+
+    $this->mockPostAdminStats
+        ->shouldReceive('getAuthorStatsForUserId')
+        ->once()
+        ->with($userId)
+        ->andReturn($stats);
+
+    $result = $this->service->getAuthorDashboardStats($userId);
+
+    expect($result)->toBe([
+        'posts_count' => 5,
+        'total_views' => 120,
+    ]);
+});
+
+test('getTopCommenters caches result from comment service', function () {
+    $expected = [
+        ['user_id' => 'u1', 'name' => 'Alice', 'email' => 'alice@example.com', 'comments_count' => 3],
+        ['user_id' => 'u2', 'name' => 'Bob', 'email' => 'bob@example.com', 'comments_count' => 2],
+    ];
+
+    $this->mockCommentService
+        ->shouldReceive('getAllTimeTopCommenters')
+        ->once()
+        ->with(10)
+        ->andReturn($expected);
+
+    $first = $this->service->getTopCommenters();
+    $second = $this->service->getTopCommenters();
+
+    expect($first)->toBe($expected);
+    expect($second)->toBe($expected);
+    // The mock expectation ensures it was called only once.
 });
 
 test('getAuthorStats delegates to post admin service', function () {

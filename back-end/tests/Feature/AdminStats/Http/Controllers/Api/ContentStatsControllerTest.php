@@ -95,3 +95,106 @@ test('authors denies author', function () {
         ->getJson('/api/admin/stats/authors')
         ->assertStatus(403);
 });
+
+test('me returns author dashboard stats for admin', function () {
+    $stats = ['posts_count' => 5, 'total_views' => 120];
+    $userId = $this->admin->id;
+
+    $this->mockContentStatsService
+        ->shouldReceive('getAuthorDashboardStats')
+        ->once()
+        ->with($userId)
+        ->andReturn($stats);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/admin/stats/me');
+
+    $response->assertOk()
+        ->assertJson([
+            'data' => $stats,
+        ]);
+});
+
+test('me returns author dashboard stats for editor', function () {
+    $stats = ['posts_count' => 2, 'total_views' => 30];
+    $userId = $this->editor->id;
+
+    $this->mockContentStatsService
+        ->shouldReceive('getAuthorDashboardStats')
+        ->once()
+        ->with($userId)
+        ->andReturn($stats);
+
+    $this->actingAs($this->editor, 'sanctum')
+        ->getJson('/api/admin/stats/me')
+        ->assertOk()
+        ->assertJson(['data' => $stats]);
+});
+
+test('me returns author dashboard stats for author', function () {
+    $stats = ['posts_count' => 0, 'total_views' => 0];
+    $userId = $this->author->id;
+
+    $this->mockContentStatsService
+        ->shouldReceive('getAuthorDashboardStats')
+        ->once()
+        ->with($userId)
+        ->andReturn($stats);
+
+    $this->actingAs($this->author, 'sanctum')
+        ->getJson('/api/admin/stats/me')
+        ->assertOk()
+        ->assertJson(['data' => $stats]);
+});
+
+test('me denies regular user', function () {
+    $regularUser = User::factory()->create();
+    $regularUser->assignRole('user');
+
+    $this->mockContentStatsService->shouldNotReceive('getAuthorDashboardStats');
+
+    $this->actingAs($regularUser, 'sanctum')
+        ->getJson('/api/admin/stats/me')
+        ->assertStatus(403);
+});
+
+test('commenters returns top commenters for admin', function () {
+    $commenters = [
+        ['user_id' => 'u1', 'name' => 'Alice', 'email' => 'alice@example.com', 'comments_count' => 3],
+    ];
+
+    $this->mockContentStatsService
+        ->shouldReceive('getTopCommenters')
+        ->once()
+        ->andReturn($commenters);
+
+    $response = $this->actingAs($this->admin, 'sanctum')
+        ->getJson('/api/admin/stats/commenters');
+
+    $response->assertOk()
+        ->assertJson([
+            'data' => $commenters,
+        ]);
+});
+
+test('commenters returns top commenters for editor', function () {
+    $commenters = [];
+
+    $this->mockContentStatsService
+        ->shouldReceive('getTopCommenters')
+        ->once()
+        ->andReturn($commenters);
+
+    $this->actingAs($this->editor, 'sanctum')
+        ->getJson('/api/admin/stats/commenters')
+        ->assertOk()
+        ->assertJson(['data' => $commenters]);
+});
+
+test('commenters denies author', function () {
+    $this->mockContentStatsService->shouldNotReceive('getTopCommenters');
+
+    $this->actingAs($this->author, 'sanctum')
+        ->getJson('/api/admin/stats/commenters')
+        ->assertStatus(403);
+});

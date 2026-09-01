@@ -12,9 +12,6 @@ beforeEach(function () {
     $this->statsService = new CommentStatsService($this->postInfoService);
     $this->post = Post::factory()->create();
     
-    // Travel to Thursday of the current week. 
-    // This ensures that relative dates like subDays(1) safely fall within the current calendar week 
-    // (>= startOfWeek()), aligning the test data with the source code's calendar week logic.
     $this->travelTo(Carbon::now()->startOfWeek()->addDays(3));
 });
 
@@ -82,4 +79,42 @@ test('getTotalCommentCountForUser counts all approved comments', function () {
     Comment::factory()->byUser($user)->create(['is_approved' => false]);
 
     expect($this->statsService->getTotalCommentCountForUser($user->id))->toBe(4);
+});
+
+test('getAllTimeTopCommenters returns aggregated top commenters across registered and guest users', function () {
+    $user = User::factory()->create();
+    $guestEmail = 'guest@example.com';
+
+    // Registered user comments
+    Comment::factory()->approved()->count(3)->byUser($user)->create();
+    // Guest comments (no user_id, but with name/email)
+    Comment::factory()->approved()->count(5)->create([
+        'user_id' => null,
+        'name' => 'Guest',
+        'email' => $guestEmail,
+    ]);
+    // Another registered user with 2 comments
+    $otherUser = User::factory()->create();
+    Comment::factory()->approved()->count(2)->byUser($otherUser)->create();
+
+    $result = $this->statsService->getAllTimeTopCommenters(10);
+
+    expect($result)->toHaveCount(3);
+
+    // Find entries by identity
+    $guestEntry = collect($result)->firstWhere('email', $guestEmail);
+    expect($guestEntry)->not->toBeNull();
+    expect($guestEntry['comments_count'])->toBe(5);
+    expect($guestEntry['user_id'])->toBeNull();
+    expect($guestEntry['name'])->toBe('Guest');
+
+    $userEntry = collect($result)->firstWhere('user_id', $user->id);
+    expect($userEntry)->not->toBeNull();
+    expect($userEntry['comments_count'])->toBe(3);
+    expect($userEntry['name'])->toBe($user->name);
+    expect($userEntry['email'])->toBe($user->email);
+
+    $otherEntry = collect($result)->firstWhere('user_id', $otherUser->id);
+    expect($otherEntry)->not->toBeNull();
+    expect($otherEntry['comments_count'])->toBe(2);
 });
