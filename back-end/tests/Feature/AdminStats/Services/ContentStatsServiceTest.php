@@ -74,8 +74,8 @@ test('getDashboardStats handles empty popular stats', function () {
     $this->mockPostAdminStats->shouldReceive('getTotalViews')->once()->andReturn(0);
     $this->mockPostAdminStats->shouldReceive('getPopularCategoryStats')->once()->with(5)->andReturn([]);
     $this->mockPostAdminStats->shouldReceive('getPopularTagStats')->once()->with(10)->andReturn([]);
-    $this->mockCategoryAdmin->shouldNotReceive('getByIds');
-    $this->mockTagAdmin->shouldNotReceive('getByIds');
+    $this->mockCategoryAdmin->shouldReceive('getByIds')->once()->with([])->andReturn([]);
+    $this->mockTagAdmin->shouldReceive('getByIds')->once()->with([])->andReturn([]);
 
     $result = $this->service->getDashboardStats();
 
