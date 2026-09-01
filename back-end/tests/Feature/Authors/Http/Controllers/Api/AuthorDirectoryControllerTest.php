@@ -96,7 +96,8 @@ test('index respects search and per_page query parameters', function () {
 
 test('show returns author profile with stats', function () {
     $user = User::factory()->create(['username' => 'johndoe', 'name' => 'John Doe']);
-    $profile = Profile::factory()->create([
+    
+    Profile::factory()->create([
         'user_id' => $user->id,
         'avatar' => 'http://example.com/avatar.png',
         'bio' => 'About John',
@@ -104,7 +105,12 @@ test('show returns author profile with stats', function () {
         'years_of_experience' => 10,
         'social_links' => ['https://twitter.com/johndoe'],
     ]);
-    $profile->load('user');
+
+    // CRITICAL FIX: Re-fetch the profile from the database.
+    // This resets Eloquent's internal `wasRecentlyCreated` flag to false.
+    // If we pass the factory-created instance directly to the mock, Laravel's 
+    // Resource will see `wasRecentlyCreated = true` and incorrectly return a 201 status.
+    $profile = Profile::with('user')->where('user_id', $user->id)->first();
 
     $this->mockProfileService
         ->shouldReceive('getPublicProfileByUsername')
