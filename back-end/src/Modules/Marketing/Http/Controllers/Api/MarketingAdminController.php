@@ -26,6 +26,7 @@ class MarketingAdminController extends Controller
 
     public function subscribers(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', Subscriber::class);
         $subscribers = $this->newsletterService->getAdminSubscribers($request->integer('per_page', 20));
         return SubscriberResource::collection($subscribers)->response()->setStatusCode(200);
     }
