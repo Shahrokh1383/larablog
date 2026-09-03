@@ -55,7 +55,7 @@ flowchart LR
 ## 2. Backend Directory Structure
 
 ```text
-larablog-api/
+back-end/
 ├── app/                              # Framework bootstrap only
 ├── bootstrap/
 ├── config/
@@ -131,7 +131,7 @@ For aggregator modules (e.g., a lightweight cross-module context), the skeleton 
 ### 3.1 Next.js Public Site (App Router)
 
 ```text
-larablog-web/
+User/
 ├── app/                                      # THIN orchestrator only
 │   ├── (auth)/
 │   ├── (public)/
@@ -164,7 +164,7 @@ larablog-web/
 ### 3.2 React Admin Panel (Vite)
 
 ```text
-larablog-admin/
+Admin/
 └── src/
     ├── app/
     │   ├── App.tsx
