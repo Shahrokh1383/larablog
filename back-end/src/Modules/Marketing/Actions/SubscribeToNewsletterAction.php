@@ -2,6 +2,7 @@
 
 namespace Modules\Marketing\Actions;
 
+use Illuminate\Database\UniqueConstraintViolationException;
 use Modules\Marketing\Models\Subscriber;
 use Modules\Marketing\DTOs\SubscribeDTO;
 use Modules\Marketing\Exceptions\MarketingException;
@@ -21,6 +22,10 @@ class SubscribeToNewsletterAction
             return $existing;
         }
 
-        return Subscriber::create(['email' => $dto->email]);
+        try {
+            return Subscriber::create(['email' => $dto->email]);
+        } catch (UniqueConstraintViolationException) {
+            throw MarketingException::alreadySubscribed();
+        }
     }
 }

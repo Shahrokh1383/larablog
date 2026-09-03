@@ -26,13 +26,15 @@ class MarketingAdminController extends Controller
 
     public function subscribers(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Subscriber::class); // Requires Policy
-        $subscribers = $this->newsletterService->getAdminSubscribers($request->query('per_page', 20));
+        $this->authorize('viewAny', Subscriber::class);
+        $subscribers = $this->newsletterService->getAdminSubscribers($request->integer('per_page', 20));
         return SubscriberResource::collection($subscribers)->response()->setStatusCode(200);
     }
 
     public function sendNewsletter(SendNewsletterRequest $request): JsonResponse
     {
+        $this->authorize('sendNewsletter', Subscriber::class);
+
         $this->newsletterService->dispatchNewsletterJob(
             subscriberIds: $request->validated('subscriber_ids'),
             sendToAll: $request->validated('send_to_all')
@@ -50,7 +52,7 @@ class MarketingAdminController extends Controller
     public function contactMessages(Request $request): JsonResponse
     {
         $this->authorize('viewAny', ContactMessage::class);
-        $messages = $this->contactService->getAdminMessages($request->query('per_page', 20));
+        $messages = $this->contactService->getAdminMessages($request->integer('per_page', 20));
         return ContactMessageResource::collection($messages)->response()->setStatusCode(200);
     }
 

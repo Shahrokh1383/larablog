@@ -14,8 +14,8 @@ class StoreContactMessageRequest extends FormRequest
         return [
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'max:5000'],
-            'name'    => ['nullable', 'string', 'max:255', Rule::requiredIf(fn() => !$this->user())],
-            'email'   => ['nullable', 'email', 'max:255', Rule::requiredIf(fn() => !$this->user())],
+            'name'  => ['nullable', 'string', 'max:255', Rule::requiredIf(fn() => !$this->user() || $this->user()->name === null)],
+            'email' => ['nullable', 'email', 'max:255', Rule::requiredIf(fn() => !$this->user() || $this->user()->email === null)],
         ];
     }
 }
