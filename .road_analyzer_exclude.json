@@ -39,10 +39,10 @@
     "back-end\\src\\Shared",
     "User\\src\\shared",
     "User\\app",
-    "Admin",
     "back-end\\database",
+    "back-end\\tests",
     "User",
-    "back-end\\tests"
+    "back-end"
   ],
   "globalPatterns": [
     "public",
@@ -56,6 +56,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-09-03T04:44:52.969Z",
+  "lastModified": "2026-09-03T07:29:18.538Z",
   "version": 1
 }
