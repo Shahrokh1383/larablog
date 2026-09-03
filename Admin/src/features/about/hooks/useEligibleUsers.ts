@@ -17,7 +17,7 @@ export function useEligibleUsers(initialSearch = '') {
 
   const query = useQuery<PaginatedResponse<EligibleUser>>({
     queryKey: [...aboutKeys.eligibleUsers, debouncedSearch, page],
-    queryFn: () => aboutApi.getEligibleUsers(debouncedSearch, page, 500),
+    queryFn: () => aboutApi.getEligibleUsers(debouncedSearch, page, 100),
     placeholderData: keepPreviousData,
     refetchOnMount: 'always',
   });

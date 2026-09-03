@@ -42,7 +42,7 @@
     "back-end\\database",
     "back-end\\tests",
     "User",
-    "back-end"
+    "Admin"
   ],
   "globalPatterns": [
     "public",
@@ -56,6 +56,6 @@
     "content.txt",
     "doc"
   ],
-  "lastModified": "2026-09-03T10:28:22.474Z",
+  "lastModified": "2026-09-03T11:07:36.935Z",
   "version": 1
 }

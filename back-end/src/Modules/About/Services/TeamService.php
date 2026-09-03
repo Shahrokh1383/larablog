@@ -45,7 +45,7 @@ class TeamService
         $paginator = $this->getEligibleUsers($search, $perPage);
 
         $data = collect($paginator->items())
-            ->map(fn (object $user) => $this->mapEligibleUser($user))
+            ->map(fn (array $user) => $this->mapEligibleUser($user))
             ->values()
             ->all();
 
@@ -116,14 +116,14 @@ class TeamService
         );
     }
 
-    private function mapEligibleUser(object $user): array
+    private function mapEligibleUser(array $user): array
     {
         return [
-            'id'     => $user->id,
-            'name'   => $user->name,
-            'email'  => $user->email,
-            'avatar' => $user->avatar,
-            'roles'  => $user->roles->pluck('name')->toArray(),
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'email'  => $user['email'],
+            'avatar' => $user['avatar'] ?? null,
+            'roles'  => $user['roles'] ?? [],
         ];
     }
 

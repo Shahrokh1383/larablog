@@ -29,7 +29,7 @@ export const aboutApi = {
     const response = await httpClient.get('/admin/about/team-members', { params: { page, per_page: perPage } });
     return response.data;
   },
-  getEligibleUsers: async (search = '', page = 1, perPage = 500): Promise<PaginatedResponse<EligibleUser>> => {
+  getEligibleUsers: async (search = '', page = 1, perPage = 100): Promise<PaginatedResponse<EligibleUser>> => {
     const response = await httpClient.get('/admin/about/eligible-users', { params: { search, page, per_page: perPage } });
     return response.data;
   },
