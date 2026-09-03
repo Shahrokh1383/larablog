@@ -33,6 +33,8 @@ class MarketingAdminController extends Controller
 
     public function sendNewsletter(SendNewsletterRequest $request): JsonResponse
     {
+        $this->authorize('sendNewsletter', Subscriber::class);
+
         $this->newsletterService->dispatchNewsletterJob(
             subscriberIds: $request->validated('subscriber_ids'),
             sendToAll: $request->validated('send_to_all')

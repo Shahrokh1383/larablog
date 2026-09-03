@@ -5,6 +5,7 @@ namespace Modules\Marketing\Services;
 use Modules\Marketing\Models\Subscriber;
 use Modules\Marketing\DTOs\SubscribeDTO;
 use Modules\Marketing\Actions\SubscribeToNewsletterAction;
+use Modules\Marketing\Exceptions\MarketingException;
 use Modules\Marketing\Jobs\SendBestPostsNewsletterJob;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -26,6 +27,10 @@ class NewsletterService
 
     public function dispatchNewsletterJob(?array $subscriberIds = null, bool $sendToAll = false): void
     {
+        if (!$sendToAll && empty($subscriberIds)) {
+            throw MarketingException::subscriberSelectionRequired();
+        }
+
         SendBestPostsNewsletterJob::dispatch($subscriberIds, $sendToAll);
     }
 
