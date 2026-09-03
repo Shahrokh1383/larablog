@@ -14,6 +14,7 @@ class ContactMessageResource extends JsonResource
             'subject'    => $this->subject,
             'message'    => $this->message,
             'is_read'    => $this->is_read,
+            'replied_at' => $this->replied_at,
             'author'     => $this->user ? [
                 'id'   => $this->user->id,
                 'name' => $this->user->name,

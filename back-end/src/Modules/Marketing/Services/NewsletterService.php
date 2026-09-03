@@ -11,6 +11,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class NewsletterService
 {
+    private const MAX_PER_PAGE = 100;
+
     public function __construct(
         private readonly SubscribeToNewsletterAction $subscribeAction
     ) {}
@@ -22,7 +24,9 @@ class NewsletterService
 
     public function getAdminSubscribers(int $perPage = 20): LengthAwarePaginator
     {
-        return Subscriber::latest()->paginate($perPage);
+        return Subscriber::latest()->paginate(
+            max(1, min(self::MAX_PER_PAGE, $perPage))
+        );
     }
 
     public function dispatchNewsletterJob(?array $subscriberIds = null, bool $sendToAll = false): void

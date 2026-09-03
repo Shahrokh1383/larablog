@@ -11,9 +11,9 @@ class MarketingException extends DomainException
         return new self('This email is already subscribed to our newsletter.', 409);
     }
 
-    public static function noSubscribersFound(): self
+    public static function alreadyReplied(): self
     {
-        return new self('No active subscribers found to send the newsletter.', 404);
+        return new self('This contact message has already been replied to.', 409);
     }
 
     public static function subscriberSelectionRequired(): self

@@ -19,6 +19,7 @@ class ContactMessage extends Model
 
     protected $casts = [
         'is_read' => 'boolean',
+        'replied_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
