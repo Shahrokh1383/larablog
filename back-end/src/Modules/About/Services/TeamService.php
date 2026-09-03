@@ -2,22 +2,27 @@
 
 namespace Modules\About\Services;
 
-use Modules\About\Models\TeamMember;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\About\DTOs\TeamMemberDTO;
+use Modules\About\Models\TeamMember;
 use Modules\Identity\Services\Contracts\FetchesUsersByRole;
 use Modules\Profile\Services\Contracts\FetchesPublicProfiles;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class TeamService
 {
+    public const PUBLIC_TEAM_LIMIT = 8;
+
+    private const ELIGIBLE_ROLES = ['admin', 'editor', 'author'];
+
     public function __construct(
         private FetchesUsersByRole $userFetcher,
-        private FetchesPublicProfiles $profileFetcher
+        private FetchesPublicProfiles $profileFetcher,
     ) {}
 
-    public function getActiveMembersData(int $perPage = 8): array
+    public function getActiveMembersData(int $perPage = self::PUBLIC_TEAM_LIMIT): array
     {
-        $members = TeamMember::where('is_active', true)
+        $members = TeamMember::query()
+            ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('created_at', 'asc')
             ->paginate($perPage);
@@ -25,25 +30,111 @@ class TeamService
         return $this->mapMembers($members);
     }
 
-    public function getMembersForAdminData(int $perPage = 10): array
+    public function getMembersForAdminData(int $perPage): array
     {
-        $members = TeamMember::orderBy('sort_order')
+        $members = TeamMember::query()
+            ->orderBy('sort_order')
             ->orderBy('created_at', 'asc')
             ->paginate($perPage);
 
         return $this->mapMembers($members);
     }
 
-    private function mapMembers($members): array
+    public function getEligibleUsersData(?string $search, int $perPage): array
+    {
+        $paginator = $this->getEligibleUsers($search, $perPage);
+
+        $data = collect($paginator->items())
+            ->map(fn (object $user) => $this->mapEligibleUser($user))
+            ->values()
+            ->all();
+
+        return [
+            'data' => $data,
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+            ],
+        ];
+    }
+
+    public function create(TeamMemberDTO $dto): array
+    {
+        $member = TeamMember::create([
+            'user_id'    => $dto->userId,
+            'sort_order' => $dto->sortOrder ?? 0,
+            'is_active'  => $dto->isActive ?? true,
+        ]);
+
+        return $this->mapSingleMember(
+            $member,
+            $this->userFetcher->getUsersWithRolesMap([$member->user_id]),
+            $this->profileFetcher->getPublicProfilesMap([$member->user_id]),
+        );
+    }
+
+    public function update(TeamMember $member, TeamMemberDTO $dto): array
+    {
+        $attributes = array_filter(
+            [
+                'user_id'    => $dto->userId,
+                'sort_order' => $dto->sortOrder,
+                'is_active'  => $dto->isActive,
+            ],
+            static fn ($value) => $value !== null,
+        );
+
+        if ($attributes !== []) {
+            $member->update($attributes);
+        }
+
+        $member->refresh();
+
+        return $this->mapSingleMember(
+            $member,
+            $this->userFetcher->getUsersWithRolesMap([$member->user_id]),
+            $this->profileFetcher->getPublicProfilesMap([$member->user_id]),
+        );
+    }
+
+    public function delete(TeamMember $member): void
+    {
+        $member->delete();
+    }
+
+    private function getEligibleUsers(?string $search, int $perPage): LengthAwarePaginator
+    {
+        $excludedIds = TeamMember::query()->pluck('user_id')->toArray();
+
+        return $this->userFetcher->getPaginatedUsersWithRoles(
+            self::ELIGIBLE_ROLES,
+            $search,
+            $perPage,
+            $excludedIds,
+        );
+    }
+
+    private function mapEligibleUser(object $user): array
+    {
+        return [
+            'id'     => $user->id,
+            'name'   => $user->name,
+            'email'  => $user->email,
+            'avatar' => $user->avatar,
+            'roles'  => $user->roles->pluck('name')->toArray(),
+        ];
+    }
+
+    private function mapMembers(LengthAwarePaginator $members): array
     {
         $userIds = $members->pluck('user_id')->toArray();
         $usersMap = $this->userFetcher->getUsersWithRolesMap($userIds);
         $profilesMap = $this->profileFetcher->getPublicProfilesMap($userIds);
 
         $mapped = collect($members->items())
-            ->map(function ($member) use ($usersMap, $profilesMap) {
-                return $this->mapSingleMember($member, $usersMap, $profilesMap);
-            })
+            ->map(fn (TeamMember $member) => $this->mapSingleMember($member, $usersMap, $profilesMap))
             ->values();
 
         return [
@@ -57,7 +148,7 @@ class TeamService
         ];
     }
 
-    private function mapSingleMember(TeamMember $member, array $usersMap = [], array $profilesMap = []): array
+    private function mapSingleMember(TeamMember $member, array $usersMap, array $profilesMap): array
     {
         $user = $usersMap[$member->user_id] ?? null;
         $profile = $profilesMap[$member->user_id] ?? null;
@@ -80,52 +171,5 @@ class TeamService
             'created_at' => $member->created_at,
             'updated_at' => $member->updated_at,
         ];
-    }
-
-    public function getEligibleUsers(?string $search = null, int $perPage = 15): LengthAwarePaginator
-    {
-        $excludedIds = TeamMember::pluck('user_id')->toArray();
-
-        return $this->userFetcher->getPaginatedUsersWithRoles(
-            ['admin', 'editor', 'author'],
-            $search,
-            $perPage,
-            $excludedIds
-        );
-    }
-
-    public function create(TeamMemberDTO $dto): array
-    {
-        $member = TeamMember::create([
-            'user_id'    => $dto->userId,
-            'sort_order' => $dto->sortOrder,
-            'is_active'  => $dto->isActive,
-        ]);
-
-        $usersMap = $this->userFetcher->getUsersWithRolesMap([$member->user_id]);
-        $profilesMap = $this->profileFetcher->getPublicProfilesMap([$member->user_id]);
-
-        return $this->mapSingleMember($member, $usersMap, $profilesMap);
-    }
-
-    public function update(TeamMember $member, TeamMemberDTO $dto): array
-    {
-        $member->update([
-            'user_id'    => $dto->userId,
-            'sort_order' => $dto->sortOrder,
-            'is_active'  => $dto->isActive,
-        ]);
-
-        $member->refresh();
-
-        $usersMap = $this->userFetcher->getUsersWithRolesMap([$member->user_id]);
-        $profilesMap = $this->profileFetcher->getPublicProfilesMap([$member->user_id]);
-
-        return $this->mapSingleMember($member, $usersMap, $profilesMap);
-    }
-
-    public function delete(TeamMember $member): void
-    {
-        $member->delete();
     }
 }

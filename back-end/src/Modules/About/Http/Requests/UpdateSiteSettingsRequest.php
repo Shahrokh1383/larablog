@@ -6,11 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSiteSettingsRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true; // Authorization via Policy in controller
-    }
-
     public function rules(): array
     {
         return [
