@@ -15,8 +15,9 @@ test('new subscriber is created', function () {
 
     expect($subscriber)->toBeInstanceOf(Subscriber::class);
     expect($subscriber->email)->toBe('new@example.com');
+    $subscriber->refresh();
     expect($subscriber->is_active)->toBeTrue();
-    $this->assertDatabaseHas('marketing_subscribers', ['email' => 'new@example.com']);
+    $this->assertDatabaseHas('marketing_subscribers', ['email' => 'new@example.com', 'is_active' => true]);
 });
 
 test('existing active subscriber throws alreadySubscribed', function () {
@@ -24,7 +25,7 @@ test('existing active subscriber throws alreadySubscribed', function () {
     $dto = new SubscribeDTO(email: 'existing@example.com');
 
     expect(fn () => $this->action->execute($dto))
-        ->toThrow(MarketingException::class, 'Already subscribed');
+        ->toThrow(MarketingException::class, 'This email is already subscribed to our newsletter.');
 });
 
 test('existing inactive subscriber is reactivated', function () {
@@ -41,11 +42,8 @@ test('existing inactive subscriber is reactivated', function () {
 });
 
 test('unique constraint violation is handled', function () {
-    // Simulate race condition: two concurrent subscribes with same email
     $this->expectException(MarketingException::class);
     $dto = new SubscribeDTO(email: 'race@example.com');
-    // First create
     Subscriber::create(['email' => $dto->email]);
-    // Then attempt create with same email, will throw unique violation
     $this->action->execute($dto);
 });

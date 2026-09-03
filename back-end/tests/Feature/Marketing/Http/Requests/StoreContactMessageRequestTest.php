@@ -3,6 +3,11 @@
 use Modules\Marketing\Http\Requests\StoreContactMessageRequest;
 use Shared\Models\User;
 
+function ruleStrings(array $rules): array
+{
+    return array_map(fn ($rule) => (string) $rule, $rules);
+}
+
 test('StoreContactMessageRequest authorizes always', function () {
     $request = new StoreContactMessageRequest();
     expect($request->authorize())->toBeTrue();
@@ -10,14 +15,16 @@ test('StoreContactMessageRequest authorizes always', function () {
 
 test('StoreContactMessageRequest rules when user is guest', function () {
     $request = new StoreContactMessageRequest();
-    // Simulate no authenticated user
     $request->setUserResolver(fn () => null);
 
     $rules = $request->rules();
     expect($rules)->toHaveKey('name');
     expect($rules)->toHaveKey('email');
-    expect($rules['name'])->toContain('required');
-    expect($rules['email'])->toContain('required');
+
+    $nameRules = ruleStrings($rules['name']);
+    $emailRules = ruleStrings($rules['email']);
+    expect($nameRules)->toContain('required');
+    expect($emailRules)->toContain('required');
 });
 
 test('StoreContactMessageRequest rules when user has name and email', function () {
@@ -26,8 +33,10 @@ test('StoreContactMessageRequest rules when user has name and email', function (
     $request->setUserResolver(fn () => $user);
 
     $rules = $request->rules();
-    expect($rules['name'])->not->toContain('required');
-    expect($rules['email'])->not->toContain('required');
+    $nameRules = ruleStrings($rules['name']);
+    $emailRules = ruleStrings($rules['email']);
+    expect($nameRules)->not->toContain('required');
+    expect($emailRules)->not->toContain('required');
 });
 
 test('StoreContactMessageRequest rules when user lacks name or email', function () {
@@ -36,6 +45,8 @@ test('StoreContactMessageRequest rules when user lacks name or email', function 
     $request->setUserResolver(fn () => $user);
 
     $rules = $request->rules();
-    expect($rules['name'])->toContain('required');
-    expect($rules['email'])->toContain('required');
+    $nameRules = ruleStrings($rules['name']);
+    $emailRules = ruleStrings($rules['email']);
+    expect($nameRules)->toContain('required');
+    expect($emailRules)->toContain('required');
 });

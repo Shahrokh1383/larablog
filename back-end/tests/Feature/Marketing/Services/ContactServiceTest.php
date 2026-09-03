@@ -73,7 +73,7 @@ test('replyToMessage marks replied_at and queues admin reply', function () {
 test('replyToMessage throws alreadyReplied if already replied', function () {
     $message = ContactMessage::factory()->create(['replied_at' => now()]);
     expect(fn () => $this->service->replyToMessage($message, 'Second reply'))
-        ->toThrow(MarketingException::class, 'Already replied');
+        ->toThrow(MarketingException::class, 'This contact message has already been replied to.');
 });
 
 test('replyToMessage rolls back replied_at if email fails', function () {

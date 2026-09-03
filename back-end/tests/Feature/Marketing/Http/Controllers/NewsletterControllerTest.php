@@ -29,12 +29,12 @@ test('subscribe validation fails for invalid email', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-test('subscribe throws 422 if already subscribed', function () {
+test('subscribe throws 409 if already subscribed', function () {
     Subscriber::factory()->create(['email' => 'existing@example.com', 'is_active' => true]);
     $response = $this->postJson('/api/newsletter/subscribe', [
         'email' => 'existing@example.com',
     ]);
 
-    $response->assertStatus(422)
-        ->assertJson(['message' => 'Already subscribed']);
+    $response->assertStatus(409)
+        ->assertJson(['message' => 'This email is already subscribed to our newsletter.']);
 });

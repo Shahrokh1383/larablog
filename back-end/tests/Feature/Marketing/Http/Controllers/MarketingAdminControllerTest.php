@@ -10,10 +10,12 @@ use Modules\Marketing\Actions\SendContactEmailAction;
 use Modules\Marketing\Jobs\SendBestPostsNewsletterJob;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
     Mail::fake();
     Queue::fake();
+    Role::firstOrCreate(['name' => 'admin']);
 
     $this->newsletterService = new NewsletterService(new SubscribeToNewsletterAction());
     $this->contactService = new ContactService(new SendContactEmailAction());
@@ -97,7 +99,12 @@ test('admin can view contact message and marks as read', function () {
     $response = $this->getJson("/api/admin/contact-messages/{$message->id}");
 
     $response->assertStatus(200)
-        ->assertJson(['id' => $message->id, 'is_read' => true]);
+        ->assertJson([
+            'data' => [
+                'id' => $message->id,
+                'is_read' => true,
+            ]
+        ]);
     $this->assertDatabaseHas('marketing_contact_messages', ['id' => $message->id, 'is_read' => true]);
 });
 
@@ -129,7 +136,7 @@ test('admin can reply to contact message', function () {
 });
 
 test('non-admin cannot access admin endpoints', function () {
-    $user = User::factory()->create(); // no admin role
+    $user = User::factory()->create();
     $this->actingAs($user, 'sanctum');
 
     $response = $this->getJson('/api/admin/subscribers');
