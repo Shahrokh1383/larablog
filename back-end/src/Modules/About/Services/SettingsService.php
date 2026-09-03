@@ -41,12 +41,23 @@ class SettingsService
 
     public function deleteStoryImage(string $url): void
     {
-        $this->deleteStoryImageAction->execute($url);
+        $deletedPath = $this->deleteStoryImageAction->execute($url);
 
         $settings = $this->getSettings();
 
-        if ($settings->story_image === $url) {
+        if ($this->urlPath($settings->story_image) === $deletedPath) {
             $settings->update(['story_image' => null]);
         }
+    }
+
+    private function urlPath(?string $url): ?string
+    {
+        if ($url === null || $url === '') {
+            return null;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+
+        return is_string($path) ? $path : null;
     }
 }

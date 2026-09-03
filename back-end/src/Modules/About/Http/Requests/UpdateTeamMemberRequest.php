@@ -7,6 +7,11 @@ use Illuminate\Validation\Rule;
 
 class UpdateTeamMemberRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
         return [

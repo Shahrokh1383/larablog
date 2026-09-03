@@ -11,7 +11,7 @@ class DeleteStoryImageAction
 
     private const STORY_IMAGE_DIRECTORY = 'about/story/';
 
-    public function execute(string $url): void
+    public function execute(string $url): string
     {
         $path = parse_url($url, PHP_URL_PATH);
 
@@ -34,5 +34,6 @@ class DeleteStoryImageAction
         if (! $disk->delete($relativePath)) {
             throw new StoryImageDeletionFailedException('The story image file could not be deleted.');
         }
+        return $path;
     }
 }

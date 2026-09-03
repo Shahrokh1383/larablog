@@ -7,6 +7,11 @@ use Illuminate\Http\UploadedFile;
 
 class UploadStoryImageRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
         return [
