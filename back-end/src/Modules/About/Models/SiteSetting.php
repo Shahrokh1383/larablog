@@ -3,9 +3,13 @@
 namespace Modules\About\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\Modules\About\SiteSettingFactory;
 
 class SiteSetting extends Model
 {
+    use HasFactory;
+
     protected $table = 'about_site_settings';
 
     protected $fillable = [
@@ -30,5 +34,10 @@ class SiteSetting extends Model
     public static function singleton(): self
     {
         return self::firstOrFail();
+    }
+
+    protected static function newFactory(): SiteSettingFactory
+    {
+        return SiteSettingFactory::new();
     }
 }

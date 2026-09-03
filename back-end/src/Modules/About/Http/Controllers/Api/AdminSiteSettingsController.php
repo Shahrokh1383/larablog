@@ -2,22 +2,19 @@
 
 namespace Modules\About\Http\Controllers\Api;
 
-use Modules\About\Services\SettingsService;
-use Modules\About\Actions\UploadStoryImageAction;
-use Modules\About\Actions\DeleteStoryImageAction;
-use Modules\About\DTOs\SiteSettingsDTO;
-use Modules\About\Http\Requests\UpdateSiteSettingsRequest;
-use Modules\About\Http\Resources\SiteSettingResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\About\DTOs\SiteSettingsDTO;
+use Modules\About\Http\Requests\DeleteStoryImageRequest;
+use Modules\About\Http\Requests\UpdateSiteSettingsRequest;
+use Modules\About\Http\Requests\UploadStoryImageRequest;
+use Modules\About\Http\Resources\SiteSettingResource;
+use Modules\About\Services\SettingsService;
 
 class AdminSiteSettingsController extends Controller
 {
     public function __construct(
         private SettingsService $settingsService,
-        private UploadStoryImageAction $uploadStoryImageAction,
-        private DeleteStoryImageAction $deleteStoryImageAction
     ) {}
 
     public function show(): JsonResponse
@@ -34,31 +31,20 @@ class AdminSiteSettingsController extends Controller
 
         return response()->json([
             'message' => 'Site settings updated successfully.',
-            'data' => new SiteSettingResource($settings),
+            'data'    => new SiteSettingResource($settings),
         ]);
     }
 
-    public function uploadStoryImage(Request $request): JsonResponse
+    public function uploadStoryImage(UploadStoryImageRequest $request): JsonResponse
     {
-        $request->validate([
-            'story_image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-        ]);
+        $url = $this->settingsService->uploadStoryImage($request->image());
 
-        $url = $this->uploadStoryImageAction->execute($request->file('story_image'));
         return response()->json(['url' => $url]);
     }
 
-    public function deleteStoryImage(Request $request): JsonResponse
+    public function deleteStoryImage(DeleteStoryImageRequest $request): JsonResponse
     {
-        $request->validate([
-            'url' => ['required', 'string', 'url'],
-        ]);
-
-        $this->deleteStoryImageAction->execute($request->input('url'));
-        
-        // Also clear it from settings
-        $settings = $this->settingsService->getSettings();
-        $settings->update(['story_image' => null]);
+        $this->settingsService->deleteStoryImage($request->imageUrl());
 
         return response()->json(['message' => 'Story image deleted successfully.']);
     }

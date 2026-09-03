@@ -1,7 +1,6 @@
 import httpClient from '@/shared/api/httpClient';
-import type { SiteSettings, TeamMember } from '../types/about';
+import type { SiteSettings, TeamMember, EligibleUser } from '../types/about';
 import type { PaginatedResponse } from '@/shared/types/api';
-import type { AdminUser } from '@/features/users/types/user';
 
 export const aboutApi = {
   // Site Settings
@@ -30,7 +29,7 @@ export const aboutApi = {
     const response = await httpClient.get('/admin/about/team-members', { params: { page, per_page: perPage } });
     return response.data;
   },
-  getEligibleUsers: async (search = '', page = 1, perPage = 500): Promise<PaginatedResponse<AdminUser>> => {
+  getEligibleUsers: async (search = '', page = 1, perPage = 100): Promise<PaginatedResponse<EligibleUser>> => {
     const response = await httpClient.get('/admin/about/eligible-users', { params: { search, page, per_page: perPage } });
     return response.data;
   },

@@ -2,54 +2,32 @@
 
 namespace Modules\About\Http\Controllers\Api;
 
-use Modules\About\Models\TeamMember;
-use Modules\About\Services\TeamService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 use Modules\About\DTOs\TeamMemberDTO;
+use Modules\About\Http\Requests\ListEligibleUsersRequest;
+use Modules\About\Http\Requests\ListTeamMembersRequest;
 use Modules\About\Http\Requests\StoreTeamMemberRequest;
 use Modules\About\Http\Requests\UpdateTeamMemberRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use Modules\About\Models\TeamMember;
+use Modules\About\Services\TeamService;
 
 class AdminTeamMemberController extends Controller
 {
     public function __construct(private TeamService $teamService) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(ListTeamMembersRequest $request): JsonResponse
     {
-        $perPage = (int) $request->input('per_page', 10);
-        $data = $this->teamService->getMembersForAdminData($perPage);
-
-        return response()->json($data);
+        return response()->json(
+            $this->teamService->getMembersForAdminData($request->perPage())
+        );
     }
 
-    public function eligibleUsers(Request $request): JsonResponse
+    public function eligibleUsers(ListEligibleUsersRequest $request): JsonResponse
     {
-        $search  = $request->input('search');
-        $perPage = (int) $request->input('per_page', 500); 
-        $paginator = $this->teamService->getEligibleUsers($search, $perPage);
-
-        $mapped = collect($paginator->items())
-            ->map(function ($user) {
-                return [
-                    'id'     => $user->id,
-                    'name'   => $user->name,
-                    'email'  => $user->email,
-                    'avatar' => $user->avatar,
-                    'roles'  => $user->roles->pluck('name')->toArray(),
-                ];
-            })
-            ->values();
-
-        return response()->json([
-            'data' => $mapped,
-            'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'last_page'    => $paginator->lastPage(),
-                'per_page'     => $paginator->perPage(),
-                'total'        => $paginator->total(),
-            ],
-        ]);
+        return response()->json(
+            $this->teamService->getEligibleUsersData($request->search(), $request->perPage())
+        );
     }
 
     public function store(StoreTeamMemberRequest $request): JsonResponse

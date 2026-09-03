@@ -18,7 +18,7 @@ class AboutController extends Controller
     public function index(): JsonResponse
     {
         $settings = $this->settingsService->getSettings();
-        $teamData = $this->teamService->getActiveMembersData(8);
+        $teamData = $this->teamService->getActiveMembersData(TeamService::PUBLIC_TEAM_LIMIT);
 
         return response()->json([
             'data' => [

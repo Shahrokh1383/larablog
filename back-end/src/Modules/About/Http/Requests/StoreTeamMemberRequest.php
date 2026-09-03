@@ -15,8 +15,8 @@ class StoreTeamMemberRequest extends FormRequest
     {
         return [
             'user_id'    => ['required', 'exists:users,id', 'unique:about_team_members,user_id'],
-            'sort_order' => ['integer', 'min:0'],
-            'is_active'  => ['boolean'],
+            'sort_order' => ['sometimes', 'integer', 'min:0'],
+            'is_active'  => ['sometimes', 'boolean'],
         ];
     }
 }
