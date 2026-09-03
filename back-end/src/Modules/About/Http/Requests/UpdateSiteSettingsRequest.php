@@ -25,6 +25,7 @@ class UpdateSiteSettingsRequest extends FormRequest
             'social_links.instagram' => 'nullable|url',
             'social_links.dribbble' => 'nullable|url',
             'social_links.youtube' => 'nullable|url',
+            'social_links.discord' => 'nullable|url',
             'story_image' => 'nullable|string|url|max:2048',
         ];
     }

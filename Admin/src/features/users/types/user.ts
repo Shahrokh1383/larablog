@@ -4,6 +4,7 @@ export interface AdminUser {
   email: string;
   username: string;
   roles: string[];
+  avatar: string | null;
   created_at: string;
 }
 
